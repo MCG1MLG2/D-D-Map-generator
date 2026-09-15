@@ -1,0 +1,3014 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Königreichskarte – Zufallsgenerator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=IM+Fell+English:ital@0;1&display=swap');
+
+  :root{
+    --parchment: #e9dcb9;
+    --parchment-dark: #d8c599;
+    --parchment-edge: #b89f6b;
+    --ink: #3c2c1e;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #24201a;
+    font-family: 'IM Fell English', serif;
+    color: var(--ink);
+  }
+
+  .page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px 48px;
+  }
+
+  header {
+    text-align: center;
+    max-width: 640px;
+    margin-bottom: 6px;
+  }
+
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: clamp(28px, 4vw, 42px);
+    letter-spacing: 1px;
+    color: #ecd9a5;
+    margin: 0 0 8px;
+  }
+
+  header p {
+    color: #c7b98f;
+    font-size: 18px;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .controls-panel {
+    width: min(920px, 94vw);
+    background: var(--parchment);
+    border: 2px solid #6e5218;
+    border-radius: 6px;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.4);
+    margin: 20px 0 28px;
+    overflow: hidden;
+  }
+
+  .control-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 20px;
+    background: linear-gradient(180deg, #ddcda0, #cdb87f);
+    border-bottom: 2px solid #6e5218;
+  }
+
+  button#generateBtn, button#downloadBtn, button#toggleSettingsBtn {
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    color: #2c2114;
+    background: linear-gradient(180deg, #d8b25e, #a97e2b);
+    border: 2px solid #6e5218;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #4a3712, 0 4px 8px rgba(0,0,0,0.35);
+    transition: transform 0.08s ease;
+  }
+  button#toggleSettingsBtn {
+    background: linear-gradient(180deg, #f3e8c8, #d8c599);
+  }
+  button#generateBtn:hover, button#downloadBtn:hover, button#toggleSettingsBtn:hover { filter: brightness(1.08); }
+  button#generateBtn:active, button#downloadBtn:active, button#toggleSettingsBtn:active { transform: translateY(2px); box-shadow: 0 1px 0 #4a3712; }
+
+  .seed-label {
+    font-size: 14px;
+    color: #5a4530;
+    width: 100%;
+    text-align: center;
+  }
+
+  #languageSelect, #seedInput {
+    font-family: 'IM Fell English', serif;
+    font-size: 14px;
+    background: #f3e8c8;
+    border: 1px solid #8a6a3f;
+    border-radius: 3px;
+    color: #3c2c1e;
+    padding: 6px 8px;
+  }
+  #seedInput { width: 120px; background: #fbf3dd; padding: 5px 7px; }
+
+  .settings-body {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 18px 28px;
+    padding: 18px 22px 22px;
+  }
+  .settings-body.collapsed { display: none; }
+
+  .control-group h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #6e5218;
+    margin: 0 0 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #c9b686;
+  }
+
+  .field-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 9px;
+    font-size: 14px;
+    color: #3c2c1e;
+  }
+  .field-row:last-child { margin-bottom: 0; }
+  .field-row span.f-label { flex: 1; }
+
+  .field-row select, .field-row input[type="number"] {
+    font-family: 'IM Fell English', serif;
+    font-size: 14px;
+    background: #fbf3dd;
+    border: 1px solid #8a6a3f;
+    border-radius: 3px;
+    color: #3c2c1e;
+    padding: 5px 7px;
+    width: 108px;
+  }
+  .field-row input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    accent-color: #a97e2b;
+  }
+
+  .map-frame {
+    position: relative;
+    max-width: 96vw;
+    max-height: 78vh;
+    overflow: auto;
+    background: var(--parchment);
+    border: 10px solid var(--parchment-edge);
+    outline: 2px solid #6b5636;
+    border-radius: 3px;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.55);
+  }
+
+  svg#mapSvg {
+    display: block;
+  }
+
+  footer {
+    margin-top: 22px;
+    color: #8f8262;
+    font-size: 14px;
+    text-align: center;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+/*
+ * languages.js — translations for the Kingdom Map generator.
+ *
+ * To add a new language: copy one whole language block (the part between
+ *   xx: { ... },
+ * and give it a new two-letter code as the key. Fill in every field —
+ * "options" holds the labels for the position dropdowns (mitte/oben/unten/...).
+ * Nothing else in the project needs to change: the language picker and all
+ * detection logic read this file automatically.
+ */
+const LANGUAGES = {
+  de: {
+    nativeName: "Deutsch",
+    title: "Karte des Königreichs",
+    subtitle: "Eine handgezeichnete Fantasiekarte: zufällig generiert, mit Bergen, Meer, Wald, Wüste und Fluss – und komplett nach deinen Wünschen einstellbar.",
+    generateBtn: "⚔ Neue Karte erzeugen",
+    downloadBtn: "⬇ Als PNG speichern",
+    toggleSettingsBtn: "⚙ Einstellungen",
+    lblSeed: "Seed:",
+    grpCastles: "Burgen",
+    lblMainCastle: "Hauptburg",
+    lblOutposts: "Außenposten",
+    lblNoOutposts: "keine Außenposten",
+    grpTerrain: "Gelände",
+    lblMountains: "Gebirge",
+    lblSea: "Meer",
+    lblForest: "Wald",
+    lblDesert: "Wüste",
+    grpRiver: "Fluss",
+    lblGenerateRiver: "Fluss generieren",
+    lblBridges: "Brücken",
+    grpMap: "Karte",
+    lblFields: "Felder (100–10000)",
+    grpMarkers: "Marker",
+    lblActionFields: "Aktionsfelder (je 500er)",
+    lblMerchant: "Händlerfeld Nr.",
+    footer: "Jede Karte wird zufällig neu erzeugt – Gelände, Wege und Lage der Außenposten variieren leicht.",
+    mapWord: "Karte",
+    fieldsWord: "Felder",
+    pngError: "PNG-Export ist fehlgeschlagen. Alternativ: Rechtsklick auf die Karte → \"Grafik speichern unter\".",
+    options: {
+      "aus": "Aus",
+      "mitte": "Mitte",
+      "oben": "Oben",
+      "unten": "Unten",
+      "links": "Links",
+      "rechts": "Rechts",
+      "oben-links": "Oben links",
+      "oben-rechts": "Oben rechts",
+      "unten-links": "Unten links",
+      "unten-rechts": "Unten rechts"
+    }
+  },
+  en: {
+    nativeName: "English",
+    title: "Map of the Kingdom",
+    subtitle: "A hand-drawn fantasy map: randomly generated, with mountains, sea, forest, desert and a river – fully customisable to your liking.",
+    generateBtn: "⚔ Generate New Map",
+    downloadBtn: "⬇ Save as PNG",
+    toggleSettingsBtn: "⚙ Settings",
+    lblSeed: "Seed:",
+    grpCastles: "Castles",
+    lblMainCastle: "Main castle",
+    lblOutposts: "Outposts",
+    lblNoOutposts: "no outposts",
+    grpTerrain: "Terrain",
+    lblMountains: "Mountains",
+    lblSea: "Sea",
+    lblForest: "Forest",
+    lblDesert: "Desert",
+    grpRiver: "River",
+    lblGenerateRiver: "Generate river",
+    lblBridges: "Bridges",
+    grpMap: "Map",
+    lblFields: "Fields (100–10000)",
+    grpMarkers: "Markers",
+    lblActionFields: "Action fields (every 500)",
+    lblMerchant: "Merchant field no.",
+    footer: "Every map is randomly generated anew – terrain, paths and outpost placement vary slightly.",
+    mapWord: "Map",
+    fieldsWord: "fields",
+    pngError: "PNG export failed. Alternatively: right-click the map → \"Save image as\".",
+    options: {
+      "aus": "Off",
+      "mitte": "Center",
+      "oben": "Top",
+      "unten": "Bottom",
+      "links": "Left",
+      "rechts": "Right",
+      "oben-links": "Top left",
+      "oben-rechts": "Top right",
+      "unten-links": "Bottom left",
+      "unten-rechts": "Bottom right"
+    }
+  },
+  es: {
+    nativeName: "Español",
+    title: "Mapa del Reino",
+    subtitle: "Un mapa de fantasía dibujado a mano: generado aleatoriamente, con montañas, mar, bosque, desierto y un río – totalmente personalizable a tu gusto.",
+    generateBtn: "⚔ Generar nuevo mapa",
+    downloadBtn: "⬇ Guardar como PNG",
+    toggleSettingsBtn: "⚙ Ajustes",
+    lblSeed: "Semilla:",
+    grpCastles: "Castillos",
+    lblMainCastle: "Castillo principal",
+    lblOutposts: "Puestos avanzados",
+    lblNoOutposts: "sin puestos avanzados",
+    grpTerrain: "Terreno",
+    lblMountains: "Montañas",
+    lblSea: "Mar",
+    lblForest: "Bosque",
+    lblDesert: "Desierto",
+    grpRiver: "Río",
+    lblGenerateRiver: "Generar río",
+    lblBridges: "Puentes",
+    grpMap: "Mapa",
+    lblFields: "Casillas (100–10000)",
+    grpMarkers: "Marcadores",
+    lblActionFields: "Casillas de acción (cada 500)",
+    lblMerchant: "N.º de casilla de mercader",
+    footer: "Cada mapa se genera aleatoriamente de nuevo – el terreno, los caminos y la ubicación de los puestos avanzados varían ligeramente.",
+    mapWord: "Mapa",
+    fieldsWord: "casillas",
+    pngError: "La exportación a PNG ha fallado. Alternativa: clic derecho en el mapa → \"Guardar imagen como\".",
+    options: {
+      "aus": "Desactivado",
+      "mitte": "Centro",
+      "oben": "Arriba",
+      "unten": "Abajo",
+      "links": "Izquierda",
+      "rechts": "Derecha",
+      "oben-links": "Arriba izquierda",
+      "oben-rechts": "Arriba derecha",
+      "unten-links": "Abajo izquierda",
+      "unten-rechts": "Abajo derecha"
+    }
+  },
+  fr: {
+    nativeName: "Français",
+    title: "Carte du Royaume",
+    subtitle: "Une carte de fantasy dessinée à la main : générée aléatoirement, avec montagnes, mer, forêt, désert et une rivière – entièrement personnalisable selon vos envies.",
+    generateBtn: "⚔ Générer une nouvelle carte",
+    downloadBtn: "⬇ Enregistrer en PNG",
+    toggleSettingsBtn: "⚙ Paramètres",
+    lblSeed: "Graine :",
+    grpCastles: "Châteaux",
+    lblMainCastle: "Château principal",
+    lblOutposts: "Avant-postes",
+    lblNoOutposts: "aucun avant-poste",
+    grpTerrain: "Terrain",
+    lblMountains: "Montagnes",
+    lblSea: "Mer",
+    lblForest: "Forêt",
+    lblDesert: "Désert",
+    grpRiver: "Rivière",
+    lblGenerateRiver: "Générer une rivière",
+    lblBridges: "Ponts",
+    grpMap: "Carte",
+    lblFields: "Cases (100–10000)",
+    grpMarkers: "Marqueurs",
+    lblActionFields: "Cases d'action (tous les 500)",
+    lblMerchant: "N° de case marchand",
+    footer: "Chaque carte est régénérée aléatoirement – le terrain, les chemins et l'emplacement des avant-postes varient légèrement.",
+    mapWord: "Carte",
+    fieldsWord: "cases",
+    pngError: "L'export PNG a échoué. Alternative : clic droit sur la carte → \"Enregistrer l'image sous\".",
+    options: {
+      "aus": "Désactivé",
+      "mitte": "Centre",
+      "oben": "Haut",
+      "unten": "Bas",
+      "links": "Gauche",
+      "rechts": "Droite",
+      "oben-links": "Haut gauche",
+      "oben-rechts": "Haut droite",
+      "unten-links": "Bas gauche",
+      "unten-rechts": "Bas droite"
+    }
+  },
+  zh: {
+    nativeName: "中文",
+    title: "王国地图",
+    subtitle: "一张手绘的奇幻地图：随机生成，包含山脉、海洋、森林、沙漠和河流——完全可根据你的喜好自定义。",
+    generateBtn: "⚔ 生成新地图",
+    downloadBtn: "⬇ 保存为PNG",
+    toggleSettingsBtn: "⚙ 设置",
+    lblSeed: "种子：",
+    grpCastles: "城堡",
+    lblMainCastle: "主城堡",
+    lblOutposts: "前哨",
+    lblNoOutposts: "无前哨",
+    grpTerrain: "地形",
+    lblMountains: "山脉",
+    lblSea: "海洋",
+    lblForest: "森林",
+    lblDesert: "沙漠",
+    grpRiver: "河流",
+    lblGenerateRiver: "生成河流",
+    lblBridges: "桥梁",
+    grpMap: "地图",
+    lblFields: "地块（100–10000）",
+    grpMarkers: "标记",
+    lblActionFields: "事件地块（每500个）",
+    lblMerchant: "商人地块编号",
+    footer: "每张地图都是随机重新生成的——地形、道路和前哨位置会略有不同。",
+    mapWord: "地图",
+    fieldsWord: "地块",
+    pngError: "PNG导出失败。可以尝试：右键点击地图 →\"图片另存为\"。",
+    options: {
+      "aus": "关闭",
+      "mitte": "中间",
+      "oben": "上方",
+      "unten": "下方",
+      "links": "左侧",
+      "rechts": "右侧",
+      "oben-links": "左上",
+      "oben-rechts": "右上",
+      "unten-links": "左下",
+      "unten-rechts": "右下"
+    }
+  },
+  ru: {
+    nativeName: "Русский",
+    title: "Карта королевства",
+    subtitle: "Рисованная фэнтезийная карта: генерируется случайным образом, с горами, морем, лесом, пустыней и рекой — полностью настраивается по вашему желанию.",
+    generateBtn: "⚔ Создать новую карту",
+    downloadBtn: "⬇ Сохранить как PNG",
+    toggleSettingsBtn: "⚙ Настройки",
+    lblSeed: "Сид:",
+    grpCastles: "Замки",
+    lblMainCastle: "Главный замок",
+    lblOutposts: "Форпосты",
+    lblNoOutposts: "без форпостов",
+    grpTerrain: "Ландшафт",
+    lblMountains: "Горы",
+    lblSea: "Море",
+    lblForest: "Лес",
+    lblDesert: "Пустыня",
+    grpRiver: "Река",
+    lblGenerateRiver: "Создать реку",
+    lblBridges: "Мосты",
+    grpMap: "Карта",
+    lblFields: "Клетки (100–10000)",
+    grpMarkers: "Маркеры",
+    lblActionFields: "Клетки событий (каждые 500)",
+    lblMerchant: "№ клетки торговца",
+    footer: "Каждая карта генерируется заново случайным образом — ландшафт, пути и расположение форпостов немного отличаются.",
+    mapWord: "Карта",
+    fieldsWord: "клеток",
+    pngError: "Экспорт в PNG не удался. Альтернатива: щёлкните правой кнопкой по карте → \"Сохранить изображение как\".",
+    options: {
+      "aus": "Выкл",
+      "mitte": "Центр",
+      "oben": "Сверху",
+      "unten": "Снизу",
+      "links": "Слева",
+      "rechts": "Справа",
+      "oben-links": "Сверху слева",
+      "oben-rechts": "Сверху справа",
+      "unten-links": "Снизу слева",
+      "unten-rechts": "Снизу справа"
+    }
+  },
+  hi: {
+    nativeName: "हिन्दी",
+    title: "राज्य का नक्शा",
+    subtitle: "हाथ से बना काल्पनिक नक्शा: यादृच्छिक रूप से बनाया गया, पहाड़ों, समुद्र, जंगल, रेगिस्तान और एक नदी के साथ – पूरी तरह से आपकी पसंद के अनुसार अनुकूलन योग्य।",
+    generateBtn: "⚔ नया नक्शा बनाएं",
+    downloadBtn: "⬇ PNG के रूप में सहेजें",
+    toggleSettingsBtn: "⚙ सेटिंग्स",
+    lblSeed: "सीड:",
+    grpCastles: "किले",
+    lblMainCastle: "मुख्य किला",
+    lblOutposts: "चौकियां",
+    lblNoOutposts: "कोई चौकी नहीं",
+    grpTerrain: "भूभाग",
+    lblMountains: "पहाड़",
+    lblSea: "समुद्र",
+    lblForest: "जंगल",
+    lblDesert: "रेगिस्तान",
+    grpRiver: "नदी",
+    lblGenerateRiver: "नदी बनाएं",
+    lblBridges: "पुल",
+    grpMap: "नक्शा",
+    lblFields: "खेत (100–10000)",
+    grpMarkers: "मार्कर",
+    lblActionFields: "क्रिया क्षेत्र (हर 500)",
+    lblMerchant: "व्यापारी क्षेत्र संख्या",
+    footer: "हर नक्शा यादृच्छिक रूप से नया बनाया जाता है – भूभाग, रास्ते और चौकियों की स्थिति थोड़ी भिन्न होती है।",
+    mapWord: "नक्शा",
+    fieldsWord: "खेत",
+    pngError: "PNG निर्यात विफल रहा। वैकल्पिक रूप से: नक्शे पर राइट-क्लिक करें → \"छवि को इस रूप में सहेजें\"।",
+    options: {
+      "aus": "बंद",
+      "mitte": "केंद्र",
+      "oben": "ऊपर",
+      "unten": "नीचे",
+      "links": "बाएं",
+      "rechts": "दाएं",
+      "oben-links": "ऊपर बाएं",
+      "oben-rechts": "ऊपर दाएं",
+      "unten-links": "नीचे बाएं",
+      "unten-rechts": "नीचे दाएं"
+    }
+  },
+  ar: {
+    nativeName: "العربية",
+    title: "خريطة المملكة",
+    subtitle: "خريطة خيالية مرسومة يدويًا: تُنشأ عشوائيًا، مع جبال وبحر وغابة وصحراء ونهر – قابلة للتخصيص بالكامل حسب رغبتك.",
+    generateBtn: "⚔ إنشاء خريطة جديدة",
+    downloadBtn: "⬇ حفظ كصورة PNG",
+    toggleSettingsBtn: "⚙ الإعدادات",
+    lblSeed: "البذرة:",
+    grpCastles: "القلاع",
+    lblMainCastle: "القلعة الرئيسية",
+    lblOutposts: "المخافر",
+    lblNoOutposts: "بدون مخافر",
+    grpTerrain: "التضاريس",
+    lblMountains: "الجبال",
+    lblSea: "البحر",
+    lblForest: "الغابة",
+    lblDesert: "الصحراء",
+    grpRiver: "النهر",
+    lblGenerateRiver: "إنشاء نهر",
+    lblBridges: "الجسور",
+    grpMap: "الخريطة",
+    lblFields: "الحقول (100–10000)",
+    grpMarkers: "العلامات",
+    lblActionFields: "حقول الأحداث (كل 500)",
+    lblMerchant: "رقم حقل التاجر",
+    footer: "يتم إنشاء كل خريطة عشوائيًا من جديد – تختلف التضاريس والطرق ومواقع المخافر قليلاً.",
+    mapWord: "خريطة",
+    fieldsWord: "حقول",
+    pngError: "فشل تصدير PNG. بدلاً من ذلك: انقر بزر الماوس الأيمن على الخريطة ← \"حفظ الصورة باسم\".",
+    options: {
+      "aus": "إيقاف",
+      "mitte": "المنتصف",
+      "oben": "أعلى",
+      "unten": "أسفل",
+      "links": "يسار",
+      "rechts": "يمين",
+      "oben-links": "أعلى يسار",
+      "oben-rechts": "أعلى يمين",
+      "unten-links": "أسفل يسار",
+      "unten-rechts": "أسفل يمين"
+    }
+  },
+  bn: {
+    nativeName: "বাংলা",
+    title: "রাজ্যের মানচিত্র",
+    subtitle: "হাতে আঁকা একটি কল্পনার মানচিত্র: এলোমেলোভাবে তৈরি, পাহাড়, সমুদ্র, বন, মরুভূমি এবং একটি নদী সহ – সম্পূর্ণভাবে আপনার পছন্দমতো কাস্টমাইজযোগ্য।",
+    generateBtn: "⚔ নতুন মানচিত্র তৈরি করুন",
+    downloadBtn: "⬇ PNG হিসাবে সংরক্ষণ করুন",
+    toggleSettingsBtn: "⚙ সেটিংস",
+    lblSeed: "সীড:",
+    grpCastles: "দুর্গ",
+    lblMainCastle: "প্রধান দুর্গ",
+    lblOutposts: "ফাঁড়ি",
+    lblNoOutposts: "কোনো ফাঁড়ি নেই",
+    grpTerrain: "ভূখণ্ড",
+    lblMountains: "পাহাড়",
+    lblSea: "সমুদ্র",
+    lblForest: "বন",
+    lblDesert: "মরুভূমি",
+    grpRiver: "নদী",
+    lblGenerateRiver: "নদী তৈরি করুন",
+    lblBridges: "সেতু",
+    grpMap: "মানচিত্র",
+    lblFields: "মাঠ (১০০–১০০০০)",
+    grpMarkers: "মার্কার",
+    lblActionFields: "কর্ম ক্ষেত্র (প্রতি ৫০০)",
+    lblMerchant: "বণিক ক্ষেত্র নম্বর",
+    footer: "প্রতিটি মানচিত্র এলোমেলোভাবে নতুন করে তৈরি করা হয় – ভূখণ্ড, পথ এবং ফাঁড়ির অবস্থান কিছুটা ভিন্ন হয়।",
+    mapWord: "মানচিত্র",
+    fieldsWord: "মাঠ",
+    pngError: "PNG এক্সপোর্ট ব্যর্থ হয়েছে। বিকল্পভাবে: মানচিত্রে ডান-ক্লিক করুন → \"চিত্র সংরক্ষণ করুন\"।",
+    options: {
+      "aus": "বন্ধ",
+      "mitte": "কেন্দ্র",
+      "oben": "উপরে",
+      "unten": "নিচে",
+      "links": "বামে",
+      "rechts": "ডানে",
+      "oben-links": "উপরে বামে",
+      "oben-rechts": "উপরে ডানে",
+      "unten-links": "নিচে বামে",
+      "unten-rechts": "নিচে ডানে"
+    }
+  },
+  pt: {
+    nativeName: "Português",
+    title: "Mapa do Reino",
+    subtitle: "Um mapa de fantasia desenhado à mão: gerado aleatoriamente, com montanhas, mar, floresta, deserto e um rio – totalmente personalizável ao seu gosto.",
+    generateBtn: "⚔ Gerar novo mapa",
+    downloadBtn: "⬇ Salvar como PNG",
+    toggleSettingsBtn: "⚙ Configurações",
+    lblSeed: "Semente:",
+    grpCastles: "Castelos",
+    lblMainCastle: "Castelo principal",
+    lblOutposts: "Postos avançados",
+    lblNoOutposts: "sem postos avançados",
+    grpTerrain: "Terreno",
+    lblMountains: "Montanhas",
+    lblSea: "Mar",
+    lblForest: "Floresta",
+    lblDesert: "Deserto",
+    grpRiver: "Rio",
+    lblGenerateRiver: "Gerar rio",
+    lblBridges: "Pontes",
+    grpMap: "Mapa",
+    lblFields: "Campos (100–10000)",
+    grpMarkers: "Marcadores",
+    lblActionFields: "Campos de ação (a cada 500)",
+    lblMerchant: "Nº do campo do mercador",
+    footer: "Cada mapa é gerado aleatoriamente novamente – o terreno, os caminhos e a localização dos postos avançados variam ligeiramente.",
+    mapWord: "Mapa",
+    fieldsWord: "campos",
+    pngError: "A exportação para PNG falhou. Alternativa: clique com o botão direito no mapa → \"Salvar imagem como\".",
+    options: {
+      "aus": "Desligado",
+      "mitte": "Centro",
+      "oben": "Cima",
+      "unten": "Baixo",
+      "links": "Esquerda",
+      "rechts": "Direita",
+      "oben-links": "Cima esquerda",
+      "oben-rechts": "Cima direita",
+      "unten-links": "Baixo esquerda",
+      "unten-rechts": "Baixo direita"
+    }
+  },
+  ur: {
+    nativeName: "اردو",
+    title: "بادشاہی کا نقشہ",
+    subtitle: "ہاتھ سے بنایا گیا ایک فنتاسی نقشہ: بے ترتیب طور پر تیار کیا گیا، پہاڑوں، سمندر، جنگل، صحرا اور ایک دریا کے ساتھ – آپ کی مرضی کے مطابق مکمل طور پر قابل ترتیب۔",
+    generateBtn: "⚔ نیا نقشہ بنائیں",
+    downloadBtn: "⬇ PNG کے طور پر محفوظ کریں",
+    toggleSettingsBtn: "⚙ ترتیبات",
+    lblSeed: "سیڈ:",
+    grpCastles: "قلعے",
+    lblMainCastle: "مرکزی قلعہ",
+    lblOutposts: "چوکیاں",
+    lblNoOutposts: "کوئی چوکی نہیں",
+    grpTerrain: "خطہ",
+    lblMountains: "پہاڑ",
+    lblSea: "سمندر",
+    lblForest: "جنگل",
+    lblDesert: "صحرا",
+    grpRiver: "دریا",
+    lblGenerateRiver: "دریا بنائیں",
+    lblBridges: "پل",
+    grpMap: "نقشہ",
+    lblFields: "کھیت (100–10000)",
+    grpMarkers: "نشانات",
+    lblActionFields: "ایکشن کھیت (ہر 500)",
+    lblMerchant: "تاجر کھیت نمبر",
+    footer: "ہر نقشہ بے ترتیب طور پر نئے سرے سے بنایا جاتا ہے – خطہ، راستے اور چوکیوں کی جگہ قدرے مختلف ہوتی ہے۔",
+    mapWord: "نقشہ",
+    fieldsWord: "کھیت",
+    pngError: "PNG ایکسپورٹ ناکام ہو گیا۔ متبادل کے طور پر: نقشے پر دائیں کلک کریں → \"تصویر کو محفوظ کریں بطور\"۔",
+    options: {
+      "aus": "بند",
+      "mitte": "وسط",
+      "oben": "اوپر",
+      "unten": "نیچے",
+      "links": "بائیں",
+      "rechts": "دائیں",
+      "oben-links": "اوپر بائیں",
+      "oben-rechts": "اوپر دائیں",
+      "unten-links": "نیچے بائیں",
+      "unten-rechts": "نیچے دائیں"
+    }
+  },
+  id: {
+    nativeName: "Bahasa Indonesia",
+    title: "Peta Kerajaan",
+    subtitle: "Peta fantasi gambar tangan: dibuat secara acak, dengan gunung, laut, hutan, gurun, dan sungai – sepenuhnya dapat disesuaikan sesuai keinginan Anda.",
+    generateBtn: "⚔ Buat Peta Baru",
+    downloadBtn: "⬇ Simpan sebagai PNG",
+    toggleSettingsBtn: "⚙ Pengaturan",
+    lblSeed: "Seed:",
+    grpCastles: "Kastil",
+    lblMainCastle: "Kastil utama",
+    lblOutposts: "Pos terdepan",
+    lblNoOutposts: "tanpa pos terdepan",
+    grpTerrain: "Medan",
+    lblMountains: "Gunung",
+    lblSea: "Laut",
+    lblForest: "Hutan",
+    lblDesert: "Gurun",
+    grpRiver: "Sungai",
+    lblGenerateRiver: "Buat sungai",
+    lblBridges: "Jembatan",
+    grpMap: "Peta",
+    lblFields: "Petak (100–10000)",
+    grpMarkers: "Penanda",
+    lblActionFields: "Petak aksi (tiap 500)",
+    lblMerchant: "No. petak pedagang",
+    footer: "Setiap peta dibuat ulang secara acak – medan, jalur, dan lokasi pos terdepan sedikit bervariasi.",
+    mapWord: "Peta",
+    fieldsWord: "petak",
+    pngError: "Ekspor PNG gagal. Alternatif: klik kanan pada peta → \"Simpan gambar sebagai\".",
+    options: {
+      "aus": "Mati",
+      "mitte": "Tengah",
+      "oben": "Atas",
+      "unten": "Bawah",
+      "links": "Kiri",
+      "rechts": "Kanan",
+      "oben-links": "Atas kiri",
+      "oben-rechts": "Atas kanan",
+      "unten-links": "Bawah kiri",
+      "unten-rechts": "Bawah kanan"
+    }
+  },
+  ja: {
+    nativeName: "日本語",
+    title: "王国の地図",
+    subtitle: "手描きのファンタジーマップ：ランダムに生成され、山、海、森、砂漠、川があり、お好みに合わせて完全にカスタマイズ可能です。",
+    generateBtn: "⚔ 新しい地図を生成",
+    downloadBtn: "⬇ PNGとして保存",
+    toggleSettingsBtn: "⚙ 設定",
+    lblSeed: "シード：",
+    grpCastles: "城",
+    lblMainCastle: "メインの城",
+    lblOutposts: "前哨基地",
+    lblNoOutposts: "前哨基地なし",
+    grpTerrain: "地形",
+    lblMountains: "山",
+    lblSea: "海",
+    lblForest: "森",
+    lblDesert: "砂漠",
+    grpRiver: "川",
+    lblGenerateRiver: "川を生成",
+    lblBridges: "橋",
+    grpMap: "地図",
+    lblFields: "マス（100〜10000）",
+    grpMarkers: "マーカー",
+    lblActionFields: "アクションマス（500ごと）",
+    lblMerchant: "商人マス番号",
+    footer: "地図はランダムに新しく生成されます – 地形、道、前哨基地の位置は少しずつ異なります。",
+    mapWord: "地図",
+    fieldsWord: "マス",
+    pngError: "PNGのエクスポートに失敗しました。代わりに地図を右クリック →「名前を付けて画像を保存」をお試しください。",
+    options: {
+      "aus": "オフ",
+      "mitte": "中央",
+      "oben": "上",
+      "unten": "下",
+      "links": "左",
+      "rechts": "右",
+      "oben-links": "左上",
+      "oben-rechts": "右上",
+      "unten-links": "左下",
+      "unten-rechts": "右下"
+    }
+  },
+  sw: {
+    nativeName: "Kiswahili",
+    title: "Ramani ya Ufalme",
+    subtitle: "Ramani ya kubuni iliyochorwa kwa mkono: inatengenezwa kwa nasibu, ikiwa na milima, bahari, msitu, jangwa na mto – inabadilishwa kikamilifu kulingana na matakwa yako.",
+    generateBtn: "⚔ Tengeneza Ramani Mpya",
+    downloadBtn: "⬇ Hifadhi kama PNG",
+    toggleSettingsBtn: "⚙ Mipangilio",
+    lblSeed: "Mbegu:",
+    grpCastles: "Ngome",
+    lblMainCastle: "Ngome kuu",
+    lblOutposts: "Vituo vya nje",
+    lblNoOutposts: "hakuna vituo vya nje",
+    grpTerrain: "Ardhi",
+    lblMountains: "Milima",
+    lblSea: "Bahari",
+    lblForest: "Msitu",
+    lblDesert: "Jangwa",
+    grpRiver: "Mto",
+    lblGenerateRiver: "Tengeneza mto",
+    lblBridges: "Madaraja",
+    grpMap: "Ramani",
+    lblFields: "Mashamba (100–10000)",
+    grpMarkers: "Alama",
+    lblActionFields: "Mashamba ya matukio (kila 500)",
+    lblMerchant: "Nambari ya shamba la mfanyabiashara",
+    footer: "Kila ramani hutengenezwa upya kwa nasibu – ardhi, njia na maeneo ya vituo vya nje hutofautiana kidogo.",
+    mapWord: "Ramani",
+    fieldsWord: "mashamba",
+    pngError: "Uhamishaji wa PNG umeshindwa. Vinginevyo: bofya kulia kwenye ramani → \"Hifadhi picha kama\".",
+    options: {
+      "aus": "Imezimwa",
+      "mitte": "Katikati",
+      "oben": "Juu",
+      "unten": "Chini",
+      "links": "Kushoto",
+      "rechts": "Kulia",
+      "oben-links": "Juu kushoto",
+      "oben-rechts": "Juu kulia",
+      "unten-links": "Chini kushoto",
+      "unten-rechts": "Chini kulia"
+    }
+  },
+  mr: {
+    nativeName: "मराठी",
+    title: "राज्याचा नकाशा",
+    subtitle: "हाताने काढलेला काल्पनिक नकाशा: यादृच्छिकपणे तयार केलेला, डोंगर, समुद्र, जंगल, वाळवंट आणि नदीसह – पूर्णपणे आपल्या आवडीनुसार सानुकूल करण्यायोग्य.",
+    generateBtn: "⚔ नवीन नकाशा तयार करा",
+    downloadBtn: "⬇ PNG म्हणून जतन करा",
+    toggleSettingsBtn: "⚙ सेटिंग्ज",
+    lblSeed: "सीड:",
+    grpCastles: "किल्ले",
+    lblMainCastle: "मुख्य किल्ला",
+    lblOutposts: "चौक्या",
+    lblNoOutposts: "चौक्या नाहीत",
+    grpTerrain: "भूभाग",
+    lblMountains: "डोंगर",
+    lblSea: "समुद्र",
+    lblForest: "जंगल",
+    lblDesert: "वाळवंट",
+    grpRiver: "नदी",
+    lblGenerateRiver: "नदी तयार करा",
+    lblBridges: "पूल",
+    grpMap: "नकाशा",
+    lblFields: "शेत (१००–१००००)",
+    grpMarkers: "चिन्हे",
+    lblActionFields: "क्रिया क्षेत्र (दर ५००)",
+    lblMerchant: "व्यापारी क्षेत्र क्रमांक",
+    footer: "प्रत्येक नकाशा यादृच्छिकपणे नव्याने तयार केला जातो – भूभाग, मार्ग आणि चौक्यांचे स्थान थोडे वेगळे असते.",
+    mapWord: "नकाशा",
+    fieldsWord: "शेत",
+    pngError: "PNG निर्यात अयशस्वी झाले. पर्यायाने: नकाशावर उजवे-क्लिक करा → \"प्रतिमा जतन करा\".",
+    options: {
+      "aus": "बंद",
+      "mitte": "मध्यभागी",
+      "oben": "वर",
+      "unten": "खाली",
+      "links": "डावीकडे",
+      "rechts": "उजवीकडे",
+      "oben-links": "वर डावीकडे",
+      "oben-rechts": "वर उजवीकडे",
+      "unten-links": "खाली डावीकडे",
+      "unten-rechts": "खाली उजवीकडे"
+    }
+  },
+  te: {
+    nativeName: "తెలుగు",
+    title: "రాజ్యం యొక్క పటం",
+    subtitle: "చేతితో గీసిన కల్పిత పటం: యాదృచ్ఛికంగా రూపొందించబడింది, పర్వతాలు, సముద్రం, అడవి, ఎడారి మరియు నదితో – మీ ఇష్టానికి అనుగుణంగా పూర్తిగా అనుకూలీకరించదగినది.",
+    generateBtn: "⚔ కొత్త పటం రూపొందించండి",
+    downloadBtn: "⬇ PNGగా సేవ్ చేయండి",
+    toggleSettingsBtn: "⚙ సెట్టింగ్‌లు",
+    lblSeed: "సీడ్:",
+    grpCastles: "కోటలు",
+    lblMainCastle: "ప్రధాన కోట",
+    lblOutposts: "అవుట్‌పోస్టులు",
+    lblNoOutposts: "అవుట్‌పోస్టులు లేవు",
+    grpTerrain: "భూభాగం",
+    lblMountains: "పర్వతాలు",
+    lblSea: "సముద్రం",
+    lblForest: "అడవి",
+    lblDesert: "ఎడారి",
+    grpRiver: "నది",
+    lblGenerateRiver: "నది సృష్టించండి",
+    lblBridges: "వంతెనలు",
+    grpMap: "పటం",
+    lblFields: "క్షేత్రాలు (100–10000)",
+    grpMarkers: "గుర్తులు",
+    lblActionFields: "చర్య క్షేత్రాలు (ప్రతి 500)",
+    lblMerchant: "వ్యాపారి క్షేత్ర సంఖ్య",
+    footer: "ప్రతి పటం యాదృచ్ఛికంగా కొత్తగా రూపొందించబడుతుంది – భూభాగం, మార్గాలు మరియు అవుట్‌పోస్టుల స్థానం కొద్దిగా మారుతుంది.",
+    mapWord: "పటం",
+    fieldsWord: "క్షేత్రాలు",
+    pngError: "PNG ఎగుమతి విఫలమైంది. ప్రత్యామ్నాయంగా: పటంపై కుడి-క్లిక్ చేయండి → \"చిత్రాన్ని ఇలా సేవ్ చేయండి\".",
+    options: {
+      "aus": "ఆఫ్",
+      "mitte": "మధ్య",
+      "oben": "పైన",
+      "unten": "కింద",
+      "links": "ఎడమ",
+      "rechts": "కుడి",
+      "oben-links": "పైన ఎడమ",
+      "oben-rechts": "పైన కుడి",
+      "unten-links": "కింద ఎడమ",
+      "unten-rechts": "కింద కుడి"
+    }
+  },
+  tr: {
+    nativeName: "Türkçe",
+    title: "Krallığın Haritası",
+    subtitle: "Elle çizilmiş bir fantezi haritası: rastgele oluşturulur, dağlar, deniz, orman, çöl ve bir nehir ile – tamamen isteğinize göre özelleştirilebilir.",
+    generateBtn: "⚔ Yeni Harita Oluştur",
+    downloadBtn: "⬇ PNG Olarak Kaydet",
+    toggleSettingsBtn: "⚙ Ayarlar",
+    lblSeed: "Tohum:",
+    grpCastles: "Kaleler",
+    lblMainCastle: "Ana kale",
+    lblOutposts: "Karakollar",
+    lblNoOutposts: "karakol yok",
+    grpTerrain: "Arazi",
+    lblMountains: "Dağlar",
+    lblSea: "Deniz",
+    lblForest: "Orman",
+    lblDesert: "Çöl",
+    grpRiver: "Nehir",
+    lblGenerateRiver: "Nehir oluştur",
+    lblBridges: "Köprüler",
+    grpMap: "Harita",
+    lblFields: "Alanlar (100–10000)",
+    grpMarkers: "İşaretler",
+    lblActionFields: "Eylem alanları (her 500'de bir)",
+    lblMerchant: "Tüccar alan no.",
+    footer: "Her harita rastgele olarak yeniden oluşturulur – arazi, yollar ve karakol konumları hafifçe değişir.",
+    mapWord: "Harita",
+    fieldsWord: "alan",
+    pngError: "PNG dışa aktarma başarısız oldu. Alternatif olarak: haritaya sağ tıklayın → \"Resmi farklı kaydet\".",
+    options: {
+      "aus": "Kapalı",
+      "mitte": "Merkez",
+      "oben": "Üst",
+      "unten": "Alt",
+      "links": "Sol",
+      "rechts": "Sağ",
+      "oben-links": "Üst sol",
+      "oben-rechts": "Üst sağ",
+      "unten-links": "Alt sol",
+      "unten-rechts": "Alt sağ"
+    }
+  },
+  ta: {
+    nativeName: "தமிழ்",
+    title: "அரசின் வரைபடம்",
+    subtitle: "கையால் வரையப்பட்ட ஒரு கற்பனை வரைபடம்: சீரற்ற முறையில் உருவாக்கப்பட்டது, மலைகள், கடல், காடு, பாலைவனம் மற்றும் ஒரு ஆற்றுடன் – உங்கள் விருப்பத்திற்கு ஏற்ப முழுமையாக தனிப்பயனாக்கக்கூடியது.",
+    generateBtn: "⚔ புதிய வரைபடத்தை உருவாக்கு",
+    downloadBtn: "⬇ PNG ஆக சேமி",
+    toggleSettingsBtn: "⚙ அமைப்புகள்",
+    lblSeed: "விதை:",
+    grpCastles: "கோட்டைகள்",
+    lblMainCastle: "முதன்மை கோட்டை",
+    lblOutposts: "முன்னிலைகள்",
+    lblNoOutposts: "முன்னிலைகள் இல்லை",
+    grpTerrain: "நிலப்பரப்பு",
+    lblMountains: "மலைகள்",
+    lblSea: "கடல்",
+    lblForest: "காடு",
+    lblDesert: "பாலைவனம்",
+    grpRiver: "ஆறு",
+    lblGenerateRiver: "ஆற்றை உருவாக்கு",
+    lblBridges: "பாலங்கள்",
+    grpMap: "வரைபடம்",
+    lblFields: "வயல்கள் (100–10000)",
+    grpMarkers: "குறியீடுகள்",
+    lblActionFields: "செயல் வயல்கள் (ஒவ்வொரு 500)",
+    lblMerchant: "வணிகர் வயல் எண்",
+    footer: "ஒவ்வொரு வரைபடமும் சீரற்ற முறையில் மீண்டும் உருவாக்கப்படுகிறது – நிலப்பரப்பு, பாதைகள் மற்றும் முன்னிலைகளின் இடம் சற்று மாறுபடும்.",
+    mapWord: "வரைபடம்",
+    fieldsWord: "வயல்கள்",
+    pngError: "PNG ஏற்றுமதி தோல்வியடைந்தது. மாற்றாக: வரைபடத்தில் வலது கிளிக் செய்யவும் → \"படத்தை இப்படி சேமி\".",
+    options: {
+      "aus": "ஆஃப்",
+      "mitte": "மையம்",
+      "oben": "மேலே",
+      "unten": "கீழே",
+      "links": "இடது",
+      "rechts": "வலது",
+      "oben-links": "மேலே இடது",
+      "oben-rechts": "மேலே வலது",
+      "unten-links": "கீழே இடது",
+      "unten-rechts": "கீழே வலது"
+    }
+  },
+  vi: {
+    nativeName: "Tiếng Việt",
+    title: "Bản đồ Vương quốc",
+    subtitle: "Một bản đồ giả tưởng được vẽ tay: được tạo ngẫu nhiên, với núi, biển, rừng, sa mạc và một con sông – hoàn toàn có thể tùy chỉnh theo ý thích của bạn.",
+    generateBtn: "⚔ Tạo Bản Đồ Mới",
+    downloadBtn: "⬇ Lưu dưới dạng PNG",
+    toggleSettingsBtn: "⚙ Cài đặt",
+    lblSeed: "Hạt giống:",
+    grpCastles: "Lâu đài",
+    lblMainCastle: "Lâu đài chính",
+    lblOutposts: "Tiền đồn",
+    lblNoOutposts: "không có tiền đồn",
+    grpTerrain: "Địa hình",
+    lblMountains: "Núi",
+    lblSea: "Biển",
+    lblForest: "Rừng",
+    lblDesert: "Sa mạc",
+    grpRiver: "Sông",
+    lblGenerateRiver: "Tạo sông",
+    lblBridges: "Cầu",
+    grpMap: "Bản đồ",
+    lblFields: "Ô (100–10000)",
+    grpMarkers: "Dấu hiệu",
+    lblActionFields: "Ô sự kiện (mỗi 500)",
+    lblMerchant: "Số ô thương nhân",
+    footer: "Mỗi bản đồ được tạo ngẫu nhiên lại từ đầu – địa hình, đường đi và vị trí tiền đồn thay đổi đôi chút.",
+    mapWord: "Bản đồ",
+    fieldsWord: "ô",
+    pngError: "Xuất PNG không thành công. Hoặc: nhấp chuột phải vào bản đồ → \"Lưu hình ảnh thành\".",
+    options: {
+      "aus": "Tắt",
+      "mitte": "Giữa",
+      "oben": "Trên",
+      "unten": "Dưới",
+      "links": "Trái",
+      "rechts": "Phải",
+      "oben-links": "Trên trái",
+      "oben-rechts": "Trên phải",
+      "unten-links": "Dưới trái",
+      "unten-rechts": "Dưới phải"
+    }
+  },
+  ko: {
+    nativeName: "한국어",
+    title: "왕국 지도",
+    subtitle: "손으로 그린 판타지 지도: 무작위로 생성되며 산, 바다, 숲, 사막, 강이 있고 원하는 대로 완전히 사용자 지정할 수 있습니다.",
+    generateBtn: "⚔ 새 지도 생성",
+    downloadBtn: "⬇ PNG로 저장",
+    toggleSettingsBtn: "⚙ 설정",
+    lblSeed: "시드:",
+    grpCastles: "성",
+    lblMainCastle: "주성",
+    lblOutposts: "전초기지",
+    lblNoOutposts: "전초기지 없음",
+    grpTerrain: "지형",
+    lblMountains: "산",
+    lblSea: "바다",
+    lblForest: "숲",
+    lblDesert: "사막",
+    grpRiver: "강",
+    lblGenerateRiver: "강 생성",
+    lblBridges: "다리",
+    grpMap: "지도",
+    lblFields: "칸 (100–10000)",
+    grpMarkers: "마커",
+    lblActionFields: "이벤트 칸 (500개마다)",
+    lblMerchant: "상인 칸 번호",
+    footer: "모든 지도는 무작위로 새로 생성됩니다 – 지형, 경로, 전초기지 위치가 약간씩 달라집니다.",
+    mapWord: "지도",
+    fieldsWord: "칸",
+    pngError: "PNG 내보내기에 실패했습니다. 대신: 지도를 마우스 오른쪽 버튼으로 클릭 → \"이미지를 다른 이름으로 저장\"을 시도하세요.",
+    options: {
+      "aus": "꺼짐",
+      "mitte": "중앙",
+      "oben": "위",
+      "unten": "아래",
+      "links": "왼쪽",
+      "rechts": "오른쪽",
+      "oben-links": "왼쪽 위",
+      "oben-rechts": "오른쪽 위",
+      "unten-links": "왼쪽 아래",
+      "unten-rechts": "오른쪽 아래"
+    }
+  },
+  bg: {
+    nativeName: "Български",
+    title: "Карта на кралството",
+    subtitle: "Ръчно нарисувана фентъзи карта: генерирана на случаен принцип, с планини, море, гора, пустиня и река – напълно персонализируема по ваш вкус.",
+    generateBtn: "⚔ Генерирай нова карта",
+    downloadBtn: "⬇ Запази като PNG",
+    toggleSettingsBtn: "⚙ Настройки",
+    lblSeed: "Начално число:",
+    grpCastles: "Замъци",
+    lblMainCastle: "Главен замък",
+    lblOutposts: "Аванпостове",
+    lblNoOutposts: "без аванпостове",
+    grpTerrain: "Терен",
+    lblMountains: "Планини",
+    lblSea: "Море",
+    lblForest: "Гора",
+    lblDesert: "Пустиня",
+    grpRiver: "Река",
+    lblGenerateRiver: "Генерирай река",
+    lblBridges: "Мостове",
+    grpMap: "Карта",
+    lblFields: "Полета (100–10000)",
+    grpMarkers: "Маркери",
+    lblActionFields: "Полета за действие (на всеки 500)",
+    lblMerchant: "№ на търговско поле",
+    footer: "Всяка карта се генерира отново на случаен принцип – теренът, пътищата и разположението на аванпостовете варират леко.",
+    mapWord: "Карта",
+    fieldsWord: "полета",
+    pngError: "Експортът в PNG не бе успешен. Алтернативно: щракнете с десен бутон върху картата → \"Запази изображението като\".",
+    options: {
+      "aus": "Изключено",
+      "mitte": "Център",
+      "oben": "Горе",
+      "unten": "Долу",
+      "links": "Ляво",
+      "rechts": "Дясно",
+      "oben-links": "Горе ляво",
+      "oben-rechts": "Горе дясно",
+      "unten-links": "Долу ляво",
+      "unten-rechts": "Долу дясно"
+    }
+  },
+  hr: {
+    nativeName: "Hrvatski",
+    title: "Karta kraljevstva",
+    subtitle: "Ručno crtana fantastična karta: generirana nasumično, s planinama, morem, šumom, pustinjom i rijekom – potpuno prilagodljiva vašim željama.",
+    generateBtn: "⚔ Generiraj novu kartu",
+    downloadBtn: "⬇ Spremi kao PNG",
+    toggleSettingsBtn: "⚙ Postavke",
+    lblSeed: "Sjeme:",
+    grpCastles: "Dvorci",
+    lblMainCastle: "Glavni dvorac",
+    lblOutposts: "Ispostave",
+    lblNoOutposts: "bez ispostava",
+    grpTerrain: "Teren",
+    lblMountains: "Planine",
+    lblSea: "More",
+    lblForest: "Šuma",
+    lblDesert: "Pustinja",
+    grpRiver: "Rijeka",
+    lblGenerateRiver: "Generiraj rijeku",
+    lblBridges: "Mostovi",
+    grpMap: "Karta",
+    lblFields: "Polja (100–10000)",
+    grpMarkers: "Oznake",
+    lblActionFields: "Akcijska polja (svakih 500)",
+    lblMerchant: "Br. trgovačkog polja",
+    footer: "Svaka karta se ponovno generira nasumično – teren, putevi i položaj ispostava malo variraju.",
+    mapWord: "Karta",
+    fieldsWord: "polja",
+    pngError: "Izvoz u PNG nije uspio. Alternativno: desni klik na kartu → \"Spremi sliku kao\".",
+    options: {
+      "aus": "Isključeno",
+      "mitte": "Sredina",
+      "oben": "Gore",
+      "unten": "Dolje",
+      "links": "Lijevo",
+      "rechts": "Desno",
+      "oben-links": "Gore lijevo",
+      "oben-rechts": "Gore desno",
+      "unten-links": "Dolje lijevo",
+      "unten-rechts": "Dolje desno"
+    }
+  },
+  cs: {
+    nativeName: "Čeština",
+    title: "Mapa království",
+    subtitle: "Ručně kreslená fantasy mapa: náhodně generovaná, s horami, mořem, lesem, pouští a řekou – zcela přizpůsobitelná podle vašich přání.",
+    generateBtn: "⚔ Vygenerovat novou mapu",
+    downloadBtn: "⬇ Uložit jako PNG",
+    toggleSettingsBtn: "⚙ Nastavení",
+    lblSeed: "Seed:",
+    grpCastles: "Hrady",
+    lblMainCastle: "Hlavní hrad",
+    lblOutposts: "Základny",
+    lblNoOutposts: "bez základen",
+    grpTerrain: "Terén",
+    lblMountains: "Hory",
+    lblSea: "Moře",
+    lblForest: "Les",
+    lblDesert: "Poušť",
+    grpRiver: "Řeka",
+    lblGenerateRiver: "Vygenerovat řeku",
+    lblBridges: "Mosty",
+    grpMap: "Mapa",
+    lblFields: "Pole (100–10000)",
+    grpMarkers: "Značky",
+    lblActionFields: "Akční pole (každých 500)",
+    lblMerchant: "Č. obchodního pole",
+    footer: "Každá mapa je znovu náhodně vygenerována – terén, cesty a umístění základen se mírně liší.",
+    mapWord: "Mapa",
+    fieldsWord: "polí",
+    pngError: "Export do PNG selhal. Alternativně: klikněte pravým tlačítkem na mapu → \"Uložit obrázek jako\".",
+    options: {
+      "aus": "Vypnuto",
+      "mitte": "Střed",
+      "oben": "Nahoře",
+      "unten": "Dole",
+      "links": "Vlevo",
+      "rechts": "Vpravo",
+      "oben-links": "Nahoře vlevo",
+      "oben-rechts": "Nahoře vpravo",
+      "unten-links": "Dole vlevo",
+      "unten-rechts": "Dole vpravo"
+    }
+  },
+  da: {
+    nativeName: "Dansk",
+    title: "Kongerigets kort",
+    subtitle: "Et håndtegnet fantasikort: genereret tilfældigt, med bjerge, hav, skov, ørken og en flod – fuldt tilpasseligt efter dine ønsker.",
+    generateBtn: "⚔ Generer nyt kort",
+    downloadBtn: "⬇ Gem som PNG",
+    toggleSettingsBtn: "⚙ Indstillinger",
+    lblSeed: "Seed:",
+    grpCastles: "Slotte",
+    lblMainCastle: "Hovedslot",
+    lblOutposts: "Forposter",
+    lblNoOutposts: "ingen forposter",
+    grpTerrain: "Terræn",
+    lblMountains: "Bjerge",
+    lblSea: "Hav",
+    lblForest: "Skov",
+    lblDesert: "Ørken",
+    grpRiver: "Flod",
+    lblGenerateRiver: "Generer flod",
+    lblBridges: "Broer",
+    grpMap: "Kort",
+    lblFields: "Felter (100–10000)",
+    grpMarkers: "Markører",
+    lblActionFields: "Handlingsfelter (hver 500.)",
+    lblMerchant: "Handelsfelt nr.",
+    footer: "Hvert kort genereres tilfældigt på ny – terræn, veje og forposternes placering varierer en smule.",
+    mapWord: "Kort",
+    fieldsWord: "felter",
+    pngError: "PNG-eksport mislykkedes. Alternativt: højreklik på kortet → \"Gem billede som\".",
+    options: {
+      "aus": "Fra",
+      "mitte": "Midte",
+      "oben": "Top",
+      "unten": "Bund",
+      "links": "Venstre",
+      "rechts": "Højre",
+      "oben-links": "Top venstre",
+      "oben-rechts": "Top højre",
+      "unten-links": "Bund venstre",
+      "unten-rechts": "Bund højre"
+    }
+  },
+  nl: {
+    nativeName: "Nederlands",
+    title: "Kaart van het Koninkrijk",
+    subtitle: "Een handgetekende fantasiekaart: willekeurig gegenereerd, met bergen, zee, bos, woestijn en een rivier – volledig aanpasbaar naar wens.",
+    generateBtn: "⚔ Nieuwe kaart genereren",
+    downloadBtn: "⬇ Opslaan als PNG",
+    toggleSettingsBtn: "⚙ Instellingen",
+    lblSeed: "Seed:",
+    grpCastles: "Kastelen",
+    lblMainCastle: "Hoofdkasteel",
+    lblOutposts: "Buitenposten",
+    lblNoOutposts: "geen buitenposten",
+    grpTerrain: "Terrein",
+    lblMountains: "Bergen",
+    lblSea: "Zee",
+    lblForest: "Bos",
+    lblDesert: "Woestijn",
+    grpRiver: "Rivier",
+    lblGenerateRiver: "Rivier genereren",
+    lblBridges: "Bruggen",
+    grpMap: "Kaart",
+    lblFields: "Velden (100–10000)",
+    grpMarkers: "Markeringen",
+    lblActionFields: "Actievelden (elke 500)",
+    lblMerchant: "Handelaarsveld nr.",
+    footer: "Elke kaart wordt willekeurig opnieuw gegenereerd – terrein, paden en de ligging van buitenposten variëren licht.",
+    mapWord: "Kaart",
+    fieldsWord: "velden",
+    pngError: "PNG-export is mislukt. Alternatief: rechtsklik op de kaart → \"Afbeelding opslaan als\".",
+    options: {
+      "aus": "Uit",
+      "mitte": "Midden",
+      "oben": "Boven",
+      "unten": "Onder",
+      "links": "Links",
+      "rechts": "Rechts",
+      "oben-links": "Boven links",
+      "oben-rechts": "Boven rechts",
+      "unten-links": "Onder links",
+      "unten-rechts": "Onder rechts"
+    }
+  },
+  et: {
+    nativeName: "Eesti",
+    title: "Kuningriigi kaart",
+    subtitle: "Käsitsi joonistatud fantaasiakaart: genereeritud juhuslikult, mägede, mere, metsa, kõrbe ja jõega – täielikult sinu soovi järgi kohandatav.",
+    generateBtn: "⚔ Loo uus kaart",
+    downloadBtn: "⬇ Salvesta PNG-na",
+    toggleSettingsBtn: "⚙ Seaded",
+    lblSeed: "Seeme:",
+    grpCastles: "Lossid",
+    lblMainCastle: "Pealoss",
+    lblOutposts: "Eelpostid",
+    lblNoOutposts: "eelpostideta",
+    grpTerrain: "Maastik",
+    lblMountains: "Mäed",
+    lblSea: "Meri",
+    lblForest: "Mets",
+    lblDesert: "Kõrb",
+    grpRiver: "Jõgi",
+    lblGenerateRiver: "Loo jõgi",
+    lblBridges: "Sillad",
+    grpMap: "Kaart",
+    lblFields: "Väljad (100–10000)",
+    grpMarkers: "Markerid",
+    lblActionFields: "Tegevusväljad (iga 500 järel)",
+    lblMerchant: "Kaupmehe välja nr",
+    footer: "Iga kaart luuakse juhuslikult uuesti – maastik, teed ja eelpostide asukoht varieeruvad veidi.",
+    mapWord: "Kaart",
+    fieldsWord: "välja",
+    pngError: "PNG eksportimine ebaõnnestus. Alternatiivina: paremklõps kaardil → \"Salvesta pilt nimega\".",
+    options: {
+      "aus": "Väljas",
+      "mitte": "Keskel",
+      "oben": "Üleval",
+      "unten": "All",
+      "links": "Vasakul",
+      "rechts": "Paremal",
+      "oben-links": "Üleval vasakul",
+      "oben-rechts": "Üleval paremal",
+      "unten-links": "All vasakul",
+      "unten-rechts": "All paremal"
+    }
+  },
+  fi: {
+    nativeName: "Suomi",
+    title: "Kuningaskunnan kartta",
+    subtitle: "Käsin piirretty fantasiakartta: satunnaisesti luotu, vuorineen, merineen, metsineen, aavikkoineen ja jokineen – täysin muokattavissa mieltymystesi mukaan.",
+    generateBtn: "⚔ Luo uusi kartta",
+    downloadBtn: "⬇ Tallenna PNG:nä",
+    toggleSettingsBtn: "⚙ Asetukset",
+    lblSeed: "Siemenluku:",
+    grpCastles: "Linnat",
+    lblMainCastle: "Päälinna",
+    lblOutposts: "Etuvartiot",
+    lblNoOutposts: "ei etuvartioita",
+    grpTerrain: "Maasto",
+    lblMountains: "Vuoret",
+    lblSea: "Meri",
+    lblForest: "Metsä",
+    lblDesert: "Aavikko",
+    grpRiver: "Joki",
+    lblGenerateRiver: "Luo joki",
+    lblBridges: "Sillat",
+    grpMap: "Kartta",
+    lblFields: "Ruudut (100–10000)",
+    grpMarkers: "Merkit",
+    lblActionFields: "Tapahtumaruudut (joka 500.)",
+    lblMerchant: "Kauppiaan ruudun nro",
+    footer: "Jokainen kartta luodaan satunnaisesti uudelleen – maasto, polut ja etuvartioiden sijainti vaihtelevat hieman.",
+    mapWord: "Kartta",
+    fieldsWord: "ruutua",
+    pngError: "PNG-vienti epäonnistui. Vaihtoehtoisesti: napsauta karttaa hiiren oikealla painikkeella → \"Tallenna kuva nimellä\".",
+    options: {
+      "aus": "Pois",
+      "mitte": "Keskellä",
+      "oben": "Ylhäällä",
+      "unten": "Alhaalla",
+      "links": "Vasemmalla",
+      "rechts": "Oikealla",
+      "oben-links": "Ylhäällä vasemmalla",
+      "oben-rechts": "Ylhäällä oikealla",
+      "unten-links": "Alhaalla vasemmalla",
+      "unten-rechts": "Alhaalla oikealla"
+    }
+  },
+  el: {
+    nativeName: "Ελληνικά",
+    title: "Χάρτης του Βασιλείου",
+    subtitle: "Ένας χειροποίητος φανταστικός χάρτης: δημιουργείται τυχαία, με βουνά, θάλασσα, δάσος, έρημο και ποτάμι – πλήρως προσαρμόσιμος στις επιθυμίες σας.",
+    generateBtn: "⚔ Δημιουργία νέου χάρτη",
+    downloadBtn: "⬇ Αποθήκευση ως PNG",
+    toggleSettingsBtn: "⚙ Ρυθμίσεις",
+    lblSeed: "Σπόρος:",
+    grpCastles: "Κάστρα",
+    lblMainCastle: "Κύριο κάστρο",
+    lblOutposts: "Φυλάκια",
+    lblNoOutposts: "χωρίς φυλάκια",
+    grpTerrain: "Έδαφος",
+    lblMountains: "Βουνά",
+    lblSea: "Θάλασσα",
+    lblForest: "Δάσος",
+    lblDesert: "Έρημος",
+    grpRiver: "Ποτάμι",
+    lblGenerateRiver: "Δημιουργία ποταμού",
+    lblBridges: "Γέφυρες",
+    grpMap: "Χάρτης",
+    lblFields: "Πεδία (100–10000)",
+    grpMarkers: "Δείκτες",
+    lblActionFields: "Πεδία δράσης (κάθε 500)",
+    lblMerchant: "Αρ. πεδίου εμπόρου",
+    footer: "Κάθε χάρτης δημιουργείται εκ νέου τυχαία – το έδαφος, τα μονοπάτια και η θέση των φυλακίων ποικίλλουν ελαφρώς.",
+    mapWord: "Χάρτης",
+    fieldsWord: "πεδία",
+    pngError: "Η εξαγωγή PNG απέτυχε. Εναλλακτικά: δεξί κλικ στον χάρτη → \"Αποθήκευση εικόνας ως\".",
+    options: {
+      "aus": "Απενεργοποιημένο",
+      "mitte": "Κέντρο",
+      "oben": "Πάνω",
+      "unten": "Κάτω",
+      "links": "Αριστερά",
+      "rechts": "Δεξιά",
+      "oben-links": "Πάνω αριστερά",
+      "oben-rechts": "Πάνω δεξιά",
+      "unten-links": "Κάτω αριστερά",
+      "unten-rechts": "Κάτω δεξιά"
+    }
+  },
+  hu: {
+    nativeName: "Magyar",
+    title: "A Királyság térképe",
+    subtitle: "Kézzel rajzolt fantasy térkép: véletlenszerűen generált, hegyekkel, tengerrel, erdővel, sivataggal és folyóval – teljesen az igényeid szerint testreszabható.",
+    generateBtn: "⚔ Új térkép generálása",
+    downloadBtn: "⬇ Mentés PNG-ként",
+    toggleSettingsBtn: "⚙ Beállítások",
+    lblSeed: "Seed:",
+    grpCastles: "Várak",
+    lblMainCastle: "Fő vár",
+    lblOutposts: "Előőrsök",
+    lblNoOutposts: "nincs előőrs",
+    grpTerrain: "Terep",
+    lblMountains: "Hegyek",
+    lblSea: "Tenger",
+    lblForest: "Erdő",
+    lblDesert: "Sivatag",
+    grpRiver: "Folyó",
+    lblGenerateRiver: "Folyó generálása",
+    lblBridges: "Hidak",
+    grpMap: "Térkép",
+    lblFields: "Mezők (100–10000)",
+    grpMarkers: "Jelölők",
+    lblActionFields: "Eseménymezők (minden 500.)",
+    lblMerchant: "Kereskedő mező száma",
+    footer: "Minden térkép véletlenszerűen újra generálódik – a terep, az utak és az előőrsök helyzete kissé eltér.",
+    mapWord: "Térkép",
+    fieldsWord: "mező",
+    pngError: "A PNG exportálása sikertelen volt. Alternatíva: jobb kattintás a térképre → \"Kép mentése másként\".",
+    options: {
+      "aus": "Ki",
+      "mitte": "Közép",
+      "oben": "Fent",
+      "unten": "Lent",
+      "links": "Bal",
+      "rechts": "Jobb",
+      "oben-links": "Fent balra",
+      "oben-rechts": "Fent jobbra",
+      "unten-links": "Lent balra",
+      "unten-rechts": "Lent jobbra"
+    }
+  },
+  ga: {
+    nativeName: "Gaeilge",
+    title: "Léarscáil na Ríochta",
+    subtitle: "Léarscáil fantaisíochta lámhtharraingthe: gineadh go randamach, le sléibhte, farraige, foraois, fásach agus abhainn – inoiriúnaithe go hiomlán de réir do mhian.",
+    generateBtn: "⚔ Gin Léarscáil Nua",
+    downloadBtn: "⬇ Sábháil mar PNG",
+    toggleSettingsBtn: "⚙ Socruithe",
+    lblSeed: "Síol:",
+    grpCastles: "Caisleáin",
+    lblMainCastle: "Príomhchaisleán",
+    lblOutposts: "Urphoist",
+    lblNoOutposts: "gan urphoist",
+    grpTerrain: "Tír-raon",
+    lblMountains: "Sléibhte",
+    lblSea: "Farraige",
+    lblForest: "Foraois",
+    lblDesert: "Fásach",
+    grpRiver: "Abhainn",
+    lblGenerateRiver: "Gin abhainn",
+    lblBridges: "Droichid",
+    grpMap: "Léarscáil",
+    lblFields: "Páirceanna (100–10000)",
+    grpMarkers: "Marcóirí",
+    lblActionFields: "Páirceanna gnímh (gach 500)",
+    lblMerchant: "Uimhir páirc an cheannaí",
+    footer: "Gintear gach léarscáil as an nua go randamach – athraíonn an tír-raon, na cosáin agus suíomh na n-urphost beagán.",
+    mapWord: "Léarscáil",
+    fieldsWord: "páirceanna",
+    pngError: "Theip ar onnmhairiú PNG. Mar rogha eile: deaschliceáil ar an léarscáil → \"Sábháil an íomhá mar\".",
+    options: {
+      "aus": "As",
+      "mitte": "Lár",
+      "oben": "Barr",
+      "unten": "Bun",
+      "links": "Clé",
+      "rechts": "Deas",
+      "oben-links": "Barr clé",
+      "oben-rechts": "Barr deas",
+      "unten-links": "Bun clé",
+      "unten-rechts": "Bun deas"
+    }
+  },
+  it: {
+    nativeName: "Italiano",
+    title: "Mappa del Regno",
+    subtitle: "Una mappa fantasy disegnata a mano: generata casualmente, con montagne, mare, foresta, deserto e un fiume – completamente personalizzabile a piacimento.",
+    generateBtn: "⚔ Genera nuova mappa",
+    downloadBtn: "⬇ Salva come PNG",
+    toggleSettingsBtn: "⚙ Impostazioni",
+    lblSeed: "Seme:",
+    grpCastles: "Castelli",
+    lblMainCastle: "Castello principale",
+    lblOutposts: "Avamposti",
+    lblNoOutposts: "nessun avamposto",
+    grpTerrain: "Terreno",
+    lblMountains: "Montagne",
+    lblSea: "Mare",
+    lblForest: "Foresta",
+    lblDesert: "Deserto",
+    grpRiver: "Fiume",
+    lblGenerateRiver: "Genera fiume",
+    lblBridges: "Ponti",
+    grpMap: "Mappa",
+    lblFields: "Caselle (100–10000)",
+    grpMarkers: "Indicatori",
+    lblActionFields: "Caselle azione (ogni 500)",
+    lblMerchant: "N. casella mercante",
+    footer: "Ogni mappa viene rigenerata casualmente – terreno, percorsi e posizione degli avamposti variano leggermente.",
+    mapWord: "Mappa",
+    fieldsWord: "caselle",
+    pngError: "Esportazione PNG non riuscita. In alternativa: clic destro sulla mappa → \"Salva immagine con nome\".",
+    options: {
+      "aus": "Disattivato",
+      "mitte": "Centro",
+      "oben": "Sopra",
+      "unten": "Sotto",
+      "links": "Sinistra",
+      "rechts": "Destra",
+      "oben-links": "Sopra sinistra",
+      "oben-rechts": "Sopra destra",
+      "unten-links": "Sotto sinistra",
+      "unten-rechts": "Sotto destra"
+    }
+  },
+  lv: {
+    nativeName: "Latviešu",
+    title: "Karalistes karte",
+    subtitle: "Ar roku zīmēta fantāzijas karte: izveidota nejauši, ar kalniem, jūru, mežu, tuksnesi un upi – pilnībā pielāgojama pēc jūsu vēlmēm.",
+    generateBtn: "⚔ Ģenerēt jaunu karti",
+    downloadBtn: "⬇ Saglabāt kā PNG",
+    toggleSettingsBtn: "⚙ Iestatījumi",
+    lblSeed: "Sēkla:",
+    grpCastles: "Pilis",
+    lblMainCastle: "Galvenā pils",
+    lblOutposts: "Priekšposteņi",
+    lblNoOutposts: "bez priekšposteņiem",
+    grpTerrain: "Reljefs",
+    lblMountains: "Kalni",
+    lblSea: "Jūra",
+    lblForest: "Mežs",
+    lblDesert: "Tuksnesis",
+    grpRiver: "Upe",
+    lblGenerateRiver: "Ģenerēt upi",
+    lblBridges: "Tilti",
+    grpMap: "Karte",
+    lblFields: "Lauki (100–10000)",
+    grpMarkers: "Marķieri",
+    lblActionFields: "Darbības lauki (ik pēc 500)",
+    lblMerchant: "Tirgotāja lauka Nr.",
+    footer: "Katra karte tiek ģenerēta no jauna nejauši – reljefs, ceļi un priekšposteņu atrašanās vieta nedaudz atšķiras.",
+    mapWord: "Karte",
+    fieldsWord: "lauki",
+    pngError: "PNG eksportēšana neizdevās. Alternatīvi: veiciet labo klikšķi uz kartes → \"Saglabāt attēlu kā\".",
+    options: {
+      "aus": "Izslēgts",
+      "mitte": "Centrs",
+      "oben": "Augšā",
+      "unten": "Apakšā",
+      "links": "Kreisā",
+      "rechts": "Labā",
+      "oben-links": "Augšā kreisā",
+      "oben-rechts": "Augšā labā",
+      "unten-links": "Apakšā kreisā",
+      "unten-rechts": "Apakšā labā"
+    }
+  },
+  lt: {
+    nativeName: "Lietuvių",
+    title: "Karalystės žemėlapis",
+    subtitle: "Ranka piešti fantastinis žemėlapis: sugeneruotas atsitiktinai, su kalnais, jūra, mišku, dykuma ir upe – visiškai pritaikomas pagal jūsų norus.",
+    generateBtn: "⚔ Generuoti naują žemėlapį",
+    downloadBtn: "⬇ Išsaugoti kaip PNG",
+    toggleSettingsBtn: "⚙ Nustatymai",
+    lblSeed: "Sėkla:",
+    grpCastles: "Pilys",
+    lblMainCastle: "Pagrindinė pilis",
+    lblOutposts: "Forpostai",
+    lblNoOutposts: "be forpostų",
+    grpTerrain: "Reljefas",
+    lblMountains: "Kalnai",
+    lblSea: "Jūra",
+    lblForest: "Miškas",
+    lblDesert: "Dykuma",
+    grpRiver: "Upė",
+    lblGenerateRiver: "Generuoti upę",
+    lblBridges: "Tiltai",
+    grpMap: "Žemėlapis",
+    lblFields: "Laukai (100–10000)",
+    grpMarkers: "Žymekliai",
+    lblActionFields: "Veiksmų laukai (kas 500)",
+    lblMerchant: "Prekybininko lauko nr.",
+    footer: "Kiekvienas žemėlapis generuojamas iš naujo atsitiktinai – reljefas, keliai ir forpostų vieta šiek tiek skiriasi.",
+    mapWord: "Žemėlapis",
+    fieldsWord: "laukai",
+    pngError: "PNG eksportavimas nepavyko. Alternatyviai: spustelėkite dešiniuoju pelės mygtuku ant žemėlapio → \"Išsaugoti paveikslėlį kaip\".",
+    options: {
+      "aus": "Išjungta",
+      "mitte": "Centras",
+      "oben": "Viršuje",
+      "unten": "Apačioje",
+      "links": "Kairėje",
+      "rechts": "Dešinėje",
+      "oben-links": "Viršuje kairėje",
+      "oben-rechts": "Viršuje dešinėje",
+      "unten-links": "Apačioje kairėje",
+      "unten-rechts": "Apačioje dešinėje"
+    }
+  },
+  mt: {
+    nativeName: "Malti",
+    title: "Mappa tas-Saltna",
+    subtitle: "Mappa fantażjuża miktuba bl-idejn: iġġenerata b'mod każwali, b'muntanji, baħar, foresta, deżert u xmara – kompletament tista' tiġi kkustomizzata skont ix-xewqat tiegħek.",
+    generateBtn: "⚔ Iġġenera Mappa Ġdida",
+    downloadBtn: "⬇ Issejvja bħala PNG",
+    toggleSettingsBtn: "⚙ Settings",
+    lblSeed: "Seed:",
+    grpCastles: "Kastelli",
+    lblMainCastle: "Kastell prinċipali",
+    lblOutposts: "Postijiet avvanzati",
+    lblNoOutposts: "mingħajr postijiet avvanzati",
+    grpTerrain: "Terren",
+    lblMountains: "Muntanji",
+    lblSea: "Baħar",
+    lblForest: "Foresta",
+    lblDesert: "Deżert",
+    grpRiver: "Xmara",
+    lblGenerateRiver: "Iġġenera xmara",
+    lblBridges: "Pontijiet",
+    grpMap: "Mappa",
+    lblFields: "Oqsma (100–10000)",
+    grpMarkers: "Markaturi",
+    lblActionFields: "Oqsma ta' azzjoni (kull 500)",
+    lblMerchant: "Numru tal-qasam tan-negozjant",
+    footer: "Kull mappa tiġi ġġenerata mill-ġdid b'mod każwali – it-terren, il-mogħdijiet u l-pożizzjoni tal-postijiet avvanzati jvarjaw ftit.",
+    mapWord: "Mappa",
+    fieldsWord: "oqsma",
+    pngError: "L-esportazzjoni PNG falliet. Alternattivament: ikklikkja bil-lemin fuq il-mappa → \"Issejvja x-xbieha bħala\".",
+    options: {
+      "aus": "Mitfi",
+      "mitte": "Ċentru",
+      "oben": "Fuq",
+      "unten": "Isfel",
+      "links": "Xellug",
+      "rechts": "Lemin",
+      "oben-links": "Fuq xellug",
+      "oben-rechts": "Fuq lemin",
+      "unten-links": "Isfel xellug",
+      "unten-rechts": "Isfel lemin"
+    }
+  },
+  pl: {
+    nativeName: "Polski",
+    title: "Mapa Królestwa",
+    subtitle: "Ręcznie rysowana mapa fantasy: generowana losowo, z górami, morzem, lasem, pustynią i rzeką – w pełni dostosowywana do Twoich upodobań.",
+    generateBtn: "⚔ Wygeneruj nową mapę",
+    downloadBtn: "⬇ Zapisz jako PNG",
+    toggleSettingsBtn: "⚙ Ustawienia",
+    lblSeed: "Ziarno:",
+    grpCastles: "Zamki",
+    lblMainCastle: "Główny zamek",
+    lblOutposts: "Placówki",
+    lblNoOutposts: "bez placówek",
+    grpTerrain: "Teren",
+    lblMountains: "Góry",
+    lblSea: "Morze",
+    lblForest: "Las",
+    lblDesert: "Pustynia",
+    grpRiver: "Rzeka",
+    lblGenerateRiver: "Wygeneruj rzekę",
+    lblBridges: "Mosty",
+    grpMap: "Mapa",
+    lblFields: "Pola (100–10000)",
+    grpMarkers: "Znaczniki",
+    lblActionFields: "Pola akcji (co 500)",
+    lblMerchant: "Nr pola kupca",
+    footer: "Każda mapa jest generowana od nowa losowo – teren, ścieżki i położenie placówek nieznacznie się różnią.",
+    mapWord: "Mapa",
+    fieldsWord: "pól",
+    pngError: "Eksport do PNG nie powiódł się. Alternatywnie: kliknij prawym przyciskiem myszy na mapie → \"Zapisz obraz jako\".",
+    options: {
+      "aus": "Wyłączone",
+      "mitte": "Środek",
+      "oben": "Góra",
+      "unten": "Dół",
+      "links": "Lewo",
+      "rechts": "Prawo",
+      "oben-links": "Góra lewo",
+      "oben-rechts": "Góra prawo",
+      "unten-links": "Dół lewo",
+      "unten-rechts": "Dół prawo"
+    }
+  },
+  ro: {
+    nativeName: "Română",
+    title: "Harta Regatului",
+    subtitle: "O hartă fantastică desenată de mână: generată aleatoriu, cu munți, mare, pădure, deșert și un râu – complet personalizabilă după preferințele tale.",
+    generateBtn: "⚔ Generează o hartă nouă",
+    downloadBtn: "⬇ Salvează ca PNG",
+    toggleSettingsBtn: "⚙ Setări",
+    lblSeed: "Sămânță:",
+    grpCastles: "Castele",
+    lblMainCastle: "Castelul principal",
+    lblOutposts: "Avanposturi",
+    lblNoOutposts: "fără avanposturi",
+    grpTerrain: "Teren",
+    lblMountains: "Munți",
+    lblSea: "Mare",
+    lblForest: "Pădure",
+    lblDesert: "Deșert",
+    grpRiver: "Râu",
+    lblGenerateRiver: "Generează râu",
+    lblBridges: "Poduri",
+    grpMap: "Hartă",
+    lblFields: "Câmpuri (100–10000)",
+    grpMarkers: "Marcaje",
+    lblActionFields: "Câmpuri de acțiune (la fiecare 500)",
+    lblMerchant: "Nr. câmpului negustorului",
+    footer: "Fiecare hartă este regenerată aleatoriu – terenul, căile și poziția avanposturilor variază ușor.",
+    mapWord: "Hartă",
+    fieldsWord: "câmpuri",
+    pngError: "Exportul PNG a eșuat. Alternativ: click dreapta pe hartă → \"Salvează imaginea ca\".",
+    options: {
+      "aus": "Dezactivat",
+      "mitte": "Centru",
+      "oben": "Sus",
+      "unten": "Jos",
+      "links": "Stânga",
+      "rechts": "Dreapta",
+      "oben-links": "Sus stânga",
+      "oben-rechts": "Sus dreapta",
+      "unten-links": "Jos stânga",
+      "unten-rechts": "Jos dreapta"
+    }
+  },
+  sk: {
+    nativeName: "Slovenčina",
+    title: "Mapa kráľovstva",
+    subtitle: "Ručne kreslená fantasy mapa: náhodne generovaná, s horami, morom, lesom, púšťou a riekou – plne prispôsobiteľná podľa vašich predstáv.",
+    generateBtn: "⚔ Vygenerovať novú mapu",
+    downloadBtn: "⬇ Uložiť ako PNG",
+    toggleSettingsBtn: "⚙ Nastavenia",
+    lblSeed: "Seed:",
+    grpCastles: "Hrady",
+    lblMainCastle: "Hlavný hrad",
+    lblOutposts: "Základne",
+    lblNoOutposts: "bez základní",
+    grpTerrain: "Terén",
+    lblMountains: "Hory",
+    lblSea: "More",
+    lblForest: "Les",
+    lblDesert: "Púšť",
+    grpRiver: "Rieka",
+    lblGenerateRiver: "Vygenerovať rieku",
+    lblBridges: "Mosty",
+    grpMap: "Mapa",
+    lblFields: "Polia (100–10000)",
+    grpMarkers: "Značky",
+    lblActionFields: "Akčné polia (každých 500)",
+    lblMerchant: "Č. obchodného poľa",
+    footer: "Každá mapa sa znova náhodne vygeneruje – terén, cesty a umiestnenie základní sa mierne líšia.",
+    mapWord: "Mapa",
+    fieldsWord: "polí",
+    pngError: "Export do PNG zlyhal. Alternatívne: kliknite pravým tlačidlom na mapu → \"Uložiť obrázok ako\".",
+    options: {
+      "aus": "Vypnuté",
+      "mitte": "Stred",
+      "oben": "Hore",
+      "unten": "Dole",
+      "links": "Vľavo",
+      "rechts": "Vpravo",
+      "oben-links": "Hore vľavo",
+      "oben-rechts": "Hore vpravo",
+      "unten-links": "Dole vľavo",
+      "unten-rechts": "Dole vpravo"
+    }
+  },
+  sl: {
+    nativeName: "Slovenščina",
+    title: "Zemljevid kraljestva",
+    subtitle: "Ročno narisan fantazijski zemljevid: naključno ustvarjen, z gorami, morjem, gozdom, puščavo in reko – v celoti prilagodljiv vašim željam.",
+    generateBtn: "⚔ Ustvari nov zemljevid",
+    downloadBtn: "⬇ Shrani kot PNG",
+    toggleSettingsBtn: "⚙ Nastavitve",
+    lblSeed: "Seme:",
+    grpCastles: "Gradovi",
+    lblMainCastle: "Glavni grad",
+    lblOutposts: "Postojanke",
+    lblNoOutposts: "brez postojank",
+    grpTerrain: "Teren",
+    lblMountains: "Gore",
+    lblSea: "Morje",
+    lblForest: "Gozd",
+    lblDesert: "Puščava",
+    grpRiver: "Reka",
+    lblGenerateRiver: "Ustvari reko",
+    lblBridges: "Mostovi",
+    grpMap: "Zemljevid",
+    lblFields: "Polja (100–10000)",
+    grpMarkers: "Oznake",
+    lblActionFields: "Akcijska polja (vsakih 500)",
+    lblMerchant: "Št. trgovskega polja",
+    footer: "Vsak zemljevid se ponovno naključno ustvari – teren, poti in lega postojank se rahlo razlikujejo.",
+    mapWord: "Zemljevid",
+    fieldsWord: "polj",
+    pngError: "Izvoz v PNG ni uspel. Druga možnost: desni klik na zemljevid → \"Shrani sliko kot\".",
+    options: {
+      "aus": "Izklopljeno",
+      "mitte": "Sredina",
+      "oben": "Zgoraj",
+      "unten": "Spodaj",
+      "links": "Levo",
+      "rechts": "Desno",
+      "oben-links": "Zgoraj levo",
+      "oben-rechts": "Zgoraj desno",
+      "unten-links": "Spodaj levo",
+      "unten-rechts": "Spodaj desno"
+    }
+  },
+  sv: {
+    nativeName: "Svenska",
+    title: "Kungarikets karta",
+    subtitle: "En handritad fantasikarta: slumpmässigt genererad, med berg, hav, skog, öken och en flod – helt anpassningsbar efter dina önskemål.",
+    generateBtn: "⚔ Generera ny karta",
+    downloadBtn: "⬇ Spara som PNG",
+    toggleSettingsBtn: "⚙ Inställningar",
+    lblSeed: "Frö:",
+    grpCastles: "Slott",
+    lblMainCastle: "Huvudslott",
+    lblOutposts: "Utposter",
+    lblNoOutposts: "inga utposter",
+    grpTerrain: "Terräng",
+    lblMountains: "Berg",
+    lblSea: "Hav",
+    lblForest: "Skog",
+    lblDesert: "Öken",
+    grpRiver: "Flod",
+    lblGenerateRiver: "Generera flod",
+    lblBridges: "Broar",
+    grpMap: "Karta",
+    lblFields: "Fält (100–10000)",
+    grpMarkers: "Markörer",
+    lblActionFields: "Händelsefält (var 500:e)",
+    lblMerchant: "Handelsfält nr.",
+    footer: "Varje karta genereras slumpmässigt på nytt – terräng, vägar och utposternas placering varierar något.",
+    mapWord: "Karta",
+    fieldsWord: "fält",
+    pngError: "PNG-export misslyckades. Alternativt: högerklicka på kartan → \"Spara bild som\".",
+    options: {
+      "aus": "Av",
+      "mitte": "Mitten",
+      "oben": "Topp",
+      "unten": "Botten",
+      "links": "Vänster",
+      "rechts": "Höger",
+      "oben-links": "Topp vänster",
+      "oben-rechts": "Topp höger",
+      "unten-links": "Botten vänster",
+      "unten-rechts": "Botten höger"
+    }
+  },
+  no: {
+    nativeName: "Norsk",
+    title: "Kongerikets kart",
+    subtitle: "Et håndtegnet fantasikart: tilfeldig generert, med fjell, hav, skog, ørken og en elv – fullt tilpassbart etter dine ønsker.",
+    generateBtn: "⚔ Generer nytt kart",
+    downloadBtn: "⬇ Lagre som PNG",
+    toggleSettingsBtn: "⚙ Innstillinger",
+    lblSeed: "Frø:",
+    grpCastles: "Slott",
+    lblMainCastle: "Hovedslott",
+    lblOutposts: "Utposter",
+    lblNoOutposts: "ingen utposter",
+    grpTerrain: "Terreng",
+    lblMountains: "Fjell",
+    lblSea: "Hav",
+    lblForest: "Skog",
+    lblDesert: "Ørken",
+    grpRiver: "Elv",
+    lblGenerateRiver: "Generer elv",
+    lblBridges: "Broer",
+    grpMap: "Kart",
+    lblFields: "Felt (100–10000)",
+    grpMarkers: "Markører",
+    lblActionFields: "Handlingsfelt (hver 500.)",
+    lblMerchant: "Handelsfelt nr.",
+    footer: "Hvert kart genereres tilfeldig på ny – terreng, stier og utpostenes plassering varierer litt.",
+    mapWord: "Kart",
+    fieldsWord: "felt",
+    pngError: "PNG-eksport mislyktes. Alternativt: høyreklikk på kartet → \"Lagre bilde som\".",
+    options: {
+      "aus": "Av",
+      "mitte": "Midten",
+      "oben": "Topp",
+      "unten": "Bunn",
+      "links": "Venstre",
+      "rechts": "Høyre",
+      "oben-links": "Topp venstre",
+      "oben-rechts": "Topp høyre",
+      "unten-links": "Bunn venstre",
+      "unten-rechts": "Bunn høyre"
+    }
+  },
+  uk: {
+    nativeName: "Українська",
+    title: "Карта королівства",
+    subtitle: "Мальована вручну фентезійна карта: генерується випадковим чином, з горами, морем, лісом, пустелею та річкою – повністю налаштовується за вашим бажанням.",
+    generateBtn: "⚔ Створити нову карту",
+    downloadBtn: "⬇ Зберегти як PNG",
+    toggleSettingsBtn: "⚙ Налаштування",
+    lblSeed: "Сід:",
+    grpCastles: "Замки",
+    lblMainCastle: "Головний замок",
+    lblOutposts: "Форпости",
+    lblNoOutposts: "без форпостів",
+    grpTerrain: "Ландшафт",
+    lblMountains: "Гори",
+    lblSea: "Море",
+    lblForest: "Ліс",
+    lblDesert: "Пустеля",
+    grpRiver: "Річка",
+    lblGenerateRiver: "Створити річку",
+    lblBridges: "Мости",
+    grpMap: "Карта",
+    lblFields: "Клітинки (100–10000)",
+    grpMarkers: "Маркери",
+    lblActionFields: "Клітинки подій (кожні 500)",
+    lblMerchant: "№ клітинки торговця",
+    footer: "Кожна карта генерується заново випадковим чином – ландшафт, шляхи та розташування форпостів трохи відрізняються.",
+    mapWord: "Карта",
+    fieldsWord: "клітинок",
+    pngError: "Експорт у PNG не вдався. Альтернатива: клацніть правою кнопкою миші по карті → \"Зберегти зображення як\".",
+    options: {
+      "aus": "Вимкнено",
+      "mitte": "Центр",
+      "oben": "Зверху",
+      "unten": "Знизу",
+      "links": "Зліва",
+      "rechts": "Справа",
+      "oben-links": "Зверху зліва",
+      "oben-rechts": "Зверху справа",
+      "unten-links": "Знизу зліва",
+      "unten-rechts": "Знизу справа"
+    }
+  },
+  is: {
+    nativeName: "Íslenska",
+    title: "Kort konungsríkisins",
+    subtitle: "Handteiknað ævintýrakort: búið til af handahófi, með fjöllum, hafi, skógi, eyðimörk og á – fullkomlega sérsniðið að þínum óskum.",
+    generateBtn: "⚔ Búa til nýtt kort",
+    downloadBtn: "⬇ Vista sem PNG",
+    toggleSettingsBtn: "⚙ Stillingar",
+    lblSeed: "Fræ:",
+    grpCastles: "Kastalar",
+    lblMainCastle: "Aðalkastali",
+    lblOutposts: "Útverðir",
+    lblNoOutposts: "engir útverðir",
+    grpTerrain: "Landslag",
+    lblMountains: "Fjöll",
+    lblSea: "Haf",
+    lblForest: "Skógur",
+    lblDesert: "Eyðimörk",
+    grpRiver: "Á",
+    lblGenerateRiver: "Búa til á",
+    lblBridges: "Brýr",
+    grpMap: "Kort",
+    lblFields: "Reitir (100–10000)",
+    grpMarkers: "Merki",
+    lblActionFields: "Atburðareitir (á 500 fresti)",
+    lblMerchant: "Nr. kaupmannsreits",
+    footer: "Hvert kort er búið til af handahófi á ný – landslag, slóðir og staðsetning útvarða eru örlítið breytileg.",
+    mapWord: "Kort",
+    fieldsWord: "reitir",
+    pngError: "PNG-útflutningur mistókst. Að öðrum kosti: hægrismelltu á kortið → \"Vista mynd sem\".",
+    options: {
+      "aus": "Slökkt",
+      "mitte": "Miðja",
+      "oben": "Efst",
+      "unten": "Neðst",
+      "links": "Vinstri",
+      "rechts": "Hægri",
+      "oben-links": "Efst vinstri",
+      "oben-rechts": "Efst hægri",
+      "unten-links": "Neðst vinstri",
+      "unten-rechts": "Neðst hægri"
+    }
+  },
+  sr: {
+    nativeName: "Српски",
+    title: "Карта краљевства",
+    subtitle: "Ручно цртана фантастична карта: насумично генерисана, са планинама, морем, шумом, пустињом и реком – потпуно прилагодљива вашим жељама.",
+    generateBtn: "⚔ Генериши нову карту",
+    downloadBtn: "⬇ Сачувај као PNG",
+    toggleSettingsBtn: "⚙ Подешавања",
+    lblSeed: "Семе:",
+    grpCastles: "Замкови",
+    lblMainCastle: "Главни замак",
+    lblOutposts: "Испоставе",
+    lblNoOutposts: "без испостава",
+    grpTerrain: "Терен",
+    lblMountains: "Планине",
+    lblSea: "Море",
+    lblForest: "Шума",
+    lblDesert: "Пустиња",
+    grpRiver: "Река",
+    lblGenerateRiver: "Генериши реку",
+    lblBridges: "Мостови",
+    grpMap: "Карта",
+    lblFields: "Поља (100–10000)",
+    grpMarkers: "Ознаке",
+    lblActionFields: "Акциона поља (на сваких 500)",
+    lblMerchant: "Бр. трговачког поља",
+    footer: "Свака карта се поново насумично генерише – терен, путеви и положај испостава мало варирају.",
+    mapWord: "Карта",
+    fieldsWord: "поља",
+    pngError: "Извоз у PNG није успео. Алтернативно: десни клик на карту → \"Сачувај слику као\".",
+    options: {
+      "aus": "Искључено",
+      "mitte": "Средина",
+      "oben": "Горе",
+      "unten": "Доле",
+      "links": "Лево",
+      "rechts": "Десно",
+      "oben-links": "Горе лево",
+      "oben-rechts": "Горе десно",
+      "unten-links": "Доле лево",
+      "unten-rechts": "Доле десно"
+    }
+  },
+  sq: {
+    nativeName: "Shqip",
+    title: "Harta e Mbretërisë",
+    subtitle: "Një hartë fantazie e vizatuar me dorë: e krijuar rastësisht, me male, det, pyll, shkretëtirë dhe një lumë – plotësisht e personalizueshme sipas dëshirës suaj.",
+    generateBtn: "⚔ Krijo hartë të re",
+    downloadBtn: "⬇ Ruaj si PNG",
+    toggleSettingsBtn: "⚙ Cilësimet",
+    lblSeed: "Fara:",
+    grpCastles: "Kështjella",
+    lblMainCastle: "Kështjella kryesore",
+    lblOutposts: "Postat e përparuara",
+    lblNoOutposts: "pa posta të përparuara",
+    grpTerrain: "Terreni",
+    lblMountains: "Male",
+    lblSea: "Det",
+    lblForest: "Pyll",
+    lblDesert: "Shkretëtirë",
+    grpRiver: "Lumi",
+    lblGenerateRiver: "Krijo lumë",
+    lblBridges: "Ura",
+    grpMap: "Harta",
+    lblFields: "Fusha (100–10000)",
+    grpMarkers: "Shënues",
+    lblActionFields: "Fusha veprimi (çdo 500)",
+    lblMerchant: "Nr. i fushës së tregtarit",
+    footer: "Çdo hartë krijohet rishtazi rastësisht – terreni, shtigjet dhe vendndodhja e postave të përparuara ndryshojnë pak.",
+    mapWord: "Harta",
+    fieldsWord: "fusha",
+    pngError: "Eksportimi PNG dështoi. Alternativa: klikoni me të djathtën mbi hartë → \"Ruaj imazhin si\".",
+    options: {
+      "aus": "Fikur",
+      "mitte": "Qendër",
+      "oben": "Sipër",
+      "unten": "Poshtë",
+      "links": "Majtas",
+      "rechts": "Djathtas",
+      "oben-links": "Sipër majtas",
+      "oben-rechts": "Sipër djathtas",
+      "unten-links": "Poshtë majtas",
+      "unten-rechts": "Poshtë djathtas"
+    }
+  }
+};
+</script>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1 data-i18n="title">Karte des Königreichs</h1>
+    <p data-i18n="subtitle">Eine handgezeichnete Fantasiekarte: zufällig generiert, mit Bergen, Meer, Wald, Wüste und Fluss – und komplett nach deinen Wünschen einstellbar.</p>
+  </header>
+
+  <div class="controls-panel">
+    <div class="control-actions">
+      <select id="languageSelect"></select>
+      <button id="generateBtn" data-i18n="generateBtn">⚔ Neue Karte erzeugen</button>
+      <button id="downloadBtn" data-i18n="downloadBtn">⬇ Als PNG speichern</button>
+      <button id="toggleSettingsBtn" data-i18n="toggleSettingsBtn">⚙ Einstellungen</button>
+      <label class="seed-label" for="seedInput"><span data-i18n="lblSeed">Seed:</span>
+        <input type="number" id="seedInput" step="1">
+      </label>
+      <span class="seed-label" id="seedLabel"></span>
+    </div>
+
+    <div class="settings-body" id="settingsBody">
+      <div class="control-group">
+        <h3 data-i18n="grpCastles">Burgen</h3>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblMainCastle">Hauptburg</span>
+          <select id="castlePosition">
+            <option value="mitte" selected>Mitte</option>
+            <option value="oben">Oben</option>
+            <option value="unten">Unten</option>
+            <option value="links">Links</option>
+            <option value="rechts">Rechts</option>
+            <option value="oben-links">Oben links</option>
+            <option value="oben-rechts">Oben rechts</option>
+            <option value="unten-links">Unten links</option>
+            <option value="unten-rechts">Unten rechts</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblOutposts">Außenposten</span>
+          <input type="number" id="outpostCount" min="0" max="9" value="5">
+        </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblNoOutposts">keine Außenposten</span>
+          <input type="checkbox" id="disableOutposts">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <h3 data-i18n="grpTerrain">Gelände</h3>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblMountains">Gebirge</span>
+          <select id="mountainPosition">
+            <option value="aus">Aus</option>
+            <option value="mitte">Mitte</option>
+            <option value="oben">Oben</option>
+            <option value="unten">Unten</option>
+            <option value="links">Links</option>
+            <option value="rechts">Rechts</option>
+            <option value="oben-links">Oben links</option>
+            <option value="oben-rechts">Oben rechts</option>
+            <option value="unten-links">Unten links</option>
+            <option value="unten-rechts" selected>Unten rechts</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblSea">Meer</span>
+          <select id="seaPosition">
+            <option value="aus">Aus</option>
+            <option value="oben" selected>Oben</option>
+            <option value="unten">Unten</option>
+            <option value="links">Links</option>
+            <option value="rechts">Rechts</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblForest">Wald</span>
+          <select id="forestPosition">
+            <option value="aus">Aus</option>
+            <option value="mitte">Mitte</option>
+            <option value="oben">Oben</option>
+            <option value="unten">Unten</option>
+            <option value="links">Links</option>
+            <option value="rechts">Rechts</option>
+            <option value="oben-links">Oben links</option>
+            <option value="oben-rechts">Oben rechts</option>
+            <option value="unten-links" selected>Unten links</option>
+            <option value="unten-rechts">Unten rechts</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblDesert">Wüste</span>
+          <select id="desertPosition">
+            <option value="aus">Aus</option>
+            <option value="mitte">Mitte</option>
+            <option value="oben">Oben</option>
+            <option value="unten">Unten</option>
+            <option value="links">Links</option>
+            <option value="rechts">Rechts</option>
+            <option value="oben-links">Oben links</option>
+            <option value="oben-rechts" selected>Oben rechts</option>
+            <option value="unten-links">Unten links</option>
+            <option value="unten-rechts">Unten rechts</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <h3 data-i18n="grpRiver">Fluss</h3>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblGenerateRiver">Fluss generieren</span>
+          <input type="checkbox" id="showRiver">
+        </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblBridges">Brücken</span>
+          <input type="number" id="bridgeCount" min="1" max="10" value="3">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <h3 data-i18n="grpMap">Karte</h3>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblFields">Felder (100–10000)</span>
+          <input type="number" id="fieldCountInput" min="100" max="10000" step="50" value="700">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <h3 data-i18n="grpMarkers">Marker</h3>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblActionFields">Aktionsfelder (je 500er)</span>
+          <input type="checkbox" id="showActionFields" checked>
+        </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblMerchant">Händlerfeld Nr.</span>
+          <input type="number" id="merchantFieldNumber" min="1" placeholder="—">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="map-frame">
+    <svg id="mapSvg" viewBox="0 0 1000 800" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+
+  <footer data-i18n="footer">Jede Karte wird zufällig neu erzeugt – Gelände, Wege und Lage der Außenposten variieren leicht.</footer>
+</div>
+
+<script>
+const SVG_NS = "http://www.w3.org/2000/svg";
+const svg = document.getElementById('mapSvg');
+let W = 1000, H = 800;
+let CX = 500, CY = 400;
+let currentScale = 1;
+let fieldLookup = new Map();
+let actionFieldNumbers = new Set();
+let markersLayerRef = null;
+let currentLang = 'de';
+let currentSeed = 0;
+let rngFn = Math.random;
+
+function mulberry32(seed){
+  let t = seed >>> 0;
+  return function(){
+    t |= 0; t = (t + 0x6D2B79F5) | 0;
+    let r = Math.imul(t ^ (t >>> 15), 1 | t);
+    r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// ---------- Translations (data lives in languages.js -> LANGUAGES) ----------
+function populateLanguageSelect(){
+  const sel = document.getElementById('languageSelect');
+  sel.innerHTML = '';
+  Object.keys(LANGUAGES).forEach(code => {
+    const opt = document.createElement('option');
+    opt.value = code;
+    opt.textContent = LANGUAGES[code].nativeName || code;
+    sel.appendChild(opt);
+  });
+}
+
+function applyLanguage(lang){
+  currentLang = LANGUAGES[lang] ? lang : 'en';
+  const s = LANGUAGES[currentLang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if(s[key] !== undefined) el.textContent = s[key];
+  });
+  document.getElementById('languageSelect').value = currentLang;
+  document.getElementById('settingsBody').querySelectorAll('option').forEach(opt => {
+    const label = s.options[opt.value];
+    if(label !== undefined) opt.textContent = label;
+  });
+}
+
+function detectLanguage(){
+  const supported = Object.keys(LANGUAGES);
+  const browserLangs = navigator.languages && navigator.languages.length
+    ? navigator.languages
+    : [navigator.language || 'en'];
+  for(const l of browserLangs){
+    const code = l.toLowerCase().split('-')[0];
+    if(supported.includes(code)) return code;
+  }
+  return 'en';
+}
+
+function rand(min, max){ return rngFn() * (max - min) + min; }
+function randInt(min, max){ return Math.floor(rand(min, max + 1)); }
+function choice(arr){ return arr[randInt(0, arr.length - 1)]; }
+
+function el(tag, attrs){
+  const e = document.createElementNS(SVG_NS, tag);
+  for(const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+
+function clear(){ while(svg.firstChild) svg.removeChild(svg.firstChild); }
+
+// ---------- Background ----------
+function drawBackground(){
+  svg.appendChild(el('rect', {x:0, y:0, width:W, height:H, fill:'#e9dcb9'}));
+  const texture = el('g', {opacity:0.35});
+  for(let i=0;i<120;i++){
+    const x = rand(0,W), y = rand(0,H);
+    const r = rand(6,22);
+    texture.appendChild(el('circle', {
+      cx:x, cy:y, r:r,
+      fill: rngFn() > 0.5 ? '#dccb9a' : '#f0e3bd'
+    }));
+  }
+  svg.appendChild(texture);
+}
+
+// ---------- Field tessellation (every field touches its neighbours) ----------
+const FIELD_COLORS = ['#c9b686', '#9fb08c', '#8fa8ad', '#cbb98f', '#a6b58f', '#b6a189', '#d8c599'];
+const MOUNTAIN_COLORS = ['#8b8378', '#77705f', '#9c9488', '#655e50'];
+const SEA_COLORS = ['#5f7f86', '#6f8e94', '#4f6b71'];
+const FOREST_COLORS = ['#3f5233', '#4c5c3a', '#374a2c'];
+const DESERT_COLORS = ['#dcc38a', '#e0cd9c', '#d1b57a'];
+const PATH_COLOR = '#c9a66b';
+const DEFAULT_FIELDS = 700;
+
+function biomeColor(x, y, seed){
+  const n = Math.sin(x*0.012 + seed) + Math.sin(y*0.015 + seed*1.7) + Math.sin((x+y)*0.008 + seed*0.6);
+  const idx = Math.floor(((n + 3) / 6) * FIELD_COLORS.length) % FIELD_COLORS.length;
+  return FIELD_COLORS[(idx + FIELD_COLORS.length) % FIELD_COLORS.length];
+}
+
+// small chevron-shaped flow arrow, centred on the border between two
+// field centres and rotated to point from source toward target
+function drawBorderArrow(x1, y1, x2, y2, color, width, opacity, size){
+  const angleDeg = Math.atan2(y2-y1, x2-x1) * 180/Math.PI + 90;
+  const mx = (x1+x2)/2, my = (y1+y2)/2;
+  const scale = size / 24;
+  const g = el('g', {
+    transform: `translate(${mx},${my}) rotate(${angleDeg}) scale(${scale}) translate(-12,-12)`
+  });
+  g.appendChild(el('path', {
+    d: 'M12,1 L22.5,22 L12,14.5 L1.5,22 Z',
+    fill: color, opacity, 'stroke-linejoin':'round'
+  }));
+  return g;
+}
+
+function pointSegDist(px, py, x1, y1, x2, y2){
+  const dx = x2-x1, dy = y2-y1;
+  const lenSq = dx*dx + dy*dy;
+  let t = lenSq === 0 ? 0 : ((px-x1)*dx + (py-y1)*dy) / lenSq;
+  t = Math.max(0, Math.min(1, t));
+  const cx = x1 + t*dx, cy = y1 + t*dy;
+  return Math.hypot(px-cx, py-cy);
+}
+
+function generateFieldTessellation(outposts, desiredFields){
+  const seed = rand(0, 1000);
+  const margin = 6;
+
+  const buildingPoints = [{x:CX, y:CY, big:true}, ...outposts.map(o => ({x:o.x, y:o.y, big:false}))];
+  const points = buildingPoints.map(p => [p.x, p.y]);
+
+  function clearanceOk(x, y){
+    return buildingPoints.every(b => {
+      const minDist = b.big ? 95 : 72;
+      return Math.hypot(b.x - x, b.y - y) >= minDist;
+    });
+  }
+
+  // dynamically compensate for whichever blocking regions are actually
+  // enabled right now, so the numbered/walkable field count lands within
+  // roughly 10% of what was requested regardless of the current setup
+  const mountainChoice = document.getElementById('mountainPosition').value;
+  const seaChoice = document.getElementById('seaPosition').value;
+  const riverEnabled = document.getElementById('showRiver').checked;
+
+  let blockedFraction = 0;
+  if(mountainChoice !== 'aus') blockedFraction += 0.097;
+  if(seaChoice !== 'aus') blockedFraction += (seaChoice === 'links' || seaChoice === 'rechts') ? 0.095 : 0.119;
+  if(riverEnabled) blockedFraction += 0.06;
+  blockedFraction = Math.min(blockedFraction, 0.75);
+
+  const BLOCKED_COMPENSATION = 1 / (1 - blockedFraction);
+  const targetCount = Math.round(Math.max(desiredFields, buildingPoints.length) * BLOCKED_COMPENSATION);
+  let attempts = 0;
+  while(points.length < targetCount && attempts < targetCount * 40){
+    const x = rand(margin, W-margin), y = rand(margin, H-margin);
+    attempts++;
+    if(!clearanceOk(x, y)) continue;
+    points.push([x, y]);
+  }
+
+  // impassable mountain region, position chosen like the main castle
+  const mapScale = Math.sqrt(desiredFields / DEFAULT_FIELDS);
+  const mtnPos = positionForChoice(mountainChoice);
+  const mtnCx = mtnPos.x, mtnCy = mtnPos.y, mtnBaseR = 170*mapScale;
+  const mtnWobbleSeed = rand(0, 1000);
+  function inMountains(x, y){
+    if(mountainChoice === 'aus') return false;
+    const dx = x-mtnCx, dy = y-mtnCy;
+    const dist = Math.hypot(dx, dy);
+    const angle = Math.atan2(dy, dx);
+    const wobble = (32*Math.sin(angle*3 + mtnWobbleSeed) + 18*Math.sin(angle*5 + mtnWobbleSeed*1.9)) * mapScale;
+    return dist < mtnBaseR + wobble;
+  }
+
+  // a narrow trail of walkable "path" fields threading through the mountains
+  const trail = [];
+  {
+    const distToMtn = Math.hypot(mtnCx-CX, mtnCy-CY);
+    let angle = Math.atan2(mtnCy-CY, mtnCx-CX);
+    let x = CX + Math.cos(angle)*(distToMtn - mtnBaseR*0.9);
+    let y = CY + Math.sin(angle)*(distToMtn - mtnBaseR*0.9);
+    trail.push({x, y});
+    const steps = randInt(15, 19);
+    for(let i=0;i<steps;i++){
+      angle += rand(-0.32, 0.32);
+      x += Math.cos(angle)*24*mapScale;
+      y += Math.sin(angle)*24*mapScale;
+      trail.push({x, y});
+    }
+  }
+  function nearTrail(x, y){
+    for(let i=0;i<trail.length-1;i++){
+      if(pointSegDist(x, y, trail[i].x, trail[i].y, trail[i+1].x, trail[i+1].y) < 23*mapScale) return true;
+    }
+    return false;
+  }
+
+  // walkable forest region, position chosen the same way
+  const forestChoice = document.getElementById('forestPosition').value;
+  const forestPos = positionForChoice(forestChoice);
+  const forestCx = forestPos.x, forestCy = forestPos.y, forestBaseR = 150*mapScale;
+  const forestWobbleSeed = rand(0, 1000);
+  function inForest(x, y){
+    if(forestChoice === 'aus') return false;
+    const dx = x-forestCx, dy = y-forestCy;
+    const dist = Math.hypot(dx, dy);
+    const angle = Math.atan2(dy, dx);
+    const wobble = (28*Math.sin(angle*3 + forestWobbleSeed) + 16*Math.sin(angle*5 + forestWobbleSeed*1.9)) * mapScale;
+    return dist < forestBaseR + wobble;
+  }
+
+  // walkable desert region, position chosen the same way
+  const desertChoice = document.getElementById('desertPosition').value;
+  const desertPos = positionForChoice(desertChoice);
+  const desertCx = desertPos.x, desertCy = desertPos.y, desertBaseR = 140*mapScale;
+  const desertWobbleSeed = rand(0, 1000);
+  function inDesert(x, y){
+    if(desertChoice === 'aus') return false;
+    const dx = x-desertCx, dy = y-desertCy;
+    const dist = Math.hypot(dx, dy);
+    const angle = Math.atan2(dy, dx);
+    const wobble = (26*Math.sin(angle*3 + desertWobbleSeed) + 15*Math.sin(angle*5 + desertWobbleSeed*1.9)) * mapScale;
+    return dist < desertBaseR + wobble;
+  }
+
+  // sea band, position chosen like the main castle (edges only, or off)
+  const seaAxis = (seaChoice === 'links' || seaChoice === 'rechts') ? 'y' : 'x';
+  const seaSeed = rand(0, 1000);
+  function inSea(x, y){
+    if(seaChoice === 'aus') return false;
+    const t = seaAxis === 'x' ? x : y;
+    const wave = (26*Math.sin(t*0.012 + seaSeed) + 14*Math.sin(t*0.026 + seaSeed*1.4)) * mapScale;
+    const depth = 95*mapScale;
+    if(seaChoice === 'unten') return y > H - depth - wave;
+    if(seaChoice === 'links') return x < depth + wave;
+    if(seaChoice === 'rechts') return x > W - depth - wave;
+    return y < depth + wave; // 'oben' (default)
+  }
+
+  // optional river: starts at a non-sea edge and always winds its way
+  // into the sea (or off the map if the sea is off), with a few bridges
+  let riverPts = [], bridgePts = [];
+  const riverWidth = 40 * mapScale;
+  if(riverEnabled){
+    const seaEdgeMap = {oben:'top', unten:'bottom', links:'left', rechts:'right'};
+    let mouthEdge, mouth, reachedMouth;
+    if(seaChoice !== 'aus'){
+      mouthEdge = seaEdgeMap[seaChoice];
+      if(seaChoice === 'unten') mouth = {x: rand(W*0.25, W*0.75), y: H - 25*mapScale};
+      else if(seaChoice === 'links') mouth = {x: 25*mapScale, y: rand(H*0.25, H*0.75)};
+      else if(seaChoice === 'rechts') mouth = {x: W - 25*mapScale, y: rand(H*0.25, H*0.75)};
+      else mouth = {x: rand(W*0.25, W*0.75), y: 25*mapScale};
+      reachedMouth = (x, y) => inSea(x, y);
+    } else {
+      mouthEdge = choice(['left', 'right', 'top', 'bottom']);
+      if(mouthEdge === 'left') mouth = {x: 0, y: rand(H*0.25, H*0.75)};
+      else if(mouthEdge === 'right') mouth = {x: W, y: rand(H*0.25, H*0.75)};
+      else if(mouthEdge === 'top') mouth = {x: rand(W*0.25, W*0.75), y: 0};
+      else mouth = {x: rand(W*0.25, W*0.75), y: H};
+      reachedMouth = (x, y) =>
+        (mouthEdge === 'left' && x <= 6) || (mouthEdge === 'right' && x >= W-6) ||
+        (mouthEdge === 'top' && y <= 6) || (mouthEdge === 'bottom' && y >= H-6);
+    }
+
+    const startEdges = ['left', 'right', 'top', 'bottom'].filter(e => e !== mouthEdge);
+    const edge = choice(startEdges);
+    let x, y;
+    if(edge === 'left'){ x = -10; y = rand(H*0.15, H*0.95); }
+    else if(edge === 'right'){ x = W+10; y = rand(H*0.15, H*0.95); }
+    else if(edge === 'top'){ x = rand(W*0.15, W*0.85); y = -10; }
+    else { x = rand(W*0.15, W*0.85); y = H+10; }
+
+    let angle = Math.atan2(mouth.y-y, mouth.x-x);
+    riverPts.push({x, y});
+    const step = 22 * mapScale;
+    let guard = 0;
+    while(!reachedMouth(x, y) && guard < 500){
+      guard++;
+      const desired = Math.atan2(mouth.y-y, mouth.x-x);
+      angle = angle*0.72 + desired*0.28 + rand(-0.18, 0.18);
+      x += Math.cos(angle)*step;
+      y += Math.sin(angle)*step;
+      riverPts.push({x, y});
+    }
+    for(let k=0;k<3;k++){
+      x += Math.cos(angle)*step;
+      y += Math.sin(angle)*step;
+      riverPts.push({x, y});
+    }
+
+    const bridgeCountInput = document.getElementById('bridgeCount');
+    let numBridges = parseInt(bridgeCountInput.value, 10);
+    if(!Number.isFinite(numBridges)) numBridges = 3;
+    numBridges = Math.max(1, Math.min(10, numBridges));
+    bridgeCountInput.value = numBridges;
+    for(let k=0;k<numBridges;k++){
+      const idx = Math.max(1, Math.min(riverPts.length-2,
+        Math.round((riverPts.length-1) * ((k+1)/(numBridges+1)))));
+      const a = riverPts[idx-1], b = riverPts[idx+1];
+      bridgePts.push({x:riverPts[idx].x, y:riverPts[idx].y, angle:Math.atan2(b.y-a.y, b.x-a.x)});
+    }
+  }
+  function riverDistAt(x, y){
+    let best = Infinity;
+    for(let i=0;i<riverPts.length-1;i++){
+      const d = pointSegDist(x, y, riverPts[i].x, riverPts[i].y, riverPts[i+1].x, riverPts[i+1].y);
+      if(d < best) best = d;
+    }
+    return best;
+  }
+  function riverSideAt(x, y){
+    let best = Infinity, side = 1;
+    for(let i=0;i<riverPts.length-1;i++){
+      const a = riverPts[i], b = riverPts[i+1];
+      const d = pointSegDist(x, y, a.x, a.y, b.x, b.y);
+      if(d < best){
+        best = d;
+        side = ((b.x-a.x)*(y-a.y) - (b.y-a.y)*(x-a.x)) >= 0 ? 1 : -1;
+      }
+    }
+    return side;
+  }
+
+  const delaunay = d3.Delaunay.from(points);
+  const voronoi = delaunay.voronoi([0, 0, W, H]);
+
+  const info = new Array(points.length);
+  const cells = [];
+  for(let i=0;i<points.length;i++){
+    const [px, py] = points[i];
+    const isBuilding = i < buildingPoints.length;
+
+    let terrain = 'normal';
+    if(!isBuilding){
+      if(inSea(px, py)) terrain = 'sea';
+      else if(inMountains(px, py)) terrain = nearTrail(px, py) ? 'path' : 'mountain';
+      else if(riverEnabled && riverDistAt(px, py) < riverWidth) terrain = 'river';
+      else if(inForest(px, py)) terrain = 'forest';
+      else if(inDesert(px, py)) terrain = 'desert';
+    }
+    // river fields are always blocked/unwalkable — crossing only ever
+    // happens visually via a bridge deck, never through a numbered field
+    const blocked = terrain === 'sea' || terrain === 'mountain' || terrain === 'river';
+    info[i] = {px, py, isBuilding, terrain, blocked};
+
+    const poly = voronoi.cellPolygon(i);
+    if(!poly) continue;
+    cells.push({
+      idx: i, poly, px, py, isBuilding, terrain, blocked,
+      big: isBuilding && buildingPoints[i].big
+    });
+  }
+
+  // number top-left to bottom-right (sea/mountain/river stay unlabelled):
+  // bucket into horizontal bands, then sort left-to-right within each band
+  const numerable = cells.filter(c => !c.blocked);
+  const rows = Math.max(1, Math.round(Math.sqrt(numerable.length * (H / W))));
+  const bandHeight = H / rows;
+  const ordered = [...numerable].sort((a, b) => {
+    const ra = Math.floor(a.py / bandHeight);
+    const rb = Math.floor(b.py / bandHeight);
+    if(ra !== rb) return ra - rb;
+    return a.px - b.px;
+  });
+  ordered.forEach((c, idx) => { c.number = idx + 1; });
+
+  // lookup for markers (action fields, merchant field) that can be
+  // redrawn later without re-generating the whole random map
+  fieldLookup.clear();
+  ordered.forEach(c => fieldLookup.set(c.number, {px:c.px, py:c.py, isBuilding:c.isBuilding}));
+
+  actionFieldNumbers = new Set();
+  const total = ordered.length;
+  for(let start=1; start<=total; start+=500){
+    const end = Math.min(start+499, total);
+    const inBlock = ordered.filter(c => c.number >= start && c.number <= end);
+    const candidates = inBlock.filter(c => !c.isBuilding);
+    const pool = candidates.length ? candidates : inBlock;
+    if(pool.length) actionFieldNumbers.add(pool[randInt(0, pool.length-1)].number);
+  }
+
+  const fieldsLayer = el('g', {});
+  cells.forEach(c => {
+    let fill, opacity;
+    if(c.terrain === 'sea'){ fill = choice(SEA_COLORS); opacity = 0.8; }
+    else if(c.terrain === 'river'){ fill = choice(SEA_COLORS); opacity = 0.85; }
+    else if(c.terrain === 'mountain'){ fill = choice(MOUNTAIN_COLORS); opacity = 0.75; }
+    else if(c.terrain === 'forest'){ fill = choice(FOREST_COLORS); opacity = 0.65; }
+    else if(c.terrain === 'desert'){ fill = choice(DESERT_COLORS); opacity = 0.65; }
+    else if(c.terrain === 'path'){ fill = PATH_COLOR; opacity = 0.6; }
+    else { fill = biomeColor(c.px, c.py, seed); opacity = 0.55; }
+
+    fieldsLayer.appendChild(el('polygon', {
+      points: c.poly.map(p => p.join(',')).join(' '),
+      fill, opacity, stroke:'#5a4530', 'stroke-width':1, 'stroke-linejoin':'round'
+    }));
+
+    if(c.terrain === 'mountain'){
+      fieldsLayer.appendChild(el('path', {
+        d:`M ${c.px-6} ${c.py+5} L ${c.px} ${c.py-7} L ${c.px+6} ${c.py+5} Z`,
+        fill:'#4a433a', stroke:'#2f2a24', 'stroke-width':0.6, opacity:0.85
+      }));
+      return;
+    }
+    if(c.terrain === 'sea' || c.terrain === 'river'){
+      fieldsLayer.appendChild(el('path', {
+        d:`M ${c.px-7} ${c.py} Q ${c.px-3} ${c.py-4} ${c.px} ${c.py} Q ${c.px+4} ${c.py+4} ${c.px+7} ${c.py}`,
+        fill:'none', stroke:'#dfeef0', 'stroke-width':1, opacity:0.6
+      }));
+      return;
+    }
+    if(c.terrain === 'forest'){
+      fieldsLayer.appendChild(el('path', {
+        d:`M ${c.px} ${c.py-12} L ${c.px-3.5} ${c.py-7} L ${c.px+3.5} ${c.py-7} Z M ${c.px} ${c.py-9} L ${c.px-4.5} ${c.py-3.5} L ${c.px+4.5} ${c.py-3.5} Z`,
+        fill:'#2e3d22', stroke:'#1f2a17', 'stroke-width':0.5, opacity:0.8
+      }));
+    }
+    if(c.terrain === 'desert'){
+      fieldsLayer.appendChild(el('path', {
+        d:`M ${c.px-5} ${c.py-6} Q ${c.px-2} ${c.py-9.5} ${c.px} ${c.py-6} Q ${c.px+2} ${c.py-9.5} ${c.px+5} ${c.py-6}`,
+        fill:'none', stroke:'#a8813f', 'stroke-width':1, opacity:0.7
+      }));
+    }
+
+    const labelY = c.isBuilding ? c.py + (c.big ? 20 : 14) : c.py;
+    const t = el('text', {
+      x: c.px, y: labelY + 2.5,
+      'text-anchor': 'middle',
+      'font-family': "'Cinzel', serif",
+      'font-size': c.isBuilding ? 8 : 7,
+      fill: '#3c2c1e',
+      opacity: 0.75
+    });
+    t.textContent = c.number;
+    fieldsLayer.appendChild(t);
+  });
+
+  // bridges: one continuous deck per crossing, running from the centre of
+  // the nearest walkable field on one bank straight to the centre of the
+  // nearest walkable field on the other bank — ignores every cell
+  // boundary in between, it's a single overlay on top of the mesh
+  function nearestWalkableTo(x, y){
+    let best = null, bestD = Infinity;
+    cells.forEach(c => {
+      if(c.blocked || c.isBuilding) return;
+      const d = Math.hypot(c.px-x, c.py-y);
+      if(d < bestD){ bestD = d; best = c; }
+    });
+    return best;
+  }
+
+  bridgePts.forEach(bp => {
+    const perpAngle = bp.angle + Math.PI/2;
+    const probeDist = riverWidth * 0.9;
+    const fieldA = nearestWalkableTo(bp.x + Math.cos(perpAngle)*probeDist, bp.y + Math.sin(perpAngle)*probeDist);
+    const fieldB = nearestWalkableTo(bp.x - Math.cos(perpAngle)*probeDist, bp.y - Math.sin(perpAngle)*probeDist);
+    if(!fieldA || !fieldB) return;
+
+    const dx = fieldB.px - fieldA.px, dy = fieldB.py - fieldA.py;
+    const len = Math.hypot(dx, dy);
+    const deckDeg = Math.atan2(dy, dx) * 180/Math.PI;
+    const midX = (fieldA.px + fieldB.px) / 2, midY = (fieldA.py + fieldB.py) / 2;
+    const deckW = 8;
+    const bridge = el('g', {transform:`translate(${midX},${midY}) rotate(${deckDeg})`});
+    bridge.appendChild(el('rect', {
+      x:-len/2, y:-deckW/2, width:len, height:deckW,
+      fill:'#9c7a4a', stroke:'#5f4527', 'stroke-width':1, rx:1
+    }));
+    const planks = Math.max(3, Math.round(len/12));
+    for(let p=1;p<planks;p++){
+      const lx = -len/2 + p*(len/planks);
+      bridge.appendChild(el('line', {
+        x1:lx, y1:-deckW/2, x2:lx, y2:deckW/2, stroke:'#5f4527', 'stroke-width':0.8, opacity:0.8
+      }));
+    }
+    fieldsLayer.appendChild(bridge);
+  });
+
+  // flow arrows: small arrows sitting on the border between two fields,
+  // pointing toward whichever neighbour brings the field closer to its
+  // target castle: small castle by default, or straight to the big
+  // castle when that is actually closer, or via the nearest bridge when
+  // a river sits in between; sea/mountain/river fields are never crossed
+  const arrowLayer = el('g', {});
+  const ringRadius = outposts.length
+    ? outposts.reduce((s, o) => s + Math.hypot(o.x-CX, o.y-CY), 0) / outposts.length
+    : 0;
+
+  cells.forEach(c => {
+    if(c.isBuilding || c.blocked) return;
+
+    const dCenter = Math.hypot(CX-c.px, CY-c.py);
+    let target = {x:CX, y:CY};
+
+    if(outposts.length && dCenter > ringRadius){
+      let bestD = Infinity;
+      outposts.forEach(o => {
+        const d = Math.hypot(o.x-c.px, o.y-c.py);
+        if(d < bestD){ bestD = d; target = o; }
+      });
+    }
+
+    if(riverEnabled && bridgePts.length){
+      const fieldSide = riverSideAt(c.px, c.py);
+      const targetSide = riverSideAt(target.x, target.y);
+      if(fieldSide !== targetSide){
+        let bestBd = Infinity;
+        bridgePts.forEach(bp => {
+          const d = Math.hypot(bp.x-c.px, bp.y-c.py);
+          if(d < bestBd){ bestBd = d; target = bp; }
+        });
+      }
+    }
+
+    const ownDist = Math.hypot(target.x-c.px, target.y-c.py);
+    let bestNeighbor = null, bestNeighborDist = ownDist;
+    for(const j of delaunay.neighbors(c.idx)){
+      const n = info[j];
+      if(!n || n.blocked) continue;
+      const d = Math.hypot(target.x-n.px, target.y-n.py);
+      if(d < bestNeighborDist){ bestNeighborDist = d; bestNeighbor = n; }
+    }
+
+    if(bestNeighbor){
+      const color = target.x === CX && target.y === CY ? '#6e1f1f' : '#3c2c1e';
+      arrowLayer.appendChild(drawBorderArrow(c.px, c.py, bestNeighbor.px, bestNeighbor.py, color, 1, 0.6, 11));
+    }
+  });
+
+  const fieldNumber = numerable.length;
+  svg.insertBefore(fieldsLayer, svg.querySelector('.castles-layer') || null);
+  svg.insertBefore(arrowLayer, svg.querySelector('.castles-layer') || null);
+  return fieldNumber;
+}
+
+// ---------- Castles ----------
+function tower(cx, cy, w, h){
+  const g = el('g', {});
+  g.appendChild(el('rect', {x:cx-w/2, y:cy-h, width:w, height:h, fill:'#8b8378', stroke:'#4f473f', 'stroke-width':1.6}));
+  const teeth = 3;
+  const toothW = w/ (teeth*2);
+  for(let i=0;i<teeth;i++){
+    const tx = cx - w/2 + toothW*(2*i+0.5);
+    g.appendChild(el('rect', {x:tx, y:cy-h-6, width:toothW, height:8, fill:'#8b8378', stroke:'#4f473f', 'stroke-width':1.2}));
+  }
+  g.appendChild(el('rect', {x:cx-w/2+2, y:cy-h*0.55, width:w-4, height:6, fill:'#4f473f', opacity:0.5}));
+  return g;
+}
+
+function drawCastle(x, y, big){
+  const g = el('g', {});
+  const scale = big ? 1.3 : 0.68;
+  const wallW = 74*scale, wallH = 30*scale;
+
+  g.appendChild(el('ellipse', {cx:x, cy:y+6, rx:wallW*0.6, ry:10, fill:'#000', opacity:0.18}));
+
+  g.appendChild(el('rect', {x:x-wallW/2, y:y-wallH, width:wallW, height:wallH, fill:'#a89f8f', stroke:'#4f473f', 'stroke-width':1.6}));
+  const teeth = big ? 9 : 6;
+  const toothW = wallW/(teeth*2);
+  for(let i=0;i<teeth;i++){
+    const tx = x - wallW/2 + toothW*(2*i+0.5);
+    g.appendChild(el('rect', {x:tx, y:y-wallH-6, width:toothW, height:8, fill:'#a89f8f', stroke:'#4f473f', 'stroke-width':1.2}));
+  }
+
+  g.appendChild(tower(x-wallW/2, y, 18*scale, wallH+16*scale));
+  g.appendChild(tower(x+wallW/2, y, 18*scale, wallH+16*scale));
+
+  if(big){
+    g.appendChild(tower(x, y-6*scale, 30*scale, 62*scale));
+    g.appendChild(el('path', {d:`M ${x} ${y-68*scale} L ${x} ${y-86*scale}`, stroke:'#4f473f', 'stroke-width':2}));
+    g.appendChild(el('path', {d:`M ${x} ${y-86*scale} L ${x+16*scale} ${y-80*scale} L ${x} ${y-74*scale} Z`, fill:'#9c2b2b'}));
+  } else {
+    g.appendChild(tower(x, y-2*scale, 20*scale, 40*scale));
+    g.appendChild(el('path', {d:`M ${x} ${y-42*scale} L ${x} ${y-56*scale}`, stroke:'#4f473f', 'stroke-width':1.6}));
+    g.appendChild(el('path', {d:`M ${x} ${y-56*scale} L ${x+12*scale} ${y-51*scale} L ${x} ${y-46*scale} Z`, fill:'#9c2b2b'}));
+  }
+
+  g.appendChild(el('rect', {x:x-8*scale, y:y-14*scale, width:16*scale, height:14*scale, fill:'#3c2c1e'}));
+
+  return g;
+}
+
+// ---------- Compass ----------
+function drawCompass(){
+  const cx = W - 70, cy = 90, r = 40;
+  const g = el('g', {opacity:0.85});
+  g.appendChild(el('circle', {cx, cy, r, fill:'none', stroke:'#5a4530', 'stroke-width':1.4}));
+  const dirs = [['N',0],['O',90],['S',180],['W',270]];
+  dirs.forEach(([label, deg])=>{
+    const a = (deg-90) * Math.PI/180;
+    const x2 = cx + Math.cos(a)*r*0.85;
+    const y2 = cy + Math.sin(a)*r*0.85;
+    g.appendChild(el('line', {x1:cx, y1:cy, x2, y2, stroke:'#5a4530', 'stroke-width': label==='N'?2.2:1.2}));
+    const lx = cx + Math.cos(a)*(r+14);
+    const ly = cy + Math.sin(a)*(r+14);
+    const t = el('text', {x:lx, y:ly+4, 'text-anchor':'middle', 'font-family':'Cinzel, serif', 'font-size':13, fill:'#5a4530'});
+    t.textContent = label;
+    g.appendChild(t);
+  });
+  svg.appendChild(g);
+}
+
+// ---------- Markers: action fields + merchant field ----------
+function renderMarkers(){
+  if(markersLayerRef){ markersLayerRef.remove(); markersLayerRef = null; }
+
+  const layer = el('g', {});
+  const showAction = document.getElementById('showActionFields').checked;
+
+  if(showAction){
+    actionFieldNumbers.forEach(num => {
+      const f = fieldLookup.get(num);
+      if(!f) return;
+      layer.appendChild(el('circle', {
+        cx:f.px, cy:f.py, r:11, fill:'none', stroke:'#c0392b',
+        'stroke-width':2.4, opacity:0.9
+      }));
+      layer.appendChild(el('circle', {
+        cx:f.px, cy:f.py, r:2, fill:'#c0392b', opacity:0.9
+      }));
+    });
+  }
+
+  const merchantInput = document.getElementById('merchantFieldNumber');
+  const merchantNum = parseInt(merchantInput.value, 10);
+  if(Number.isFinite(merchantNum)){
+    const f = fieldLookup.get(merchantNum);
+    if(f){
+      layer.appendChild(el('circle', {
+        cx:f.px, cy:f.py, r:10, fill:'#d4af37', stroke:'#5a3e12',
+        'stroke-width':1.6, opacity:0.95
+      }));
+      const t = el('text', {
+        x:f.px, y:f.py + 3.5, 'text-anchor':'middle',
+        'font-family':"'Cinzel', serif", 'font-size':10,
+        fill:'#3c2c1e', 'font-weight':'700'
+      });
+      t.textContent = 'H';
+      layer.appendChild(t);
+    }
+  }
+
+  svg.appendChild(layer);
+  markersLayerRef = layer;
+}
+
+// ---------- Main generation ----------
+function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
+
+function positionForChoice(choice){
+  const mx = W*0.24, my = H*0.24;
+  switch(choice){
+    case 'links': return {x: mx, y: H/2};
+    case 'rechts': return {x: W-mx, y: H/2};
+    case 'oben': return {x: W/2, y: my};
+    case 'unten': return {x: W/2, y: H-my};
+    case 'oben-links': return {x: mx, y: my};
+    case 'oben-rechts': return {x: W-mx, y: my};
+    case 'unten-links': return {x: mx, y: H-my};
+    case 'unten-rechts': return {x: W-mx, y: H-my};
+    default: return {x: W/2, y: H/2};
+  }
+}
+
+function generateMap(explicitSeed){
+  clear();
+
+  let seed;
+  if(typeof explicitSeed === 'number' && Number.isFinite(explicitSeed)){
+    seed = Math.floor(explicitSeed);
+  } else {
+    seed = Math.floor(Math.random() * 1e9);
+  }
+  currentSeed = seed;
+  rngFn = mulberry32(seed);
+  document.getElementById('seedInput').value = seed;
+
+  const fieldInput = document.getElementById('fieldCountInput');
+  let desiredFields = parseInt(fieldInput.value, 10);
+  if(!Number.isFinite(desiredFields)) desiredFields = DEFAULT_FIELDS;
+  desiredFields = Math.max(100, Math.min(10000, desiredFields));
+  fieldInput.value = desiredFields;
+
+  const scale = Math.sqrt(desiredFields / DEFAULT_FIELDS);
+  currentScale = scale;
+  W = Math.round(1000 * scale);
+  H = Math.round(800 * scale);
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.style.width = W + 'px';
+  svg.style.height = H + 'px';
+
+  drawBackground();
+
+  const posChoice = document.getElementById('castlePosition').value;
+  const pos = positionForChoice(posChoice);
+  CX = pos.x;
+  CY = pos.y;
+
+  const disableOutposts = document.getElementById('disableOutposts').checked;
+  const countInput = document.getElementById('outpostCount');
+  countInput.disabled = disableOutposts;
+
+  let outpostCount = 0;
+  if(!disableOutposts){
+    outpostCount = parseInt(countInput.value, 10);
+    if(!Number.isFinite(outpostCount)) outpostCount = 5;
+    outpostCount = Math.max(0, Math.min(9, outpostCount));
+    countInput.value = outpostCount;
+  }
+
+  const baseRadius = (230 + rand(0, 40)) * scale;
+  const startAngle = rand(-100, -80) * Math.PI/180;
+  const outposts = [];
+  for(let i=0;i<outpostCount;i++){
+    const angle = startAngle + i * (2*Math.PI/outpostCount) + rand(-0.06, 0.06);
+    const radius = baseRadius + rand(-18, 18) * scale;
+    outposts.push({
+      x: clamp(CX + Math.cos(angle)*radius, 45*scale, W-45*scale),
+      y: clamp(CY + Math.sin(angle)*radius, 45*scale, H-45*scale)
+    });
+  }
+
+  const castleLayer = el('g', {class:'castles-layer'});
+  svg.appendChild(castleLayer);
+
+  const fieldCount = generateFieldTessellation(outposts, desiredFields);
+
+  outposts.forEach(o => castleLayer.appendChild(drawCastle(o.x, o.y, false)));
+  castleLayer.appendChild(drawCastle(CX, CY, true));
+
+  drawCompass();
+  renderMarkers();
+
+  document.getElementById('seedLabel').textContent =
+    LANGUAGES[currentLang].mapWord + ' #' + currentSeed +
+    ' · ' + fieldCount + ' ' + LANGUAGES[currentLang].fieldsWord;
+}
+
+// ---------- PNG export ----------
+function downloadPNG(){
+  const clone = svg.cloneNode(true);
+  clone.setAttribute('xmlns', SVG_NS);
+  clone.setAttribute('width', W);
+  clone.setAttribute('height', H);
+
+  const styleEl = document.createElementNS(SVG_NS, 'style');
+  styleEl.textContent =
+    "@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=IM+Fell+English&display=swap');";
+  clone.insertBefore(styleEl, clone.firstChild);
+
+  const svgStr = new XMLSerializer().serializeToString(clone);
+  const svgBlob = new Blob([svgStr], {type:'image/svg+xml;charset=utf-8'});
+  const url = URL.createObjectURL(svgBlob);
+
+  const img = new Image();
+  img.onload = function(){
+    const exportScale = 2;
+    const canvas = document.createElement('canvas');
+    canvas.width = W * exportScale;
+    canvas.height = H * exportScale;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#e9dcb9';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    URL.revokeObjectURL(url);
+
+    canvas.toBlob(function(blob){
+      const link = document.createElement('a');
+      link.download = 'MAP.png';
+      link.href = URL.createObjectURL(blob);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }, 'image/png');
+  };
+  img.onerror = function(){
+    URL.revokeObjectURL(url);
+    alert(LANGUAGES[currentLang].pngError);
+  };
+  img.src = url;
+}
+
+document.getElementById('generateBtn').addEventListener('click', () => generateMap());
+document.getElementById('toggleSettingsBtn').addEventListener('click', () => {
+  document.getElementById('settingsBody').classList.toggle('collapsed');
+});
+document.getElementById('downloadBtn').addEventListener('click', downloadPNG);
+document.getElementById('seedInput').addEventListener('change', function(){
+  const v = parseInt(this.value, 10);
+  generateMap(Number.isFinite(v) ? v : undefined);
+});
+document.getElementById('outpostCount').addEventListener('change', () => generateMap(currentSeed));
+document.getElementById('disableOutposts').addEventListener('change', () => generateMap(currentSeed));
+document.getElementById('castlePosition').addEventListener('change', () => generateMap(currentSeed));
+document.getElementById('mountainPosition').addEventListener('change', () => generateMap(currentSeed));
+document.getElementById('seaPosition').addEventListener('change', () => generateMap(currentSeed));
+document.getElementById('forestPosition').addEventListener('change', () => generateMap(currentSeed));
+document.getElementById('desertPosition').addEventListener('change', () => generateMap(currentSeed));
+document.getElementById('fieldCountInput').addEventListener('change', () => generateMap(currentSeed));
+document.getElementById('showRiver').addEventListener('change', () => generateMap(currentSeed));
+document.getElementById('bridgeCount').addEventListener('change', () => generateMap(currentSeed));
+document.getElementById('showActionFields').addEventListener('change', renderMarkers);
+document.getElementById('merchantFieldNumber').addEventListener('input', renderMarkers);
+document.getElementById('languageSelect').addEventListener('change', function(){
+  applyLanguage(this.value);
+  generateMap(currentSeed);
+});
+
+populateLanguageSelect();
+const detectedLang = detectLanguage();
+applyLanguage(detectedLang);
+generateMap();
+</script>
+</body>
+</html>
