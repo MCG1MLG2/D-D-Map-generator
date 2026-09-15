@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -75,7 +75,7 @@
     border-bottom: 2px solid #6e5218;
   }
 
-  button#generateBtn, button#downloadBtn, button#toggleSettingsBtn {
+  button#generateBtn, button#downloadBtn, button#toggleSettingsBtn, button#shareToggleBtn {
     font-family: 'Cinzel', serif;
     font-size: 15px;
     letter-spacing: 0.5px;
@@ -88,11 +88,18 @@
     box-shadow: 0 3px 0 #4a3712, 0 4px 8px rgba(0,0,0,0.35);
     transition: transform 0.08s ease;
   }
-  button#toggleSettingsBtn {
+  button#toggleSettingsBtn, button#shareToggleBtn {
     background: linear-gradient(180deg, #f3e8c8, #d8c599);
   }
-  button#generateBtn:hover, button#downloadBtn:hover, button#toggleSettingsBtn:hover { filter: brightness(1.08); }
-  button#generateBtn:active, button#downloadBtn:active, button#toggleSettingsBtn:active { transform: translateY(2px); box-shadow: 0 1px 0 #4a3712; }
+  button#generateBtn:hover, button#downloadBtn:hover, button#toggleSettingsBtn:hover, button#shareToggleBtn:hover { filter: brightness(1.08); }
+  button#generateBtn:active, button#downloadBtn:active, button#toggleSettingsBtn:active, button#shareToggleBtn:active { transform: translateY(2px); box-shadow: 0 1px 0 #4a3712; }
+
+  button#shareToggleBtn {
+    padding: 10px 16px;
+  }
+  button#shareToggleBtn.active {
+    background: linear-gradient(180deg, #d8b25e, #a97e2b);
+  }
 
   .seed-label {
     font-size: 14px;
@@ -100,6 +107,63 @@
     width: 100%;
     text-align: center;
   }
+
+  .share-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 0 20px 16px;
+    background: linear-gradient(180deg, #ddcda0, #cdb87f);
+  }
+  .share-panel.collapsed { display: none; }
+
+  button#copySettingsBtn {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    color: #2c2114;
+    background: linear-gradient(180deg, #f3e8c8, #d8c599);
+    border: 2px solid #6e5218;
+    border-radius: 4px;
+    padding: 7px 14px;
+    cursor: pointer;
+    box-shadow: 0 2px 0 #4a3712, 0 3px 6px rgba(0,0,0,0.3);
+  }
+  button#copySettingsBtn:hover { filter: brightness(1.08); }
+  button#copySettingsBtn:active { transform: translateY(2px); box-shadow: 0 1px 0 #4a3712; }
+
+  #pasteSettingsInput {
+    font-family: 'IM Fell English', serif;
+    font-size: 14px;
+    background: #fbf3dd;
+    border: 1px solid #8a6a3f;
+    border-radius: 3px;
+    color: #3c2c1e;
+    padding: 7px 9px;
+    width: min(420px, 70vw);
+  }
+
+  button#applyPasteSettingsBtn {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    color: #2c2114;
+    background: linear-gradient(180deg, #d8b25e, #a97e2b);
+    border: 2px solid #6e5218;
+    border-radius: 4px;
+    padding: 7px 16px;
+    cursor: pointer;
+    box-shadow: 0 2px 0 #4a3712, 0 3px 6px rgba(0,0,0,0.3);
+  }
+  button#applyPasteSettingsBtn:hover { filter: brightness(1.08); }
+  button#applyPasteSettingsBtn:active { transform: translateY(2px); box-shadow: 0 1px 0 #4a3712; }
+
+  .paste-settings-feedback {
+    font-size: 13px;
+    color: #6e1f1f;
+    min-width: 90px;
+  }
+  .paste-settings-feedback.success { color: #2e5a2e; }
 
   #languageSelect, #seedInput {
     font-family: 'IM Fell English', serif;
@@ -202,6 +266,13 @@ const LANGUAGES = {
     generateBtn: "⚔ Neue Karte erzeugen",
     downloadBtn: "⬇ Als PNG speichern",
     toggleSettingsBtn: "⚙ Einstellungen",
+    copySettingsBtn: "📋 Kopieren",
+    shareToggleBtn: "🔗 Teilen",
+    applyPasteSettingsBtn: "✓ Anwenden",
+    settingsCopied: "✓ Kopiert!",
+    settingsCopyError: "Kopieren fehlgeschlagen",
+    pasteSettingsPrompt: "Einstellungscode hier einfügen:",
+    pasteSettingsError: "Ungültiger Einstellungscode.",
     lblSeed: "Seed:",
     grpCastles: "Burgen",
     lblMainCastle: "Hauptburg",
@@ -244,6 +315,13 @@ const LANGUAGES = {
     generateBtn: "⚔ Generate New Map",
     downloadBtn: "⬇ Save as PNG",
     toggleSettingsBtn: "⚙ Settings",
+    copySettingsBtn: "📋 Copy",
+    shareToggleBtn: "🔗 Share",
+    applyPasteSettingsBtn: "✓ Apply",
+    settingsCopied: "✓ Copied!",
+    settingsCopyError: "Copy failed",
+    pasteSettingsPrompt: "Paste the settings code here:",
+    pasteSettingsError: "Invalid settings code.",
     lblSeed: "Seed:",
     grpCastles: "Castles",
     lblMainCastle: "Main castle",
@@ -2059,10 +2137,18 @@ const LANGUAGES = {
       <button id="generateBtn" data-i18n="generateBtn">⚔ Neue Karte erzeugen</button>
       <button id="downloadBtn" data-i18n="downloadBtn">⬇ Als PNG speichern</button>
       <button id="toggleSettingsBtn" data-i18n="toggleSettingsBtn">⚙ Einstellungen</button>
+      <button id="shareToggleBtn" data-i18n="shareToggleBtn" title="Einstellungen teilen">🔗 Teilen</button>
       <label class="seed-label" for="seedInput"><span data-i18n="lblSeed">Seed:</span>
         <input type="number" id="seedInput" step="1">
       </label>
       <span class="seed-label" id="seedLabel"></span>
+    </div>
+
+    <div class="share-panel collapsed" id="sharePanel">
+      <button id="copySettingsBtn" data-i18n="copySettingsBtn">📋 Kopieren</button>
+      <input type="text" id="pasteSettingsInput" data-i18n-placeholder="pasteSettingsPrompt" placeholder="Einstellungscode hier einfügen:">
+      <button id="applyPasteSettingsBtn" data-i18n="applyPasteSettingsBtn">✓ Anwenden</button>
+      <span class="paste-settings-feedback" id="pasteSettingsFeedback"></span>
     </div>
 
     <div class="settings-body" id="settingsBody">
@@ -2201,7 +2287,7 @@ let currentScale = 1;
 let fieldLookup = new Map();
 let actionFieldNumbers = new Set();
 let markersLayerRef = null;
-let currentLang = 'de';
+let currentLang = 'en';
 let currentSeed = 0;
 let rngFn = Math.random;
 
@@ -2232,13 +2318,24 @@ function applyLanguage(lang){
   const s = LANGUAGES[currentLang];
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    if(s[key] !== undefined) el.textContent = s[key];
+    const val = s[key] !== undefined ? s[key] : LANGUAGES.en[key];
+    if(val !== undefined) el.textContent = val;
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    const val = s[key] !== undefined ? s[key] : LANGUAGES.en[key];
+    if(val !== undefined) el.placeholder = val;
   });
   document.getElementById('languageSelect').value = currentLang;
   document.getElementById('settingsBody').querySelectorAll('option').forEach(opt => {
-    const label = s.options[opt.value];
+    const label = (s.options && s.options[opt.value] !== undefined) ? s.options[opt.value] : (LANGUAGES.en.options && LANGUAGES.en.options[opt.value]);
     if(label !== undefined) opt.textContent = label;
   });
+}
+
+function t(key){
+  const s = LANGUAGES[currentLang] || LANGUAGES.en;
+  return s[key] !== undefined ? s[key] : LANGUAGES.en[key];
 }
 
 function detectLanguage(){
@@ -2472,11 +2569,42 @@ function generateFieldTessellation(outposts, desiredFields){
     let angle = Math.atan2(mouth.y-y, mouth.x-x);
     riverPts.push({x, y});
     const step = 22 * mapScale;
+    const mtnAvoidR = mtnBaseR + 70*mapScale;
+    const buildingAvoidBuffer = 60 * mapScale;
+    const angDiff = (a, b) => Math.abs(((a - b + Math.PI*3) % (Math.PI*2)) - Math.PI);
     let guard = 0;
     while(!reachedMouth(x, y) && guard < 500){
       guard++;
       const desired = Math.atan2(mouth.y-y, mouth.x-x);
       angle = angle*0.72 + desired*0.28 + rand(-0.18, 0.18);
+
+      // steer around obstacles: the mountains, the main castle, and every
+      // outpost. Once the river gets within an obstacle's influence
+      // radius, bend the heading toward whichever tangent direction
+      // skirts it (staying closest to the direction it already wanted to
+      // go) instead of ploughing straight through. Only the single
+      // closest obstacle steers on any given step, so the river doesn't
+      // get pulled in conflicting directions near several obstacles at once.
+      let obstacle = null, obstacleAvoidR = 0, obstacleDist = Infinity;
+      if(mountainChoice !== 'aus'){
+        const d = Math.hypot(x-mtnCx, y-mtnCy);
+        if(d < mtnAvoidR && d < obstacleDist){ obstacle = {x:mtnCx, y:mtnCy}; obstacleAvoidR = mtnAvoidR; obstacleDist = d; }
+      }
+      buildingPoints.forEach(b => {
+        const avoidR = (b.big ? 95 : 72) + buildingAvoidBuffer;
+        const d = Math.hypot(x-b.x, y-b.y);
+        if(d < avoidR && d < obstacleDist){ obstacle = b; obstacleAvoidR = avoidR; obstacleDist = d; }
+      });
+
+      if(obstacle){
+        const awayAngle = Math.atan2(y-obstacle.y, x-obstacle.x);
+        const tangent1 = awayAngle + Math.PI/2;
+        const tangent2 = awayAngle - Math.PI/2;
+        const steerAngle = angDiff(tangent1, desired) < angDiff(tangent2, desired) ? tangent1 : tangent2;
+        const strength = Math.min(1, (obstacleAvoidR - obstacleDist) / obstacleAvoidR + 0.25);
+        angle = angle*(1-strength) + steerAngle*strength;
+      }
+
       x += Math.cos(angle)*step;
       y += Math.sin(angle)*step;
       riverPts.push({x, y});
@@ -2679,26 +2807,58 @@ function generateFieldTessellation(outposts, desiredFields){
   // pointing toward whichever neighbour brings the field closer to its
   // target castle: small castle by default, or straight to the big
   // castle when that is actually closer, or via the nearest bridge when
-  // a river sits in between; sea/mountain/river fields are never crossed
+  // a river sits in between; sea/mountain/river fields are never crossed.
+  //
+  // Routing itself is true shortest-path (BFS hop count) over the
+  // walkable field graph rather than raw straight-line distance, so a
+  // field whose direct line to its target is blocked (e.g. the castle
+  // sitting inside/behind the mountains) still gets routed the long way
+  // around through whatever walkable/path fields connect it — instead of
+  // the arrows simply stopping at the mountain wall.
   const arrowLayer = el('g', {});
   const ringRadius = outposts.length
     ? outposts.reduce((s, o) => s + Math.hypot(o.x-CX, o.y-CY), 0) / outposts.length
     : 0;
+
+  function bfsHopDistances(sourceIdx){
+    const dist = new Map();
+    if(!info[sourceIdx] || info[sourceIdx].blocked) return dist;
+    dist.set(sourceIdx, 0);
+    const queue = [sourceIdx];
+    for(let h=0; h<queue.length; h++){
+      const cur = queue[h];
+      const d = dist.get(cur);
+      for(const nb of delaunay.neighbors(cur)){
+        if(!info[nb] || info[nb].blocked || dist.has(nb)) continue;
+        dist.set(nb, d+1);
+        queue.push(nb);
+      }
+    }
+    return dist;
+  }
+
+  // building points are indices 0 (main castle) .. outposts.length (outposts),
+  // see buildingPoints above — reuse that indexing to seed the path search
+  const castleHops = bfsHopDistances(0);
+  const outpostHops = outposts.map((o, i) => bfsHopDistances(i + 1));
 
   cells.forEach(c => {
     if(c.isBuilding || c.blocked) return;
 
     const dCenter = Math.hypot(CX-c.px, CY-c.py);
     let target = {x:CX, y:CY};
+    let hopDist = castleHops;
 
     if(outposts.length && dCenter > ringRadius){
-      let bestD = Infinity;
-      outposts.forEach(o => {
+      let bestD = Infinity, bestI = -1;
+      outposts.forEach((o, i) => {
         const d = Math.hypot(o.x-c.px, o.y-c.py);
-        if(d < bestD){ bestD = d; target = o; }
+        if(d < bestD){ bestD = d; bestI = i; target = o; }
       });
+      if(bestI >= 0) hopDist = outpostHops[bestI];
     }
 
+    let viaBridge = false;
     if(riverEnabled && bridgePts.length){
       const fieldSide = riverSideAt(c.px, c.py);
       const targetSide = riverSideAt(target.x, target.y);
@@ -2708,16 +2868,35 @@ function generateFieldTessellation(outposts, desiredFields){
           const d = Math.hypot(bp.x-c.px, bp.y-c.py);
           if(d < bestBd){ bestBd = d; target = bp; }
         });
+        viaBridge = true;
       }
     }
 
-    const ownDist = Math.hypot(target.x-c.px, target.y-c.py);
-    let bestNeighbor = null, bestNeighborDist = ownDist;
-    for(const j of delaunay.neighbors(c.idx)){
-      const n = info[j];
-      if(!n || n.blocked) continue;
-      const d = Math.hypot(target.x-n.px, target.y-n.py);
-      if(d < bestNeighborDist){ bestNeighborDist = d; bestNeighbor = n; }
+    let bestNeighbor = null;
+
+    if(!viaBridge && hopDist.has(c.idx)){
+      // true shortest-path step: walk toward whichever neighbour has a
+      // strictly smaller hop count to the target through the walkable graph
+      let bestHops = hopDist.get(c.idx);
+      for(const j of delaunay.neighbors(c.idx)){
+        const n = info[j];
+        if(!n || n.blocked) continue;
+        const h = hopDist.get(j);
+        if(h !== undefined && h < bestHops){ bestHops = h; bestNeighbor = n; }
+      }
+    }
+
+    if(!bestNeighbor){
+      // fallback for the bridge leg (target is a point, not a graph node)
+      // or fields not connected to the target through walkable terrain
+      const ownDist = Math.hypot(target.x-c.px, target.y-c.py);
+      let bestNeighborDist = ownDist;
+      for(const j of delaunay.neighbors(c.idx)){
+        const n = info[j];
+        if(!n || n.blocked) continue;
+        const d = Math.hypot(target.x-n.px, target.y-n.py);
+        if(d < bestNeighborDist){ bestNeighborDist = d; bestNeighbor = n; }
+      }
     }
 
     if(bestNeighbor){
@@ -2984,6 +3163,140 @@ document.getElementById('toggleSettingsBtn').addEventListener('click', () => {
   document.getElementById('settingsBody').classList.toggle('collapsed');
 });
 document.getElementById('downloadBtn').addEventListener('click', downloadPNG);
+
+// ---------- Share settings: encode every control into a compact code the
+// user can copy and send to someone else, who pastes it back in to get
+// the exact same map setup (including the seed) ----------
+function collectSettings(){
+  return {
+    v: 1,
+    seed: currentSeed,
+    lang: currentLang,
+    fieldCount: document.getElementById('fieldCountInput').value,
+    castlePosition: document.getElementById('castlePosition').value,
+    disableOutposts: document.getElementById('disableOutposts').checked,
+    outpostCount: document.getElementById('outpostCount').value,
+    mountainPosition: document.getElementById('mountainPosition').value,
+    seaPosition: document.getElementById('seaPosition').value,
+    forestPosition: document.getElementById('forestPosition').value,
+    desertPosition: document.getElementById('desertPosition').value,
+    showRiver: document.getElementById('showRiver').checked,
+    bridgeCount: document.getElementById('bridgeCount').value,
+    showActionFields: document.getElementById('showActionFields').checked,
+    merchantFieldNumber: document.getElementById('merchantFieldNumber').value
+  };
+}
+
+function encodeSettings(obj){
+  return btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+}
+
+function decodeSettings(code){
+  return JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
+}
+
+function applySettings(s){
+  if(s.lang && LANGUAGES[s.lang]) applyLanguage(s.lang);
+
+  const setVal = (id, v) => { if(v !== undefined){ document.getElementById(id).value = v; } };
+  const setChecked = (id, v) => { if(v !== undefined){ document.getElementById(id).checked = v; } };
+
+  setVal('fieldCountInput', s.fieldCount);
+  setVal('castlePosition', s.castlePosition);
+  setChecked('disableOutposts', s.disableOutposts);
+  setVal('outpostCount', s.outpostCount);
+  setVal('mountainPosition', s.mountainPosition);
+  setVal('seaPosition', s.seaPosition);
+  setVal('forestPosition', s.forestPosition);
+  setVal('desertPosition', s.desertPosition);
+  setChecked('showRiver', s.showRiver);
+  setVal('bridgeCount', s.bridgeCount);
+  setChecked('showActionFields', s.showActionFields);
+  setVal('merchantFieldNumber', s.merchantFieldNumber);
+
+  document.getElementById('outpostCount').disabled = document.getElementById('disableOutposts').checked;
+
+  generateMap(typeof s.seed === 'number' && Number.isFinite(s.seed) ? s.seed : undefined);
+}
+
+function flashButton(btn, message){
+  const original = btn.textContent;
+  btn.textContent = message;
+  btn.disabled = true;
+  setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 1800);
+}
+
+function fallbackCopyToClipboard(text){
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  let ok = false;
+  try{ ok = document.execCommand('copy'); } catch(e){ ok = false; }
+  document.body.removeChild(ta);
+  return ok;
+}
+
+function copySettingsToClipboard(){
+  const code = encodeSettings(collectSettings());
+  const btn = document.getElementById('copySettingsBtn');
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(code)
+      .then(() => flashButton(btn, t('settingsCopied')))
+      .catch(() => flashButton(btn, fallbackCopyToClipboard(code) ? t('settingsCopied') : t('settingsCopyError')));
+  } else {
+    flashButton(btn, fallbackCopyToClipboard(code) ? t('settingsCopied') : t('settingsCopyError'));
+  }
+}
+
+function toggleSharePanel(){
+  const panel = document.getElementById('sharePanel');
+  const input = document.getElementById('pasteSettingsInput');
+  const feedback = document.getElementById('pasteSettingsFeedback');
+  const toggleBtn = document.getElementById('shareToggleBtn');
+  const willShow = panel.classList.contains('collapsed');
+  panel.classList.toggle('collapsed');
+  toggleBtn.classList.toggle('active', willShow);
+  feedback.textContent = '';
+  feedback.className = 'paste-settings-feedback';
+  if(willShow){
+    input.value = '';
+    input.focus();
+  }
+}
+
+function applyPastedSettings(){
+  const input = document.getElementById('pasteSettingsInput');
+  const feedback = document.getElementById('pasteSettingsFeedback');
+  const code = input.value.trim();
+  if(!code) return;
+  try{
+    applySettings(decodeSettings(code));
+    feedback.textContent = t('settingsCopied');
+    feedback.className = 'paste-settings-feedback success';
+    input.value = '';
+    setTimeout(() => {
+      document.getElementById('sharePanel').classList.add('collapsed');
+      document.getElementById('shareToggleBtn').classList.remove('active');
+      feedback.textContent = '';
+      feedback.className = 'paste-settings-feedback';
+    }, 1200);
+  } catch(e){
+    feedback.textContent = t('pasteSettingsError');
+    feedback.className = 'paste-settings-feedback';
+  }
+}
+
+document.getElementById('copySettingsBtn').addEventListener('click', copySettingsToClipboard);
+document.getElementById('shareToggleBtn').addEventListener('click', toggleSharePanel);
+document.getElementById('applyPasteSettingsBtn').addEventListener('click', applyPastedSettings);
+document.getElementById('pasteSettingsInput').addEventListener('keydown', function(e){
+  if(e.key === 'Enter') applyPastedSettings();
+});
+
 document.getElementById('seedInput').addEventListener('change', function(){
   const v = parseInt(this.value, 10);
   generateMap(Number.isFinite(v) ? v : undefined);
