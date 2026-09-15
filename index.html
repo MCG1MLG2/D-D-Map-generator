@@ -3192,7 +3192,17 @@ function encodeSettings(obj){
 }
 
 function decodeSettings(code){
-  return JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
+  // accept either a bare code or a full shared link — pull the code back
+  // out of the URL's #s=... part if that's what got pasted
+  const trimmed = code.trim();
+  const hashMatch = trimmed.match(/[#&]s=([^&]+)/);
+  const raw = hashMatch ? decodeURIComponent(hashMatch[1]) : trimmed;
+  return JSON.parse(decodeURIComponent(escape(atob(raw))));
+}
+
+function buildShareURL(){
+  const code = encodeSettings(collectSettings());
+  return location.origin + location.pathname + location.search + '#s=' + code;
 }
 
 function applySettings(s){
@@ -3241,14 +3251,14 @@ function fallbackCopyToClipboard(text){
 }
 
 function copySettingsToClipboard(){
-  const code = encodeSettings(collectSettings());
+  const link = buildShareURL();
   const btn = document.getElementById('copySettingsBtn');
   if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(code)
+    navigator.clipboard.writeText(link)
       .then(() => flashButton(btn, t('settingsCopied')))
-      .catch(() => flashButton(btn, fallbackCopyToClipboard(code) ? t('settingsCopied') : t('settingsCopyError')));
+      .catch(() => flashButton(btn, fallbackCopyToClipboard(link) ? t('settingsCopied') : t('settingsCopyError')));
   } else {
-    flashButton(btn, fallbackCopyToClipboard(code) ? t('settingsCopied') : t('settingsCopyError'));
+    flashButton(btn, fallbackCopyToClipboard(link) ? t('settingsCopied') : t('settingsCopyError'));
   }
 }
 
