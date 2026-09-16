@@ -271,7 +271,7 @@ const LANGUAGES = {
     applyPasteSettingsBtn: "✓ Anwenden",
     settingsCopied: "✓ Kopiert!",
     settingsCopyError: "Kopieren fehlgeschlagen",
-    pasteSettingsPrompt: "Einstellungscode hier einfügen:",
+    pasteSettingsPrompt: "Link oder Code hier einfügen:",
     pasteSettingsError: "Ungültiger Einstellungscode.",
     lblSeed: "Seed:",
     grpCastles: "Burgen",
@@ -320,7 +320,7 @@ const LANGUAGES = {
     applyPasteSettingsBtn: "✓ Apply",
     settingsCopied: "✓ Copied!",
     settingsCopyError: "Copy failed",
-    pasteSettingsPrompt: "Paste the settings code here:",
+    pasteSettingsPrompt: "Paste the link or code here:",
     pasteSettingsError: "Invalid settings code.",
     lblSeed: "Seed:",
     grpCastles: "Castles",
@@ -2146,7 +2146,7 @@ const LANGUAGES = {
 
     <div class="share-panel collapsed" id="sharePanel">
       <button id="copySettingsBtn" data-i18n="copySettingsBtn">📋 Kopieren</button>
-      <input type="text" id="pasteSettingsInput" data-i18n-placeholder="pasteSettingsPrompt" placeholder="Einstellungscode hier einfügen:">
+      <input type="text" id="pasteSettingsInput" data-i18n-placeholder="pasteSettingsPrompt" placeholder="Link oder Code hier einfügen:">
       <button id="applyPasteSettingsBtn" data-i18n="applyPasteSettingsBtn">✓ Anwenden</button>
       <span class="paste-settings-feedback" id="pasteSettingsFeedback"></span>
     </div>
@@ -3330,8 +3330,25 @@ document.getElementById('languageSelect').addEventListener('change', function(){
 
 populateLanguageSelect();
 const detectedLang = detectLanguage();
-applyLanguage(detectedLang);
-generateMap();
+
+// if this page was opened via a shared link (#s=<code>), restore that
+// exact setup — including the seed — instead of generating a random map
+let restoredFromLink = false;
+if(location.hash && location.hash.indexOf('s=') !== -1){
+  try{
+    const shared = decodeSettings(location.hash);
+    applyLanguage(shared.lang && LANGUAGES[shared.lang] ? shared.lang : detectedLang);
+    applySettings(shared);
+    restoredFromLink = true;
+  } catch(e){
+    restoredFromLink = false;
+  }
+}
+
+if(!restoredFromLink){
+  applyLanguage(detectedLang);
+  generateMap();
+}
 </script>
 </body>
 </html>
