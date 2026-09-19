@@ -226,7 +226,33 @@
     font-size: 11px;
   }
 
+  .back-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(180deg, var(--parchment) 0%, var(--parchment-dark) 100%);
+    border: 1px solid var(--gold);
+    border-radius: 6px;
+    padding: 8px 14px;
+    box-shadow: 0 6px 16px var(--shadow);
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .back-btn:hover { filter: brightness(1.06); }
+
   /* RTL-Anpassung für Arabisch, Urdu, Persisch */
+  html[dir="rtl"] .back-btn {
+    left: auto;
+    right: 20px;
+  }
   html[dir="rtl"] .lang-picker {
     right: auto;
     left: 20px;
@@ -240,6 +266,15 @@
     }
     html[dir="rtl"] .lang-picker {
       left: 12px;
+    }
+    .back-btn {
+      top: 12px;
+      left: 12px;
+      padding: 6px 10px;
+    }
+    html[dir="rtl"] .back-btn {
+      left: auto;
+      right: 12px;
     }
   }
 
@@ -317,6 +352,8 @@
 <script src="languages.js"></script>
 </head>
 <body>
+
+  <a href="index.html" class="back-btn"><span aria-hidden="true">←</span> <span data-i18n="backToHome">Start</span></a>
 
   <div class="lang-picker">
     <span class="globe">🌐</span>
