@@ -123,7 +123,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "الذهب والجواهر",
     "playerShareBtn": "🔗 نسخ الرابط",
     "playerShareCopied": "تم نسخ الرابط!",
-    "playerShareCopyError": "فشل النسخ."
+    "playerShareCopyError": "فشل النسخ.",
+    "backToHome": "الرئيسية"
   },
   "bg": {
     "nativeName": "Български",
@@ -225,7 +226,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Злато и скъпоценни камъни",
     "playerShareBtn": "🔗 Копирай връзка",
     "playerShareCopied": "Връзката е копирана!",
-    "playerShareCopyError": "Копирането не бе успешно."
+    "playerShareCopyError": "Копирането не бе успешно.",
+    "backToHome": "Начало"
   },
   "bn": {
     "nativeName": "বাংলা",
@@ -327,7 +329,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "সোনা ও রত্ন",
     "playerShareBtn": "🔗 লিংক কপি করুন",
     "playerShareCopied": "লিংক কপি হয়েছে!",
-    "playerShareCopyError": "কপি ব্যর্থ হয়েছে।"
+    "playerShareCopyError": "কপি ব্যর্থ হয়েছে।",
+    "backToHome": "হোম"
   },
   "ca": {
     "nativeName": "Català",
@@ -436,7 +439,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Or i gemmes",
     "playerShareBtn": "🔗 Copia l'enllaç",
     "playerShareCopied": "S'ha copiat l'enllaç!",
-    "playerShareCopyError": "Ha fallat la còpia."
+    "playerShareCopyError": "Ha fallat la còpia.",
+    "backToHome": "Inici"
   },
   "cs": {
     "nativeName": "Čeština",
@@ -538,7 +542,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Zlato a drahokamy",
     "playerShareBtn": "🔗 Kopírovat odkaz",
     "playerShareCopied": "Odkaz zkopírován!",
-    "playerShareCopyError": "Kopírování selhalo."
+    "playerShareCopyError": "Kopírování selhalo.",
+    "backToHome": "Domů"
   },
   "da": {
     "nativeName": "Dansk",
@@ -640,7 +645,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Guld & ædelsten",
     "playerShareBtn": "🔗 Kopiér link",
     "playerShareCopied": "Link kopieret!",
-    "playerShareCopyError": "Kopiering mislykkedes."
+    "playerShareCopyError": "Kopiering mislykkedes.",
+    "backToHome": "Start"
   },
   "de": {
     "nativeName": "Deutsch",
@@ -749,7 +755,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Gold & Edelsteine",
     "playerShareBtn": "🔗 Link kopieren",
     "playerShareCopied": "Link kopiert!",
-    "playerShareCopyError": "Kopieren fehlgeschlagen."
+    "playerShareCopyError": "Kopieren fehlgeschlagen.",
+    "backToHome": "Start"
   },
   "el": {
     "nativeName": "Ελληνικά",
@@ -851,7 +858,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Χρυσός & πετράδια",
     "playerShareBtn": "🔗 Αντιγραφή συνδέσμου",
     "playerShareCopied": "Ο σύνδεσμος αντιγράφηκε!",
-    "playerShareCopyError": "Η αντιγραφή απέτυχε."
+    "playerShareCopyError": "Η αντιγραφή απέτυχε.",
+    "backToHome": "Αρχική"
   },
   "en": {
     "nativeName": "English",
@@ -960,7 +968,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Gold & Gems",
     "playerShareBtn": "🔗 Copy link",
     "playerShareCopied": "Link copied!",
-    "playerShareCopyError": "Copy failed."
+    "playerShareCopyError": "Copy failed.",
+    "backToHome": "Home"
   },
   "es": {
     "nativeName": "Español",
@@ -1062,7 +1071,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Oro y gemas",
     "playerShareBtn": "🔗 Copiar enlace",
     "playerShareCopied": "¡Enlace copiado!",
-    "playerShareCopyError": "Error al copiar."
+    "playerShareCopyError": "Error al copiar.",
+    "backToHome": "Inicio"
   },
   "et": {
     "nativeName": "Eesti",
@@ -1164,7 +1174,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Kuld ja vääriskivid",
     "playerShareBtn": "🔗 Kopeeri link",
     "playerShareCopied": "Link kopeeritud!",
-    "playerShareCopyError": "Kopeerimine ebaõnnestus."
+    "playerShareCopyError": "Kopeerimine ebaõnnestus.",
+    "backToHome": "Avaleht"
   },
   "eu": {
     "nativeName": "Euskara",
@@ -1273,7 +1284,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Urrea eta harribitxiak",
     "playerShareBtn": "🔗 Kopiatu lotura",
     "playerShareCopied": "Lotura kopiatu da!",
-    "playerShareCopyError": "Kopiatzeak huts egin du."
+    "playerShareCopyError": "Kopiatzeak huts egin du.",
+    "backToHome": "Hasiera"
   },
   "fa": {
     "nativeName": "فارسی",
@@ -1382,7 +1394,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "طلا و جواهرات",
     "playerShareBtn": "🔗 کپی لینک",
     "playerShareCopied": "لینک کپی شد!",
-    "playerShareCopyError": "کپی ناموفق بود."
+    "playerShareCopyError": "کپی ناموفق بود.",
+    "backToHome": "خانه"
   },
   "fi": {
     "nativeName": "Suomi",
@@ -1484,7 +1497,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Kulta ja jalokivet",
     "playerShareBtn": "🔗 Kopioi linkki",
     "playerShareCopied": "Linkki kopioitu!",
-    "playerShareCopyError": "Kopiointi epäonnistui."
+    "playerShareCopyError": "Kopiointi epäonnistui.",
+    "backToHome": "Etusivu"
   },
   "fr": {
     "nativeName": "Français",
@@ -1586,7 +1600,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Or et gemmes",
     "playerShareBtn": "🔗 Copier le lien",
     "playerShareCopied": "Lien copié !",
-    "playerShareCopyError": "Échec de la copie."
+    "playerShareCopyError": "Échec de la copie.",
+    "backToHome": "Accueil"
   },
   "ga": {
     "nativeName": "Gaeilge",
@@ -1688,7 +1703,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Ór agus seoda",
     "playerShareBtn": "🔗 Cóipeáil an nasc",
     "playerShareCopied": "Nasc cóipeáilte!",
-    "playerShareCopyError": "Theip ar an gcóipeáil."
+    "playerShareCopyError": "Theip ar an gcóipeáil.",
+    "backToHome": "Baile"
   },
   "hi": {
     "nativeName": "हिन्दी",
@@ -1790,7 +1806,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "सोना और रत्न",
     "playerShareBtn": "🔗 लिंक कॉपी करें",
     "playerShareCopied": "लिंक कॉपी हो गया!",
-    "playerShareCopyError": "कॉपी विफल रहा।"
+    "playerShareCopyError": "कॉपी विफल रहा।",
+    "backToHome": "होम"
   },
   "hr": {
     "nativeName": "Hrvatski",
@@ -1892,7 +1909,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Zlato i dragulji",
     "playerShareBtn": "🔗 Kopiraj poveznicu",
     "playerShareCopied": "Poveznica kopirana!",
-    "playerShareCopyError": "Kopiranje nije uspjelo."
+    "playerShareCopyError": "Kopiranje nije uspjelo.",
+    "backToHome": "Početna"
   },
   "hu": {
     "nativeName": "Magyar",
@@ -1994,7 +2012,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Arany és drágakő",
     "playerShareBtn": "🔗 Link másolása",
     "playerShareCopied": "Link másolva!",
-    "playerShareCopyError": "A másolás nem sikerült."
+    "playerShareCopyError": "A másolás nem sikerült.",
+    "backToHome": "Kezdőlap"
   },
   "id": {
     "nativeName": "Bahasa Indonesia",
@@ -2096,7 +2115,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Emas & permata",
     "playerShareBtn": "🔗 Salin tautan",
     "playerShareCopied": "Tautan disalin!",
-    "playerShareCopyError": "Gagal menyalin."
+    "playerShareCopyError": "Gagal menyalin.",
+    "backToHome": "Beranda"
   },
   "is": {
     "nativeName": "Íslenska",
@@ -2198,7 +2218,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Gull og gimsteinar",
     "playerShareBtn": "🔗 Afrita tengil",
     "playerShareCopied": "Tengill afritaður!",
-    "playerShareCopyError": "Afritun mistókst."
+    "playerShareCopyError": "Afritun mistókst.",
+    "backToHome": "Heim"
   },
   "it": {
     "nativeName": "Italiano",
@@ -2300,7 +2321,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Oro e gemme",
     "playerShareBtn": "🔗 Copia link",
     "playerShareCopied": "Link copiato!",
-    "playerShareCopyError": "Copia non riuscita."
+    "playerShareCopyError": "Copia non riuscita.",
+    "backToHome": "Home"
   },
   "ja": {
     "nativeName": "日本語",
@@ -2402,7 +2424,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "金貨と宝石",
     "playerShareBtn": "🔗 リンクをコピー",
     "playerShareCopied": "リンクをコピーしました！",
-    "playerShareCopyError": "コピーに失敗しました。"
+    "playerShareCopyError": "コピーに失敗しました。",
+    "backToHome": "ホーム"
   },
   "ko": {
     "nativeName": "한국어",
@@ -2504,7 +2527,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "금화와 보석",
     "playerShareBtn": "🔗 링크 복사",
     "playerShareCopied": "링크가 복사되었습니다!",
-    "playerShareCopyError": "복사에 실패했습니다."
+    "playerShareCopyError": "복사에 실패했습니다.",
+    "backToHome": "홈"
   },
   "lt": {
     "nativeName": "Lietuvių",
@@ -2606,7 +2630,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Auksas ir brangakmeniai",
     "playerShareBtn": "🔗 Kopijuoti nuorodą",
     "playerShareCopied": "Nuoroda nukopijuota!",
-    "playerShareCopyError": "Kopijuoti nepavyko."
+    "playerShareCopyError": "Kopijuoti nepavyko.",
+    "backToHome": "Pradžia"
   },
   "lv": {
     "nativeName": "Latviešu",
@@ -2708,7 +2733,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Zelts un dārgakmeņi",
     "playerShareBtn": "🔗 Kopēt saiti",
     "playerShareCopied": "Saite nokopēta!",
-    "playerShareCopyError": "Kopēšana neizdevās."
+    "playerShareCopyError": "Kopēšana neizdevās.",
+    "backToHome": "Sākums"
   },
   "mr": {
     "nativeName": "मराठी",
@@ -2810,7 +2836,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "सोने आणि रत्ने",
     "playerShareBtn": "🔗 लिंक कॉपी करा",
     "playerShareCopied": "लिंक कॉपी झाली!",
-    "playerShareCopyError": "कॉपी करणे अयशस्वी."
+    "playerShareCopyError": "कॉपी करणे अयशस्वी.",
+    "backToHome": "मुख्यपृष्ठ"
   },
   "mt": {
     "nativeName": "Malti",
@@ -2912,7 +2939,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Deheb u ħaġar prezzjuż",
     "playerShareBtn": "🔗 Ikkopja l-link",
     "playerShareCopied": "Il-link ġie kkopjat!",
-    "playerShareCopyError": "Il-kopjar falla."
+    "playerShareCopyError": "Il-kopjar falla.",
+    "backToHome": "Home"
   },
   "nl": {
     "nativeName": "Nederlands",
@@ -3014,7 +3042,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Goud & edelstenen",
     "playerShareBtn": "🔗 Link kopiëren",
     "playerShareCopied": "Link gekopieerd!",
-    "playerShareCopyError": "Kopiëren mislukt."
+    "playerShareCopyError": "Kopiëren mislukt.",
+    "backToHome": "Start"
   },
   "no": {
     "nativeName": "Norsk",
@@ -3116,7 +3145,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Gull & edelstener",
     "playerShareBtn": "🔗 Kopier lenke",
     "playerShareCopied": "Lenke kopiert!",
-    "playerShareCopyError": "Kopiering mislyktes."
+    "playerShareCopyError": "Kopiering mislyktes.",
+    "backToHome": "Start"
   },
   "pl": {
     "nativeName": "Polski",
@@ -3218,7 +3248,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Złoto i klejnoty",
     "playerShareBtn": "🔗 Kopiuj link",
     "playerShareCopied": "Link skopiowany!",
-    "playerShareCopyError": "Kopiowanie nie powiodło się."
+    "playerShareCopyError": "Kopiowanie nie powiodło się.",
+    "backToHome": "Start"
   },
   "pt": {
     "nativeName": "Português",
@@ -3320,7 +3351,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Ouro e gemas",
     "playerShareBtn": "🔗 Copiar link",
     "playerShareCopied": "Link copiado!",
-    "playerShareCopyError": "Falha ao copiar."
+    "playerShareCopyError": "Falha ao copiar.",
+    "backToHome": "Início"
   },
   "ro": {
     "nativeName": "Română",
@@ -3422,7 +3454,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Aur și pietre prețioase",
     "playerShareBtn": "🔗 Copiază linkul",
     "playerShareCopied": "Link copiat!",
-    "playerShareCopyError": "Copierea a eșuat."
+    "playerShareCopyError": "Copierea a eșuat.",
+    "backToHome": "Acasă"
   },
   "ru": {
     "nativeName": "Русский",
@@ -3524,7 +3557,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Золото и самоцветы",
     "playerShareBtn": "🔗 Скопировать ссылку",
     "playerShareCopied": "Ссылка скопирована!",
-    "playerShareCopyError": "Не удалось скопировать."
+    "playerShareCopyError": "Не удалось скопировать.",
+    "backToHome": "Главная"
   },
   "sk": {
     "nativeName": "Slovenčina",
@@ -3626,7 +3660,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Zlato a drahokamy",
     "playerShareBtn": "🔗 Kopírovať odkaz",
     "playerShareCopied": "Odkaz skopírovaný!",
-    "playerShareCopyError": "Kopírovanie zlyhalo."
+    "playerShareCopyError": "Kopírovanie zlyhalo.",
+    "backToHome": "Domov"
   },
   "sl": {
     "nativeName": "Slovenščina",
@@ -3728,7 +3763,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Zlato in drago kamenje",
     "playerShareBtn": "🔗 Kopiraj povezavo",
     "playerShareCopied": "Povezava kopirana!",
-    "playerShareCopyError": "Kopiranje ni uspelo."
+    "playerShareCopyError": "Kopiranje ni uspelo.",
+    "backToHome": "Domov"
   },
   "sq": {
     "nativeName": "Shqip",
@@ -3830,7 +3866,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Ari dhe gurë të çmuar",
     "playerShareBtn": "🔗 Kopjo lidhjen",
     "playerShareCopied": "Lidhja u kopjua!",
-    "playerShareCopyError": "Kopjimi dështoi."
+    "playerShareCopyError": "Kopjimi dështoi.",
+    "backToHome": "Kryefaqja"
   },
   "sr": {
     "nativeName": "Српски",
@@ -3932,7 +3969,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Злато и драго камење",
     "playerShareBtn": "🔗 Копирај везу",
     "playerShareCopied": "Веза копирана!",
-    "playerShareCopyError": "Копирање није успело."
+    "playerShareCopyError": "Копирање није успело.",
+    "backToHome": "Почетна"
   },
   "sv": {
     "nativeName": "Svenska",
@@ -4034,7 +4072,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Guld & ädelstenar",
     "playerShareBtn": "🔗 Kopiera länk",
     "playerShareCopied": "Länk kopierad!",
-    "playerShareCopyError": "Kopiering misslyckades."
+    "playerShareCopyError": "Kopiering misslyckades.",
+    "backToHome": "Start"
   },
   "sw": {
     "nativeName": "Kiswahili",
@@ -4136,7 +4175,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Dhahabu na vito",
     "playerShareBtn": "🔗 Nakili kiungo",
     "playerShareCopied": "Kiungo kimenakiliwa!",
-    "playerShareCopyError": "Kunakili kumeshindwa."
+    "playerShareCopyError": "Kunakili kumeshindwa.",
+    "backToHome": "Nyumbani"
   },
   "ta": {
     "nativeName": "தமிழ்",
@@ -4238,7 +4278,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "தங்கம் மற்றும் ரத்தினங்கள்",
     "playerShareBtn": "🔗 இணைப்பை நகலெடு",
     "playerShareCopied": "இணைப்பு நகலெடுக்கப்பட்டது!",
-    "playerShareCopyError": "நகலெடுப்பு தோல்வியடைந்தது."
+    "playerShareCopyError": "நகலெடுப்பு தோல்வியடைந்தது.",
+    "backToHome": "முகப்பு"
   },
   "te": {
     "nativeName": "తెలుగు",
@@ -4340,7 +4381,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "బంగారం మరియు రత్నాలు",
     "playerShareBtn": "🔗 లింక్ కాపీ చేయి",
     "playerShareCopied": "లింక్ కాపీ చేయబడింది!",
-    "playerShareCopyError": "కాపీ విఫలమైంది."
+    "playerShareCopyError": "కాపీ విఫలమైంది.",
+    "backToHome": "హోమ్"
   },
   "th": {
     "nativeName": "ไทย",
@@ -4449,7 +4491,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "ทองและอัญมณี",
     "playerShareBtn": "🔗 คัดลอกลิงก์",
     "playerShareCopied": "คัดลอกลิงก์แล้ว!",
-    "playerShareCopyError": "คัดลอกไม่สำเร็จ"
+    "playerShareCopyError": "คัดลอกไม่สำเร็จ",
+    "backToHome": "หน้าแรก"
   },
   "tr": {
     "nativeName": "Türkçe",
@@ -4551,7 +4594,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Altın ve mücevher",
     "playerShareBtn": "🔗 Bağlantıyı kopyala",
     "playerShareCopied": "Bağlantı kopyalandı!",
-    "playerShareCopyError": "Kopyalama başarısız."
+    "playerShareCopyError": "Kopyalama başarısız.",
+    "backToHome": "Ana Sayfa"
   },
   "uk": {
     "nativeName": "Українська",
@@ -4653,7 +4697,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Золото й самоцвіти",
     "playerShareBtn": "🔗 Копіювати посилання",
     "playerShareCopied": "Посилання скопійовано!",
-    "playerShareCopyError": "Не вдалося скопіювати."
+    "playerShareCopyError": "Не вдалося скопіювати.",
+    "backToHome": "Головна"
   },
   "ur": {
     "nativeName": "اردو",
@@ -4755,7 +4800,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "سونا اور جواہرات",
     "playerShareBtn": "🔗 لنک کاپی کریں",
     "playerShareCopied": "لنک کاپی ہو گیا!",
-    "playerShareCopyError": "کاپی ناکام ہوگئی۔"
+    "playerShareCopyError": "کاپی ناکام ہوگئی۔",
+    "backToHome": "ہوم"
   },
   "vi": {
     "nativeName": "Tiếng Việt",
@@ -4857,7 +4903,8 @@ const LANGUAGES = {
     "playerLblStorageSlots": "Vàng và đá quý",
     "playerShareBtn": "🔗 Sao chép liên kết",
     "playerShareCopied": "Đã sao chép liên kết!",
-    "playerShareCopyError": "Sao chép thất bại."
+    "playerShareCopyError": "Sao chép thất bại.",
+    "backToHome": "Trang chủ"
   },
   "zh": {
     "nativeName": "中文",
@@ -4959,6 +5006,7 @@ const LANGUAGES = {
     "playerLblStorageSlots": "金币与宝石",
     "playerShareBtn": "🔗 复制链接",
     "playerShareCopied": "链接已复制！",
-    "playerShareCopyError": "复制失败。"
+    "playerShareCopyError": "复制失败。",
+    "backToHome": "首页"
   }
 };
