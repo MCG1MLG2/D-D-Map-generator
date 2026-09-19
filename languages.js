@@ -120,7 +120,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "يعيد نقطة إرادة لحليف مرة يوميًا.",
     "playerLblStorageCapacity": "أقصى ذهب وجواهر",
     "playerPouchTextLimited": "كيس لغاية {n} من الذهب والجواهر",
-    "playerLblStorageSlots": "الذهب والجواهر"
+    "playerLblStorageSlots": "الذهب والجواهر",
+    "playerShareBtn": "🔗 نسخ الرابط",
+    "playerShareCopied": "تم نسخ الرابط!",
+    "playerShareCopyError": "فشل النسخ."
   },
   "bg": {
     "nativeName": "Български",
@@ -219,7 +222,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Веднъж дневно връща точка воля на съюзник.",
     "playerLblStorageCapacity": "Макс. злато и камъни",
     "playerPouchTextLimited": "Торбичка за максимум {n} злато и скъпоценни камъни",
-    "playerLblStorageSlots": "Злато и скъпоценни камъни"
+    "playerLblStorageSlots": "Злато и скъпоценни камъни",
+    "playerShareBtn": "🔗 Копирай връзка",
+    "playerShareCopied": "Връзката е копирана!",
+    "playerShareCopyError": "Копирането не бе успешно."
   },
   "bn": {
     "nativeName": "বাংলা",
@@ -318,7 +324,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "দিনে একবার মিত্রকে একটি ইচ্ছাশক্তি পয়েন্ট ফিরিয়ে দেয়।",
     "playerLblStorageCapacity": "সর্বোচ্চ সোনা ও রত্ন",
     "playerPouchTextLimited": "সর্বোচ্চ {n} সোনা ও রত্নের জন্য থলি",
-    "playerLblStorageSlots": "সোনা ও রত্ন"
+    "playerLblStorageSlots": "সোনা ও রত্ন",
+    "playerShareBtn": "🔗 লিংক কপি করুন",
+    "playerShareCopied": "লিংক কপি হয়েছে!",
+    "playerShareCopyError": "কপি ব্যর্থ হয়েছে।"
   },
   "ca": {
     "nativeName": "Català",
@@ -424,7 +433,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Retorna un punt de voluntat a un aliat cada dia.",
     "playerLblStorageCapacity": "Màx. or i gemmes",
     "playerPouchTextLimited": "Bossa per a un màxim de {n} or i gemmes",
-    "playerLblStorageSlots": "Or i gemmes"
+    "playerLblStorageSlots": "Or i gemmes",
+    "playerShareBtn": "🔗 Copia l'enllaç",
+    "playerShareCopied": "S'ha copiat l'enllaç!",
+    "playerShareCopyError": "Ha fallat la còpia."
   },
   "cs": {
     "nativeName": "Čeština",
@@ -523,7 +535,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Jednou denně vrátí spojenci bod vůle.",
     "playerLblStorageCapacity": "Max. zlata a drahokamů",
     "playerPouchTextLimited": "Váček až na {n} zlata a drahokamů",
-    "playerLblStorageSlots": "Zlato a drahokamy"
+    "playerLblStorageSlots": "Zlato a drahokamy",
+    "playerShareBtn": "🔗 Kopírovat odkaz",
+    "playerShareCopied": "Odkaz zkopírován!",
+    "playerShareCopyError": "Kopírování selhalo."
   },
   "da": {
     "nativeName": "Dansk",
@@ -622,7 +637,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Genopretter et viljepoint til en allieret dagligt.",
     "playerLblStorageCapacity": "Maks guld & ædelsten",
     "playerPouchTextLimited": "Pose til maks {n} guld og ædelsten",
-    "playerLblStorageSlots": "Guld & ædelsten"
+    "playerLblStorageSlots": "Guld & ædelsten",
+    "playerShareBtn": "🔗 Kopiér link",
+    "playerShareCopied": "Link kopieret!",
+    "playerShareCopyError": "Kopiering mislykkedes."
   },
   "de": {
     "nativeName": "Deutsch",
@@ -728,7 +746,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Einmal pro Tag einem Verbündeten einen Willenspunkt zurückgeben.",
     "playerLblStorageCapacity": "Max. Gold & Edelsteine",
     "playerPouchTextLimited": "Ablage für bis zu {n} Gold und Edelsteine",
-    "playerLblStorageSlots": "Gold & Edelsteine"
+    "playerLblStorageSlots": "Gold & Edelsteine",
+    "playerShareBtn": "🔗 Link kopieren",
+    "playerShareCopied": "Link kopiert!",
+    "playerShareCopyError": "Kopieren fehlgeschlagen."
   },
   "el": {
     "nativeName": "Ελληνικά",
@@ -827,7 +848,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Αποκαθιστά έναν πόντο θέλησης σε σύμμαχο καθημερινά.",
     "playerLblStorageCapacity": "Μέγ. χρυσός & πετράδια",
     "playerPouchTextLimited": "Πουγκί για έως {n} χρυσό και πετράδια",
-    "playerLblStorageSlots": "Χρυσός & πετράδια"
+    "playerLblStorageSlots": "Χρυσός & πετράδια",
+    "playerShareBtn": "🔗 Αντιγραφή συνδέσμου",
+    "playerShareCopied": "Ο σύνδεσμος αντιγράφηκε!",
+    "playerShareCopyError": "Η αντιγραφή απέτυχε."
   },
   "en": {
     "nativeName": "English",
@@ -933,7 +957,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Restore a Will Point to an ally once per day.",
     "playerLblStorageCapacity": "Max Gold & Gems",
     "playerPouchTextLimited": "Pouch for up to {n} gold and gems",
-    "playerLblStorageSlots": "Gold & Gems"
+    "playerLblStorageSlots": "Gold & Gems",
+    "playerShareBtn": "🔗 Copy link",
+    "playerShareCopied": "Link copied!",
+    "playerShareCopyError": "Copy failed."
   },
   "es": {
     "nativeName": "Español",
@@ -1032,7 +1059,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Devuelve un punto de voluntad a un aliado una vez al día.",
     "playerLblStorageCapacity": "Máx. oro y gemas",
     "playerPouchTextLimited": "Bolsa para hasta {n} de oro y gemas",
-    "playerLblStorageSlots": "Oro y gemas"
+    "playerLblStorageSlots": "Oro y gemas",
+    "playerShareBtn": "🔗 Copiar enlace",
+    "playerShareCopied": "¡Enlace copiado!",
+    "playerShareCopyError": "Error al copiar."
   },
   "et": {
     "nativeName": "Eesti",
@@ -1131,7 +1161,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Taastab kord päevas liitlase tahtepunkti.",
     "playerLblStorageCapacity": "Maks. kulda ja vääriskive",
     "playerPouchTextLimited": "Kott kuni {n} kullale ja vääriskivile",
-    "playerLblStorageSlots": "Kuld ja vääriskivid"
+    "playerLblStorageSlots": "Kuld ja vääriskivid",
+    "playerShareBtn": "🔗 Kopeeri link",
+    "playerShareCopied": "Link kopeeritud!",
+    "playerShareCopyError": "Kopeerimine ebaõnnestus."
   },
   "eu": {
     "nativeName": "Euskara",
@@ -1237,7 +1270,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Egunero behin aliatu bati borondate-puntu bat itzultzen dio.",
     "playerLblStorageCapacity": "Geh. urrea eta harribitxiak",
     "playerPouchTextLimited": "Zorroa gehienez {n} urre eta harribitxientzat",
-    "playerLblStorageSlots": "Urrea eta harribitxiak"
+    "playerLblStorageSlots": "Urrea eta harribitxiak",
+    "playerShareBtn": "🔗 Kopiatu lotura",
+    "playerShareCopied": "Lotura kopiatu da!",
+    "playerShareCopyError": "Kopiatzeak huts egin du."
   },
   "fa": {
     "nativeName": "فارسی",
@@ -1343,7 +1379,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "روزی یک‌بار یک امتیاز اراده به هم‌پیمان بازمی‌گرداند.",
     "playerLblStorageCapacity": "حداکثر طلا و جواهرات",
     "playerPouchTextLimited": "کیسه‌ای برای حداکثر {n} طلا و جواهرات",
-    "playerLblStorageSlots": "طلا و جواهرات"
+    "playerLblStorageSlots": "طلا و جواهرات",
+    "playerShareBtn": "🔗 کپی لینک",
+    "playerShareCopied": "لینک کپی شد!",
+    "playerShareCopyError": "کپی ناموفق بود."
   },
   "fi": {
     "nativeName": "Suomi",
@@ -1442,7 +1481,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Palauttaa liittolaiselle tahdonpisteen kerran päivässä.",
     "playerLblStorageCapacity": "Kulta & jalokivet enintään",
     "playerPouchTextLimited": "Pussi enintään {n} kullalle ja jalokivelle",
-    "playerLblStorageSlots": "Kulta ja jalokivet"
+    "playerLblStorageSlots": "Kulta ja jalokivet",
+    "playerShareBtn": "🔗 Kopioi linkki",
+    "playerShareCopied": "Linkki kopioitu!",
+    "playerShareCopyError": "Kopiointi epäonnistui."
   },
   "fr": {
     "nativeName": "Français",
@@ -1541,7 +1583,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Rend un point de volonté à un allié une fois par jour.",
     "playerLblStorageCapacity": "Or et gemmes max.",
     "playerPouchTextLimited": "Bourse pour jusqu'à {n} d'or et de gemmes",
-    "playerLblStorageSlots": "Or et gemmes"
+    "playerLblStorageSlots": "Or et gemmes",
+    "playerShareBtn": "🔗 Copier le lien",
+    "playerShareCopied": "Lien copié !",
+    "playerShareCopyError": "Échec de la copie."
   },
   "ga": {
     "nativeName": "Gaeilge",
@@ -1640,7 +1685,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Athchóiríonn pointe tola do chomhghuaillí gach lá.",
     "playerLblStorageCapacity": "Uas. ór is seoda",
     "playerPouchTextLimited": "Mála le haghaidh suas le {n} ór agus seoda",
-    "playerLblStorageSlots": "Ór agus seoda"
+    "playerLblStorageSlots": "Ór agus seoda",
+    "playerShareBtn": "🔗 Cóipeáil an nasc",
+    "playerShareCopied": "Nasc cóipeáilte!",
+    "playerShareCopyError": "Theip ar an gcóipeáil."
   },
   "hi": {
     "nativeName": "हिन्दी",
@@ -1739,7 +1787,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "रोज़ एक बार सहयोगी को इच्छाशक्ति अंक लौटाता है।",
     "playerLblStorageCapacity": "अधिकतम सोना और रत्न",
     "playerPouchTextLimited": "अधिकतम {n} सोना और रत्नों के लिए थैली",
-    "playerLblStorageSlots": "सोना और रत्न"
+    "playerLblStorageSlots": "सोना और रत्न",
+    "playerShareBtn": "🔗 लिंक कॉपी करें",
+    "playerShareCopied": "लिंक कॉपी हो गया!",
+    "playerShareCopyError": "कॉपी विफल रहा।"
   },
   "hr": {
     "nativeName": "Hrvatski",
@@ -1838,7 +1889,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Jednom dnevno vraća bod volje savezniku.",
     "playerLblStorageCapacity": "Maks. zlata i dragulja",
     "playerPouchTextLimited": "Vrećica za najviše {n} zlata i dragulja",
-    "playerLblStorageSlots": "Zlato i dragulji"
+    "playerLblStorageSlots": "Zlato i dragulji",
+    "playerShareBtn": "🔗 Kopiraj poveznicu",
+    "playerShareCopied": "Poveznica kopirana!",
+    "playerShareCopyError": "Kopiranje nije uspjelo."
   },
   "hu": {
     "nativeName": "Magyar",
@@ -1937,7 +1991,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Naponta egyszer visszaad egy akaraterő pontot egy szövetségesnek.",
     "playerLblStorageCapacity": "Max. arany és drágakő",
     "playerPouchTextLimited": "Erszény legfeljebb {n} aranyhoz és drágakőhöz",
-    "playerLblStorageSlots": "Arany és drágakő"
+    "playerLblStorageSlots": "Arany és drágakő",
+    "playerShareBtn": "🔗 Link másolása",
+    "playerShareCopied": "Link másolva!",
+    "playerShareCopyError": "A másolás nem sikerült."
   },
   "id": {
     "nativeName": "Bahasa Indonesia",
@@ -2036,7 +2093,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Memulihkan satu poin kemauan sekutu sekali sehari.",
     "playerLblStorageCapacity": "Maks. emas & permata",
     "playerPouchTextLimited": "Kantong untuk maksimal {n} emas dan permata",
-    "playerLblStorageSlots": "Emas & permata"
+    "playerLblStorageSlots": "Emas & permata",
+    "playerShareBtn": "🔗 Salin tautan",
+    "playerShareCopied": "Tautan disalin!",
+    "playerShareCopyError": "Gagal menyalin."
   },
   "is": {
     "nativeName": "Íslenska",
@@ -2135,7 +2195,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Endurheimtir viljastig fyrir bandamann daglega.",
     "playerLblStorageCapacity": "Hám. gull og gimsteinar",
     "playerPouchTextLimited": "Pyngja fyrir að hámarki {n} gull og gimsteina",
-    "playerLblStorageSlots": "Gull og gimsteinar"
+    "playerLblStorageSlots": "Gull og gimsteinar",
+    "playerShareBtn": "🔗 Afrita tengil",
+    "playerShareCopied": "Tengill afritaður!",
+    "playerShareCopyError": "Afritun mistókst."
   },
   "it": {
     "nativeName": "Italiano",
@@ -2234,7 +2297,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Restituisce un punto volontà a un alleato al giorno.",
     "playerLblStorageCapacity": "Oro e gemme max.",
     "playerPouchTextLimited": "Sacchetto per fino a {n} oro e gemme",
-    "playerLblStorageSlots": "Oro e gemme"
+    "playerLblStorageSlots": "Oro e gemme",
+    "playerShareBtn": "🔗 Copia link",
+    "playerShareCopied": "Link copiato!",
+    "playerShareCopyError": "Copia non riuscita."
   },
   "ja": {
     "nativeName": "日本語",
@@ -2333,7 +2399,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "1日1回、仲間の意志点を1点回復できる。",
     "playerLblStorageCapacity": "金貨と宝石の上限",
     "playerPouchTextLimited": "最大{n}個までの金貨と宝石を入れられる袋",
-    "playerLblStorageSlots": "金貨と宝石"
+    "playerLblStorageSlots": "金貨と宝石",
+    "playerShareBtn": "🔗 リンクをコピー",
+    "playerShareCopied": "リンクをコピーしました！",
+    "playerShareCopyError": "コピーに失敗しました。"
   },
   "ko": {
     "nativeName": "한국어",
@@ -2432,7 +2501,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "하루에 한 번 동료의 의지 포인트를 회복.",
     "playerLblStorageCapacity": "최대 금화 및 보석",
     "playerPouchTextLimited": "최대 {n}개까지 금화와 보석을 담는 주머니",
-    "playerLblStorageSlots": "금화와 보석"
+    "playerLblStorageSlots": "금화와 보석",
+    "playerShareBtn": "🔗 링크 복사",
+    "playerShareCopied": "링크가 복사되었습니다!",
+    "playerShareCopyError": "복사에 실패했습니다."
   },
   "lt": {
     "nativeName": "Lietuvių",
@@ -2531,7 +2603,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Kartą per dieną grąžina sąjungininkui valios tašką.",
     "playerLblStorageCapacity": "Maks. aukso ir brangakmenių",
     "playerPouchTextLimited": "Maišelis ne daugiau kaip {n} aukso ir brangakmenių",
-    "playerLblStorageSlots": "Auksas ir brangakmeniai"
+    "playerLblStorageSlots": "Auksas ir brangakmeniai",
+    "playerShareBtn": "🔗 Kopijuoti nuorodą",
+    "playerShareCopied": "Nuoroda nukopijuota!",
+    "playerShareCopyError": "Kopijuoti nepavyko."
   },
   "lv": {
     "nativeName": "Latviešu",
@@ -2630,7 +2705,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Reizi dienā atjauno sabiedrotajam gribasspēka punktu.",
     "playerLblStorageCapacity": "Maks. zelta un dārgakmeņu",
     "playerPouchTextLimited": "Maisiņš ne vairāk kā {n} zeltam un dārgakmeņiem",
-    "playerLblStorageSlots": "Zelts un dārgakmeņi"
+    "playerLblStorageSlots": "Zelts un dārgakmeņi",
+    "playerShareBtn": "🔗 Kopēt saiti",
+    "playerShareCopied": "Saite nokopēta!",
+    "playerShareCopyError": "Kopēšana neizdevās."
   },
   "mr": {
     "nativeName": "मराठी",
@@ -2729,7 +2807,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "दिवसातून एकदा सहकाऱ्याला इच्छाशक्ती गुण परत देतो.",
     "playerLblStorageCapacity": "कमाल सोने आणि रत्ने",
     "playerPouchTextLimited": "जास्तीत जास्त {n} सोने आणि रत्नांसाठी थैली",
-    "playerLblStorageSlots": "सोने आणि रत्ने"
+    "playerLblStorageSlots": "सोने आणि रत्ने",
+    "playerShareBtn": "🔗 लिंक कॉपी करा",
+    "playerShareCopied": "लिंक कॉपी झाली!",
+    "playerShareCopyError": "कॉपी करणे अयशस्वी."
   },
   "mt": {
     "nativeName": "Malti",
@@ -2828,7 +2909,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Jirritorna punt rieda lil alleat darba kuljum.",
     "playerLblStorageCapacity": "Massimu deheb u ħaġar prezzjuż",
     "playerPouchTextLimited": "Boroża għal massimu ta' {n} deheb u ħaġar prezzjuż",
-    "playerLblStorageSlots": "Deheb u ħaġar prezzjuż"
+    "playerLblStorageSlots": "Deheb u ħaġar prezzjuż",
+    "playerShareBtn": "🔗 Ikkopja l-link",
+    "playerShareCopied": "Il-link ġie kkopjat!",
+    "playerShareCopyError": "Il-kopjar falla."
   },
   "nl": {
     "nativeName": "Nederlands",
@@ -2927,7 +3011,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Herstelt eenmaal per dag een wilspunt bij een bondgenoot.",
     "playerLblStorageCapacity": "Max. goud & edelstenen",
     "playerPouchTextLimited": "Buidel voor maximaal {n} goud en edelstenen",
-    "playerLblStorageSlots": "Goud & edelstenen"
+    "playerLblStorageSlots": "Goud & edelstenen",
+    "playerShareBtn": "🔗 Link kopiëren",
+    "playerShareCopied": "Link gekopieerd!",
+    "playerShareCopyError": "Kopiëren mislukt."
   },
   "no": {
     "nativeName": "Norsk",
@@ -3026,7 +3113,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Gjenoppretter et viljepoeng til en alliert daglig.",
     "playerLblStorageCapacity": "Maks gull & edelstener",
     "playerPouchTextLimited": "Pose for maks {n} gull og edelstener",
-    "playerLblStorageSlots": "Gull & edelstener"
+    "playerLblStorageSlots": "Gull & edelstener",
+    "playerShareBtn": "🔗 Kopier lenke",
+    "playerShareCopied": "Lenke kopiert!",
+    "playerShareCopyError": "Kopiering mislyktes."
   },
   "pl": {
     "nativeName": "Polski",
@@ -3125,7 +3215,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Raz dziennie przywraca sojusznikowi punkt woli.",
     "playerLblStorageCapacity": "Maks. złota i klejnotów",
     "playerPouchTextLimited": "Sakiewka na maksymalnie {n} złota i klejnotów",
-    "playerLblStorageSlots": "Złoto i klejnoty"
+    "playerLblStorageSlots": "Złoto i klejnoty",
+    "playerShareBtn": "🔗 Kopiuj link",
+    "playerShareCopied": "Link skopiowany!",
+    "playerShareCopyError": "Kopiowanie nie powiodło się."
   },
   "pt": {
     "nativeName": "Português",
@@ -3224,7 +3317,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Devolve um ponto de vontade a um aliado por dia.",
     "playerLblStorageCapacity": "Máx. ouro e gemas",
     "playerPouchTextLimited": "Bolsa para até {n} de ouro e gemas",
-    "playerLblStorageSlots": "Ouro e gemas"
+    "playerLblStorageSlots": "Ouro e gemas",
+    "playerShareBtn": "🔗 Copiar link",
+    "playerShareCopied": "Link copiado!",
+    "playerShareCopyError": "Falha ao copiar."
   },
   "ro": {
     "nativeName": "Română",
@@ -3323,7 +3419,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Redă un punct de voință unui aliat zilnic.",
     "playerLblStorageCapacity": "Max. aur și pietre prețioase",
     "playerPouchTextLimited": "Pungă pentru maximum {n} aur și pietre prețioase",
-    "playerLblStorageSlots": "Aur și pietre prețioase"
+    "playerLblStorageSlots": "Aur și pietre prețioase",
+    "playerShareBtn": "🔗 Copiază linkul",
+    "playerShareCopied": "Link copiat!",
+    "playerShareCopyError": "Copierea a eșuat."
   },
   "ru": {
     "nativeName": "Русский",
@@ -3422,7 +3521,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Раз в день возвращает союзнику очко воли.",
     "playerLblStorageCapacity": "Макс. золота и камней",
     "playerPouchTextLimited": "Мешочек до {n} золота и самоцветов",
-    "playerLblStorageSlots": "Золото и самоцветы"
+    "playerLblStorageSlots": "Золото и самоцветы",
+    "playerShareBtn": "🔗 Скопировать ссылку",
+    "playerShareCopied": "Ссылка скопирована!",
+    "playerShareCopyError": "Не удалось скопировать."
   },
   "sk": {
     "nativeName": "Slovenčina",
@@ -3521,7 +3623,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Raz denne vráti spojencovi bod vôle.",
     "playerLblStorageCapacity": "Max. zlata a drahokamov",
     "playerPouchTextLimited": "Vrecko až na {n} zlata a drahokamov",
-    "playerLblStorageSlots": "Zlato a drahokamy"
+    "playerLblStorageSlots": "Zlato a drahokamy",
+    "playerShareBtn": "🔗 Kopírovať odkaz",
+    "playerShareCopied": "Odkaz skopírovaný!",
+    "playerShareCopyError": "Kopírovanie zlyhalo."
   },
   "sl": {
     "nativeName": "Slovenščina",
@@ -3620,7 +3725,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Enkrat dnevno povrne točko volje zavezniku.",
     "playerLblStorageCapacity": "Najv. zlata in kamenja",
     "playerPouchTextLimited": "Vrečka za največ {n} zlata in dragega kamenja",
-    "playerLblStorageSlots": "Zlato in drago kamenje"
+    "playerLblStorageSlots": "Zlato in drago kamenje",
+    "playerShareBtn": "🔗 Kopiraj povezavo",
+    "playerShareCopied": "Povezava kopirana!",
+    "playerShareCopyError": "Kopiranje ni uspelo."
   },
   "sq": {
     "nativeName": "Shqip",
@@ -3719,7 +3827,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Rikthen një pikë vullneti tek një aleat çdo ditë.",
     "playerLblStorageCapacity": "Maks. ari dhe gurë të çmuar",
     "playerPouchTextLimited": "Trastë për maksimum {n} ari dhe gurë të çmuar",
-    "playerLblStorageSlots": "Ari dhe gurë të çmuar"
+    "playerLblStorageSlots": "Ari dhe gurë të çmuar",
+    "playerShareBtn": "🔗 Kopjo lidhjen",
+    "playerShareCopied": "Lidhja u kopjua!",
+    "playerShareCopyError": "Kopjimi dështoi."
   },
   "sr": {
     "nativeName": "Српски",
@@ -3818,7 +3929,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Једном дневно враћа поен воље савезнику.",
     "playerLblStorageCapacity": "Макс. злата и драгог камења",
     "playerPouchTextLimited": "Кеса за највише {n} злата и драгог камења",
-    "playerLblStorageSlots": "Злато и драго камење"
+    "playerLblStorageSlots": "Злато и драго камење",
+    "playerShareBtn": "🔗 Копирај везу",
+    "playerShareCopied": "Веза копирана!",
+    "playerShareCopyError": "Копирање није успело."
   },
   "sv": {
     "nativeName": "Svenska",
@@ -3917,7 +4031,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Återställer en viljepoäng till en allierad per dag.",
     "playerLblStorageCapacity": "Max guld & ädelstenar",
     "playerPouchTextLimited": "Påse för max {n} guld och ädelstenar",
-    "playerLblStorageSlots": "Guld & ädelstenar"
+    "playerLblStorageSlots": "Guld & ädelstenar",
+    "playerShareBtn": "🔗 Kopiera länk",
+    "playerShareCopied": "Länk kopierad!",
+    "playerShareCopyError": "Kopiering misslyckades."
   },
   "sw": {
     "nativeName": "Kiswahili",
@@ -4016,7 +4133,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Anaweza kurejesha alama ya utashi kwa mshirika mara moja kwa siku.",
     "playerLblStorageCapacity": "Kiwango cha juu cha dhahabu na vito",
     "playerPouchTextLimited": "Mfuko wa kiasi cha juu cha {n} dhahabu na vito",
-    "playerLblStorageSlots": "Dhahabu na vito"
+    "playerLblStorageSlots": "Dhahabu na vito",
+    "playerShareBtn": "🔗 Nakili kiungo",
+    "playerShareCopied": "Kiungo kimenakiliwa!",
+    "playerShareCopyError": "Kunakili kumeshindwa."
   },
   "ta": {
     "nativeName": "தமிழ்",
@@ -4115,7 +4235,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "தினமும் ஒருமுறை நட்பு நாட்டுக்கு மன உறுதி புள்ளியை மீட்டெடுக்கிறார்.",
     "playerLblStorageCapacity": "அதிகபட்ச தங்கம் & ரத்தினங்கள்",
     "playerPouchTextLimited": "அதிகபட்சம் {n} தங்கம் மற்றும் ரத்தினங்களுக்கான பை",
-    "playerLblStorageSlots": "தங்கம் மற்றும் ரத்தினங்கள்"
+    "playerLblStorageSlots": "தங்கம் மற்றும் ரத்தினங்கள்",
+    "playerShareBtn": "🔗 இணைப்பை நகலெடு",
+    "playerShareCopied": "இணைப்பு நகலெடுக்கப்பட்டது!",
+    "playerShareCopyError": "நகலெடுப்பு தோல்வியடைந்தது."
   },
   "te": {
     "nativeName": "తెలుగు",
@@ -4214,7 +4337,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "రోజుకు ఒకసారి మిత్రుడికి సంకల్ప పాయింట్‌ను తిరిగి ఇస్తాడు.",
     "playerLblStorageCapacity": "గరిష్ట బంగారం & రత్నాలు",
     "playerPouchTextLimited": "గరిష్టంగా {n} బంగారం మరియు రత్నాల కోసం సంచి",
-    "playerLblStorageSlots": "బంగారం మరియు రత్నాలు"
+    "playerLblStorageSlots": "బంగారం మరియు రత్నాలు",
+    "playerShareBtn": "🔗 లింక్ కాపీ చేయి",
+    "playerShareCopied": "లింక్ కాపీ చేయబడింది!",
+    "playerShareCopyError": "కాపీ విఫలమైంది."
   },
   "th": {
     "nativeName": "ไทย",
@@ -4320,7 +4446,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "คืนแต้มจิตใจให้พันธมิตรได้วันละครั้ง",
     "playerLblStorageCapacity": "ทองและอัญมณีสูงสุด",
     "playerPouchTextLimited": "ถุงสำหรับทองและอัญมณีสูงสุด {n} ชิ้น",
-    "playerLblStorageSlots": "ทองและอัญมณี"
+    "playerLblStorageSlots": "ทองและอัญมณี",
+    "playerShareBtn": "🔗 คัดลอกลิงก์",
+    "playerShareCopied": "คัดลอกลิงก์แล้ว!",
+    "playerShareCopyError": "คัดลอกไม่สำเร็จ"
   },
   "tr": {
     "nativeName": "Türkçe",
@@ -4419,7 +4548,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Günde bir kez bir müttefike irade puanı geri verir.",
     "playerLblStorageCapacity": "Maks. altın ve mücevher",
     "playerPouchTextLimited": "En fazla {n} altın ve mücevher için kese",
-    "playerLblStorageSlots": "Altın ve mücevher"
+    "playerLblStorageSlots": "Altın ve mücevher",
+    "playerShareBtn": "🔗 Bağlantıyı kopyala",
+    "playerShareCopied": "Bağlantı kopyalandı!",
+    "playerShareCopyError": "Kopyalama başarısız."
   },
   "uk": {
     "nativeName": "Українська",
@@ -4518,7 +4650,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Раз на день повертає союзнику очко волі.",
     "playerLblStorageCapacity": "Макс. золота й самоцвітів",
     "playerPouchTextLimited": "Мішечок максимум на {n} золота й самоцвітів",
-    "playerLblStorageSlots": "Золото й самоцвіти"
+    "playerLblStorageSlots": "Золото й самоцвіти",
+    "playerShareBtn": "🔗 Копіювати посилання",
+    "playerShareCopied": "Посилання скопійовано!",
+    "playerShareCopyError": "Не вдалося скопіювати."
   },
   "ur": {
     "nativeName": "اردو",
@@ -4617,7 +4752,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "روزانہ ایک بار ساتھی کو ایک قوت ارادی پوائنٹ واپس دیتا ہے۔",
     "playerLblStorageCapacity": "زیادہ سے زیادہ سونا و جواہرات",
     "playerPouchTextLimited": "زیادہ سے زیادہ {n} سونے اور جواہرات کے لیے تھیلا",
-    "playerLblStorageSlots": "سونا اور جواہرات"
+    "playerLblStorageSlots": "سونا اور جواہرات",
+    "playerShareBtn": "🔗 لنک کاپی کریں",
+    "playerShareCopied": "لنک کاپی ہو گیا!",
+    "playerShareCopyError": "کاپی ناکام ہوگئی۔"
   },
   "vi": {
     "nativeName": "Tiếng Việt",
@@ -4716,7 +4854,10 @@ const LANGUAGES = {
     "playerClassClericPerk": "Mỗi ngày hồi một điểm ý chí cho đồng minh.",
     "playerLblStorageCapacity": "Vàng & đá quý tối đa",
     "playerPouchTextLimited": "Túi chứa tối đa {n} vàng và đá quý",
-    "playerLblStorageSlots": "Vàng và đá quý"
+    "playerLblStorageSlots": "Vàng và đá quý",
+    "playerShareBtn": "🔗 Sao chép liên kết",
+    "playerShareCopied": "Đã sao chép liên kết!",
+    "playerShareCopyError": "Sao chép thất bại."
   },
   "zh": {
     "nativeName": "中文",
@@ -4815,6 +4956,9 @@ const LANGUAGES = {
     "playerClassClericPerk": "每天可为盟友恢复一点意志点。",
     "playerLblStorageCapacity": "最大金币与宝石数",
     "playerPouchTextLimited": "最多可存放 {n} 个金币和宝石的袋子",
-    "playerLblStorageSlots": "金币与宝石"
+    "playerLblStorageSlots": "金币与宝石",
+    "playerShareBtn": "🔗 复制链接",
+    "playerShareCopied": "链接已复制！",
+    "playerShareCopyError": "复制失败。"
   }
 };
