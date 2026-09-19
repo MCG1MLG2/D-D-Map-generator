@@ -411,25 +411,28 @@
   #card.no-storage{
     min-height:620px;
   }
-  .footer-row.no-storage{ display:none; }
+  .storage-track.no-storage{ display:none; }
 
   .footer-row{
     display:flex;
     align-items:center;
-    justify-content:space-between;
+    justify-content:flex-end;
     margin-top:22px;
     padding-top:14px;
     border-top:1px dashed var(--parchment-shadow);
   }
-  .pouch{
+  .pouch-slots{
     display:flex;
-    align-items:center;
-    gap:9px;
-    font-size:.8rem;
-    color:#5a4a30;
+    flex-wrap:wrap;
+    gap:10px;
   }
-  .pouch .icon{font-size:1.5rem;}
-  .pouch .txt{max-width:150px; line-height:1.3;}
+  .pouch-slot{
+    width:44px; height:44px;
+    background:rgba(230,190,90,.35);
+    border:2px solid #8a7142;
+    border-radius:6px;
+  }
+  .storage-track .icon{ font-size:1.1rem; margin-right:4px; }
   .brand{
     font-family:'Cinzel', serif;
     font-size:.7rem;
@@ -568,11 +571,11 @@
     <div class="field row2">
       <div>
         <label for="strengthCount" data-i18n="playerLblStrengthCount">Stärkepunkte-Felder</label>
-        <input type="number" id="strengthCount" value="10" min="1" max="20">
+        <input type="number" id="strengthCount" value="10" min="1" max="30">
       </div>
       <div>
         <label for="willCount" data-i18n="playerLblWillCount">Willenspunkte-Felder</label>
-        <input type="number" id="willCount" value="10" min="1" max="20">
+        <input type="number" id="willCount" value="10" min="1" max="30">
       </div>
     </div>
 
@@ -591,7 +594,7 @@
 
     <div class="field" id="storageCapacityField">
       <label for="storageCapacity" data-i18n="playerLblStorageCapacity">Max. Gold &amp; Edelsteine</label>
-      <input type="number" id="storageCapacity" min="0" placeholder="∞">
+      <input type="number" id="storageCapacity" value="6" min="1" max="6">
     </div>
 
     <button class="export-btn" id="exportBtn" data-i18n="playerExportBtn">Als PNG speichern</button>
@@ -640,11 +643,12 @@
         </div>
       </div>
 
+      <div class="track storage-track" id="storageTrack">
+        <div class="label"><span class="icon">💰</span> <span data-i18n="playerLblStorageSlots">Gold &amp; Edelsteine</span></div>
+        <div class="pouch-slots" id="pouchSlots"></div>
+      </div>
+
       <div class="footer-row">
-        <div class="pouch">
-          <div class="icon">💰</div>
-          <div class="txt">Ablage für beliebig viel Gold und Edelsteine</div>
-        </div>
         <div class="brand" data-i18n="playerBrand">Heldentafel</div>
       </div>
     </div>
@@ -688,12 +692,22 @@
 
   function buildPips(container, count){
     container.innerHTML = '';
-    const n = Math.max(1, Math.min(20, parseInt(count) || 1));
+    const n = Math.max(1, Math.min(30, parseInt(count) || 1));
     for(let i=0;i<n;i++){
       const pip = document.createElement('div');
       pip.className = 'pip';
       pip.textContent = i + 1;
       container.appendChild(pip);
+    }
+  }
+
+  function buildSlots(container, count){
+    container.innerHTML = '';
+    const n = Math.max(1, Math.min(6, parseInt(count) || 6));
+    for(let i=0;i<n;i++){
+      const slot = document.createElement('div');
+      slot.className = 'pouch-slot';
+      container.appendChild(slot);
     }
   }
 
@@ -738,16 +752,11 @@
     buildPips(document.getElementById('willPips'), willCount);
 
     const collapse = !document.getElementById('showStorage').checked;
-    document.querySelector('.footer-row').classList.toggle('no-storage', collapse);
+    document.getElementById('storageTrack').classList.toggle('no-storage', collapse);
     document.getElementById('card').classList.toggle('no-storage', collapse);
 
-    const capacity = parseInt(document.getElementById('storageCapacity').value, 10);
-    const pouchTextEl = document.querySelector('.pouch .txt');
-    if (pouchTextEl) {
-      pouchTextEl.textContent = (capacity > 0)
-        ? t('playerPouchTextLimited').replace('{n}', capacity)
-        : t('playerPouchText');
-    }
+    const capacity = document.getElementById('storageCapacity').value;
+    buildSlots(document.getElementById('pouchSlots'), capacity);
 
     const card = document.getElementById('card');
     card.style.setProperty('--accent', selectedPalette.accent);
