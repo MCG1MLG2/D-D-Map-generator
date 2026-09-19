@@ -119,7 +119,8 @@ const LANGUAGES = {
     "playerClassClericName": "كاهن",
     "playerClassClericPerk": "يعيد نقطة إرادة لحليف مرة يوميًا.",
     "playerLblStorageCapacity": "أقصى ذهب وجواهر",
-    "playerPouchTextLimited": "كيس لغاية {n} من الذهب والجواهر"
+    "playerPouchTextLimited": "كيس لغاية {n} من الذهب والجواهر",
+    "playerLblStorageSlots": "الذهب والجواهر"
   },
   "bg": {
     "nativeName": "Български",
@@ -217,7 +218,8 @@ const LANGUAGES = {
     "playerClassClericName": "Клирик",
     "playerClassClericPerk": "Веднъж дневно връща точка воля на съюзник.",
     "playerLblStorageCapacity": "Макс. злато и камъни",
-    "playerPouchTextLimited": "Торбичка за максимум {n} злато и скъпоценни камъни"
+    "playerPouchTextLimited": "Торбичка за максимум {n} злато и скъпоценни камъни",
+    "playerLblStorageSlots": "Злато и скъпоценни камъни"
   },
   "bn": {
     "nativeName": "বাংলা",
@@ -315,7 +317,8 @@ const LANGUAGES = {
     "playerClassClericName": "ক্লেরিক",
     "playerClassClericPerk": "দিনে একবার মিত্রকে একটি ইচ্ছাশক্তি পয়েন্ট ফিরিয়ে দেয়।",
     "playerLblStorageCapacity": "সর্বোচ্চ সোনা ও রত্ন",
-    "playerPouchTextLimited": "সর্বোচ্চ {n} সোনা ও রত্নের জন্য থলি"
+    "playerPouchTextLimited": "সর্বোচ্চ {n} সোনা ও রত্নের জন্য থলি",
+    "playerLblStorageSlots": "সোনা ও রত্ন"
   },
   "ca": {
     "nativeName": "Català",
@@ -420,7 +423,8 @@ const LANGUAGES = {
     "playerClassClericName": "Clergue",
     "playerClassClericPerk": "Retorna un punt de voluntat a un aliat cada dia.",
     "playerLblStorageCapacity": "Màx. or i gemmes",
-    "playerPouchTextLimited": "Bossa per a un màxim de {n} or i gemmes"
+    "playerPouchTextLimited": "Bossa per a un màxim de {n} or i gemmes",
+    "playerLblStorageSlots": "Or i gemmes"
   },
   "cs": {
     "nativeName": "Čeština",
@@ -518,7 +522,8 @@ const LANGUAGES = {
     "playerClassClericName": "Klerik",
     "playerClassClericPerk": "Jednou denně vrátí spojenci bod vůle.",
     "playerLblStorageCapacity": "Max. zlata a drahokamů",
-    "playerPouchTextLimited": "Váček až na {n} zlata a drahokamů"
+    "playerPouchTextLimited": "Váček až na {n} zlata a drahokamů",
+    "playerLblStorageSlots": "Zlato a drahokamy"
   },
   "da": {
     "nativeName": "Dansk",
@@ -616,7 +621,8 @@ const LANGUAGES = {
     "playerClassClericName": "Klerk",
     "playerClassClericPerk": "Genopretter et viljepoint til en allieret dagligt.",
     "playerLblStorageCapacity": "Maks guld & ædelsten",
-    "playerPouchTextLimited": "Pose til maks {n} guld og ædelsten"
+    "playerPouchTextLimited": "Pose til maks {n} guld og ædelsten",
+    "playerLblStorageSlots": "Guld & ædelsten"
   },
   "de": {
     "nativeName": "Deutsch",
@@ -721,7 +727,8 @@ const LANGUAGES = {
     "playerClassClericName": "Kleriker",
     "playerClassClericPerk": "Einmal pro Tag einem Verbündeten einen Willenspunkt zurückgeben.",
     "playerLblStorageCapacity": "Max. Gold & Edelsteine",
-    "playerPouchTextLimited": "Ablage für bis zu {n} Gold und Edelsteine"
+    "playerPouchTextLimited": "Ablage für bis zu {n} Gold und Edelsteine",
+    "playerLblStorageSlots": "Gold & Edelsteine"
   },
   "el": {
     "nativeName": "Ελληνικά",
@@ -819,7 +826,8 @@ const LANGUAGES = {
     "playerClassClericName": "Κληρικός",
     "playerClassClericPerk": "Αποκαθιστά έναν πόντο θέλησης σε σύμμαχο καθημερινά.",
     "playerLblStorageCapacity": "Μέγ. χρυσός & πετράδια",
-    "playerPouchTextLimited": "Πουγκί για έως {n} χρυσό και πετράδια"
+    "playerPouchTextLimited": "Πουγκί για έως {n} χρυσό και πετράδια",
+    "playerLblStorageSlots": "Χρυσός & πετράδια"
   },
   "en": {
     "nativeName": "English",
@@ -924,7 +932,8 @@ const LANGUAGES = {
     "playerClassClericName": "Cleric",
     "playerClassClericPerk": "Restore a Will Point to an ally once per day.",
     "playerLblStorageCapacity": "Max Gold & Gems",
-    "playerPouchTextLimited": "Pouch for up to {n} gold and gems"
+    "playerPouchTextLimited": "Pouch for up to {n} gold and gems",
+    "playerLblStorageSlots": "Gold & Gems"
   },
   "es": {
     "nativeName": "Español",
@@ -1022,7 +1031,8 @@ const LANGUAGES = {
     "playerClassClericName": "Clérigo",
     "playerClassClericPerk": "Devuelve un punto de voluntad a un aliado una vez al día.",
     "playerLblStorageCapacity": "Máx. oro y gemas",
-    "playerPouchTextLimited": "Bolsa para hasta {n} de oro y gemas"
+    "playerPouchTextLimited": "Bolsa para hasta {n} de oro y gemas",
+    "playerLblStorageSlots": "Oro y gemas"
   },
   "et": {
     "nativeName": "Eesti",
@@ -1120,7 +1130,8 @@ const LANGUAGES = {
     "playerClassClericName": "Kleerik",
     "playerClassClericPerk": "Taastab kord päevas liitlase tahtepunkti.",
     "playerLblStorageCapacity": "Maks. kulda ja vääriskive",
-    "playerPouchTextLimited": "Kott kuni {n} kullale ja vääriskivile"
+    "playerPouchTextLimited": "Kott kuni {n} kullale ja vääriskivile",
+    "playerLblStorageSlots": "Kuld ja vääriskivid"
   },
   "eu": {
     "nativeName": "Euskara",
@@ -1225,7 +1236,8 @@ const LANGUAGES = {
     "playerClassClericName": "Klerikoa",
     "playerClassClericPerk": "Egunero behin aliatu bati borondate-puntu bat itzultzen dio.",
     "playerLblStorageCapacity": "Geh. urrea eta harribitxiak",
-    "playerPouchTextLimited": "Zorroa gehienez {n} urre eta harribitxientzat"
+    "playerPouchTextLimited": "Zorroa gehienez {n} urre eta harribitxientzat",
+    "playerLblStorageSlots": "Urrea eta harribitxiak"
   },
   "fa": {
     "nativeName": "فارسی",
@@ -1330,7 +1342,8 @@ const LANGUAGES = {
     "playerClassClericName": "کشیش",
     "playerClassClericPerk": "روزی یک‌بار یک امتیاز اراده به هم‌پیمان بازمی‌گرداند.",
     "playerLblStorageCapacity": "حداکثر طلا و جواهرات",
-    "playerPouchTextLimited": "کیسه‌ای برای حداکثر {n} طلا و جواهرات"
+    "playerPouchTextLimited": "کیسه‌ای برای حداکثر {n} طلا و جواهرات",
+    "playerLblStorageSlots": "طلا و جواهرات"
   },
   "fi": {
     "nativeName": "Suomi",
@@ -1428,7 +1441,8 @@ const LANGUAGES = {
     "playerClassClericName": "Pappi",
     "playerClassClericPerk": "Palauttaa liittolaiselle tahdonpisteen kerran päivässä.",
     "playerLblStorageCapacity": "Kulta & jalokivet enintään",
-    "playerPouchTextLimited": "Pussi enintään {n} kullalle ja jalokivelle"
+    "playerPouchTextLimited": "Pussi enintään {n} kullalle ja jalokivelle",
+    "playerLblStorageSlots": "Kulta ja jalokivet"
   },
   "fr": {
     "nativeName": "Français",
@@ -1526,7 +1540,8 @@ const LANGUAGES = {
     "playerClassClericName": "Clerc",
     "playerClassClericPerk": "Rend un point de volonté à un allié une fois par jour.",
     "playerLblStorageCapacity": "Or et gemmes max.",
-    "playerPouchTextLimited": "Bourse pour jusqu'à {n} d'or et de gemmes"
+    "playerPouchTextLimited": "Bourse pour jusqu'à {n} d'or et de gemmes",
+    "playerLblStorageSlots": "Or et gemmes"
   },
   "ga": {
     "nativeName": "Gaeilge",
@@ -1624,7 +1639,8 @@ const LANGUAGES = {
     "playerClassClericName": "Cléireach",
     "playerClassClericPerk": "Athchóiríonn pointe tola do chomhghuaillí gach lá.",
     "playerLblStorageCapacity": "Uas. ór is seoda",
-    "playerPouchTextLimited": "Mála le haghaidh suas le {n} ór agus seoda"
+    "playerPouchTextLimited": "Mála le haghaidh suas le {n} ór agus seoda",
+    "playerLblStorageSlots": "Ór agus seoda"
   },
   "hi": {
     "nativeName": "हिन्दी",
@@ -1722,7 +1738,8 @@ const LANGUAGES = {
     "playerClassClericName": "पादरी",
     "playerClassClericPerk": "रोज़ एक बार सहयोगी को इच्छाशक्ति अंक लौटाता है।",
     "playerLblStorageCapacity": "अधिकतम सोना और रत्न",
-    "playerPouchTextLimited": "अधिकतम {n} सोना और रत्नों के लिए थैली"
+    "playerPouchTextLimited": "अधिकतम {n} सोना और रत्नों के लिए थैली",
+    "playerLblStorageSlots": "सोना और रत्न"
   },
   "hr": {
     "nativeName": "Hrvatski",
@@ -1820,7 +1837,8 @@ const LANGUAGES = {
     "playerClassClericName": "Klerik",
     "playerClassClericPerk": "Jednom dnevno vraća bod volje savezniku.",
     "playerLblStorageCapacity": "Maks. zlata i dragulja",
-    "playerPouchTextLimited": "Vrećica za najviše {n} zlata i dragulja"
+    "playerPouchTextLimited": "Vrećica za najviše {n} zlata i dragulja",
+    "playerLblStorageSlots": "Zlato i dragulji"
   },
   "hu": {
     "nativeName": "Magyar",
@@ -1918,7 +1936,8 @@ const LANGUAGES = {
     "playerClassClericName": "Klerikus",
     "playerClassClericPerk": "Naponta egyszer visszaad egy akaraterő pontot egy szövetségesnek.",
     "playerLblStorageCapacity": "Max. arany és drágakő",
-    "playerPouchTextLimited": "Erszény legfeljebb {n} aranyhoz és drágakőhöz"
+    "playerPouchTextLimited": "Erszény legfeljebb {n} aranyhoz és drágakőhöz",
+    "playerLblStorageSlots": "Arany és drágakő"
   },
   "id": {
     "nativeName": "Bahasa Indonesia",
@@ -2016,7 +2035,8 @@ const LANGUAGES = {
     "playerClassClericName": "Pendeta",
     "playerClassClericPerk": "Memulihkan satu poin kemauan sekutu sekali sehari.",
     "playerLblStorageCapacity": "Maks. emas & permata",
-    "playerPouchTextLimited": "Kantong untuk maksimal {n} emas dan permata"
+    "playerPouchTextLimited": "Kantong untuk maksimal {n} emas dan permata",
+    "playerLblStorageSlots": "Emas & permata"
   },
   "is": {
     "nativeName": "Íslenska",
@@ -2114,7 +2134,8 @@ const LANGUAGES = {
     "playerClassClericName": "Klerkur",
     "playerClassClericPerk": "Endurheimtir viljastig fyrir bandamann daglega.",
     "playerLblStorageCapacity": "Hám. gull og gimsteinar",
-    "playerPouchTextLimited": "Pyngja fyrir að hámarki {n} gull og gimsteina"
+    "playerPouchTextLimited": "Pyngja fyrir að hámarki {n} gull og gimsteina",
+    "playerLblStorageSlots": "Gull og gimsteinar"
   },
   "it": {
     "nativeName": "Italiano",
@@ -2212,7 +2233,8 @@ const LANGUAGES = {
     "playerClassClericName": "Chierico",
     "playerClassClericPerk": "Restituisce un punto volontà a un alleato al giorno.",
     "playerLblStorageCapacity": "Oro e gemme max.",
-    "playerPouchTextLimited": "Sacchetto per fino a {n} oro e gemme"
+    "playerPouchTextLimited": "Sacchetto per fino a {n} oro e gemme",
+    "playerLblStorageSlots": "Oro e gemme"
   },
   "ja": {
     "nativeName": "日本語",
@@ -2310,7 +2332,8 @@ const LANGUAGES = {
     "playerClassClericName": "聖職者",
     "playerClassClericPerk": "1日1回、仲間の意志点を1点回復できる。",
     "playerLblStorageCapacity": "金貨と宝石の上限",
-    "playerPouchTextLimited": "最大{n}個までの金貨と宝石を入れられる袋"
+    "playerPouchTextLimited": "最大{n}個までの金貨と宝石を入れられる袋",
+    "playerLblStorageSlots": "金貨と宝石"
   },
   "ko": {
     "nativeName": "한국어",
@@ -2408,7 +2431,8 @@ const LANGUAGES = {
     "playerClassClericName": "성직자",
     "playerClassClericPerk": "하루에 한 번 동료의 의지 포인트를 회복.",
     "playerLblStorageCapacity": "최대 금화 및 보석",
-    "playerPouchTextLimited": "최대 {n}개까지 금화와 보석을 담는 주머니"
+    "playerPouchTextLimited": "최대 {n}개까지 금화와 보석을 담는 주머니",
+    "playerLblStorageSlots": "금화와 보석"
   },
   "lt": {
     "nativeName": "Lietuvių",
@@ -2506,7 +2530,8 @@ const LANGUAGES = {
     "playerClassClericName": "Klerikas",
     "playerClassClericPerk": "Kartą per dieną grąžina sąjungininkui valios tašką.",
     "playerLblStorageCapacity": "Maks. aukso ir brangakmenių",
-    "playerPouchTextLimited": "Maišelis ne daugiau kaip {n} aukso ir brangakmenių"
+    "playerPouchTextLimited": "Maišelis ne daugiau kaip {n} aukso ir brangakmenių",
+    "playerLblStorageSlots": "Auksas ir brangakmeniai"
   },
   "lv": {
     "nativeName": "Latviešu",
@@ -2604,7 +2629,8 @@ const LANGUAGES = {
     "playerClassClericName": "Kleriķis",
     "playerClassClericPerk": "Reizi dienā atjauno sabiedrotajam gribasspēka punktu.",
     "playerLblStorageCapacity": "Maks. zelta un dārgakmeņu",
-    "playerPouchTextLimited": "Maisiņš ne vairāk kā {n} zeltam un dārgakmeņiem"
+    "playerPouchTextLimited": "Maisiņš ne vairāk kā {n} zeltam un dārgakmeņiem",
+    "playerLblStorageSlots": "Zelts un dārgakmeņi"
   },
   "mr": {
     "nativeName": "मराठी",
@@ -2702,7 +2728,8 @@ const LANGUAGES = {
     "playerClassClericName": "धर्मगुरू",
     "playerClassClericPerk": "दिवसातून एकदा सहकाऱ्याला इच्छाशक्ती गुण परत देतो.",
     "playerLblStorageCapacity": "कमाल सोने आणि रत्ने",
-    "playerPouchTextLimited": "जास्तीत जास्त {n} सोने आणि रत्नांसाठी थैली"
+    "playerPouchTextLimited": "जास्तीत जास्त {n} सोने आणि रत्नांसाठी थैली",
+    "playerLblStorageSlots": "सोने आणि रत्ने"
   },
   "mt": {
     "nativeName": "Malti",
@@ -2800,7 +2827,8 @@ const LANGUAGES = {
     "playerClassClericName": "Kleriku",
     "playerClassClericPerk": "Jirritorna punt rieda lil alleat darba kuljum.",
     "playerLblStorageCapacity": "Massimu deheb u ħaġar prezzjuż",
-    "playerPouchTextLimited": "Boroża għal massimu ta' {n} deheb u ħaġar prezzjuż"
+    "playerPouchTextLimited": "Boroża għal massimu ta' {n} deheb u ħaġar prezzjuż",
+    "playerLblStorageSlots": "Deheb u ħaġar prezzjuż"
   },
   "nl": {
     "nativeName": "Nederlands",
@@ -2898,7 +2926,8 @@ const LANGUAGES = {
     "playerClassClericName": "Kloosterling",
     "playerClassClericPerk": "Herstelt eenmaal per dag een wilspunt bij een bondgenoot.",
     "playerLblStorageCapacity": "Max. goud & edelstenen",
-    "playerPouchTextLimited": "Buidel voor maximaal {n} goud en edelstenen"
+    "playerPouchTextLimited": "Buidel voor maximaal {n} goud en edelstenen",
+    "playerLblStorageSlots": "Goud & edelstenen"
   },
   "no": {
     "nativeName": "Norsk",
@@ -2996,7 +3025,8 @@ const LANGUAGES = {
     "playerClassClericName": "Klerk",
     "playerClassClericPerk": "Gjenoppretter et viljepoeng til en alliert daglig.",
     "playerLblStorageCapacity": "Maks gull & edelstener",
-    "playerPouchTextLimited": "Pose for maks {n} gull og edelstener"
+    "playerPouchTextLimited": "Pose for maks {n} gull og edelstener",
+    "playerLblStorageSlots": "Gull & edelstener"
   },
   "pl": {
     "nativeName": "Polski",
@@ -3094,7 +3124,8 @@ const LANGUAGES = {
     "playerClassClericName": "Kleryk",
     "playerClassClericPerk": "Raz dziennie przywraca sojusznikowi punkt woli.",
     "playerLblStorageCapacity": "Maks. złota i klejnotów",
-    "playerPouchTextLimited": "Sakiewka na maksymalnie {n} złota i klejnotów"
+    "playerPouchTextLimited": "Sakiewka na maksymalnie {n} złota i klejnotów",
+    "playerLblStorageSlots": "Złoto i klejnoty"
   },
   "pt": {
     "nativeName": "Português",
@@ -3192,7 +3223,8 @@ const LANGUAGES = {
     "playerClassClericName": "Clérigo",
     "playerClassClericPerk": "Devolve um ponto de vontade a um aliado por dia.",
     "playerLblStorageCapacity": "Máx. ouro e gemas",
-    "playerPouchTextLimited": "Bolsa para até {n} de ouro e gemas"
+    "playerPouchTextLimited": "Bolsa para até {n} de ouro e gemas",
+    "playerLblStorageSlots": "Ouro e gemas"
   },
   "ro": {
     "nativeName": "Română",
@@ -3290,7 +3322,8 @@ const LANGUAGES = {
     "playerClassClericName": "Cleric",
     "playerClassClericPerk": "Redă un punct de voință unui aliat zilnic.",
     "playerLblStorageCapacity": "Max. aur și pietre prețioase",
-    "playerPouchTextLimited": "Pungă pentru maximum {n} aur și pietre prețioase"
+    "playerPouchTextLimited": "Pungă pentru maximum {n} aur și pietre prețioase",
+    "playerLblStorageSlots": "Aur și pietre prețioase"
   },
   "ru": {
     "nativeName": "Русский",
@@ -3388,7 +3421,8 @@ const LANGUAGES = {
     "playerClassClericName": "Клирик",
     "playerClassClericPerk": "Раз в день возвращает союзнику очко воли.",
     "playerLblStorageCapacity": "Макс. золота и камней",
-    "playerPouchTextLimited": "Мешочек до {n} золота и самоцветов"
+    "playerPouchTextLimited": "Мешочек до {n} золота и самоцветов",
+    "playerLblStorageSlots": "Золото и самоцветы"
   },
   "sk": {
     "nativeName": "Slovenčina",
@@ -3486,7 +3520,8 @@ const LANGUAGES = {
     "playerClassClericName": "Klerik",
     "playerClassClericPerk": "Raz denne vráti spojencovi bod vôle.",
     "playerLblStorageCapacity": "Max. zlata a drahokamov",
-    "playerPouchTextLimited": "Vrecko až na {n} zlata a drahokamov"
+    "playerPouchTextLimited": "Vrecko až na {n} zlata a drahokamov",
+    "playerLblStorageSlots": "Zlato a drahokamy"
   },
   "sl": {
     "nativeName": "Slovenščina",
@@ -3584,7 +3619,8 @@ const LANGUAGES = {
     "playerClassClericName": "Klerik",
     "playerClassClericPerk": "Enkrat dnevno povrne točko volje zavezniku.",
     "playerLblStorageCapacity": "Najv. zlata in kamenja",
-    "playerPouchTextLimited": "Vrečka za največ {n} zlata in dragega kamenja"
+    "playerPouchTextLimited": "Vrečka za največ {n} zlata in dragega kamenja",
+    "playerLblStorageSlots": "Zlato in drago kamenje"
   },
   "sq": {
     "nativeName": "Shqip",
@@ -3682,7 +3718,8 @@ const LANGUAGES = {
     "playerClassClericName": "Klerik",
     "playerClassClericPerk": "Rikthen një pikë vullneti tek një aleat çdo ditë.",
     "playerLblStorageCapacity": "Maks. ari dhe gurë të çmuar",
-    "playerPouchTextLimited": "Trastë për maksimum {n} ari dhe gurë të çmuar"
+    "playerPouchTextLimited": "Trastë për maksimum {n} ari dhe gurë të çmuar",
+    "playerLblStorageSlots": "Ari dhe gurë të çmuar"
   },
   "sr": {
     "nativeName": "Српски",
@@ -3780,7 +3817,8 @@ const LANGUAGES = {
     "playerClassClericName": "Клерик",
     "playerClassClericPerk": "Једном дневно враћа поен воље савезнику.",
     "playerLblStorageCapacity": "Макс. злата и драгог камења",
-    "playerPouchTextLimited": "Кеса за највише {n} злата и драгог камења"
+    "playerPouchTextLimited": "Кеса за највише {n} злата и драгог камења",
+    "playerLblStorageSlots": "Злато и драго камење"
   },
   "sv": {
     "nativeName": "Svenska",
@@ -3878,7 +3916,8 @@ const LANGUAGES = {
     "playerClassClericName": "Klerk",
     "playerClassClericPerk": "Återställer en viljepoäng till en allierad per dag.",
     "playerLblStorageCapacity": "Max guld & ädelstenar",
-    "playerPouchTextLimited": "Påse för max {n} guld och ädelstenar"
+    "playerPouchTextLimited": "Påse för max {n} guld och ädelstenar",
+    "playerLblStorageSlots": "Guld & ädelstenar"
   },
   "sw": {
     "nativeName": "Kiswahili",
@@ -3976,7 +4015,8 @@ const LANGUAGES = {
     "playerClassClericName": "Kasisi",
     "playerClassClericPerk": "Anaweza kurejesha alama ya utashi kwa mshirika mara moja kwa siku.",
     "playerLblStorageCapacity": "Kiwango cha juu cha dhahabu na vito",
-    "playerPouchTextLimited": "Mfuko wa kiasi cha juu cha {n} dhahabu na vito"
+    "playerPouchTextLimited": "Mfuko wa kiasi cha juu cha {n} dhahabu na vito",
+    "playerLblStorageSlots": "Dhahabu na vito"
   },
   "ta": {
     "nativeName": "தமிழ்",
@@ -4074,7 +4114,8 @@ const LANGUAGES = {
     "playerClassClericName": "மதகுரு",
     "playerClassClericPerk": "தினமும் ஒருமுறை நட்பு நாட்டுக்கு மன உறுதி புள்ளியை மீட்டெடுக்கிறார்.",
     "playerLblStorageCapacity": "அதிகபட்ச தங்கம் & ரத்தினங்கள்",
-    "playerPouchTextLimited": "அதிகபட்சம் {n} தங்கம் மற்றும் ரத்தினங்களுக்கான பை"
+    "playerPouchTextLimited": "அதிகபட்சம் {n} தங்கம் மற்றும் ரத்தினங்களுக்கான பை",
+    "playerLblStorageSlots": "தங்கம் மற்றும் ரத்தினங்கள்"
   },
   "te": {
     "nativeName": "తెలుగు",
@@ -4172,7 +4213,8 @@ const LANGUAGES = {
     "playerClassClericName": "మతగురువు",
     "playerClassClericPerk": "రోజుకు ఒకసారి మిత్రుడికి సంకల్ప పాయింట్‌ను తిరిగి ఇస్తాడు.",
     "playerLblStorageCapacity": "గరిష్ట బంగారం & రత్నాలు",
-    "playerPouchTextLimited": "గరిష్టంగా {n} బంగారం మరియు రత్నాల కోసం సంచి"
+    "playerPouchTextLimited": "గరిష్టంగా {n} బంగారం మరియు రత్నాల కోసం సంచి",
+    "playerLblStorageSlots": "బంగారం మరియు రత్నాలు"
   },
   "th": {
     "nativeName": "ไทย",
@@ -4277,7 +4319,8 @@ const LANGUAGES = {
     "playerClassClericName": "นักบวช",
     "playerClassClericPerk": "คืนแต้มจิตใจให้พันธมิตรได้วันละครั้ง",
     "playerLblStorageCapacity": "ทองและอัญมณีสูงสุด",
-    "playerPouchTextLimited": "ถุงสำหรับทองและอัญมณีสูงสุด {n} ชิ้น"
+    "playerPouchTextLimited": "ถุงสำหรับทองและอัญมณีสูงสุด {n} ชิ้น",
+    "playerLblStorageSlots": "ทองและอัญมณี"
   },
   "tr": {
     "nativeName": "Türkçe",
@@ -4375,7 +4418,8 @@ const LANGUAGES = {
     "playerClassClericName": "Rahip",
     "playerClassClericPerk": "Günde bir kez bir müttefike irade puanı geri verir.",
     "playerLblStorageCapacity": "Maks. altın ve mücevher",
-    "playerPouchTextLimited": "En fazla {n} altın ve mücevher için kese"
+    "playerPouchTextLimited": "En fazla {n} altın ve mücevher için kese",
+    "playerLblStorageSlots": "Altın ve mücevher"
   },
   "uk": {
     "nativeName": "Українська",
@@ -4473,7 +4517,8 @@ const LANGUAGES = {
     "playerClassClericName": "Клірик",
     "playerClassClericPerk": "Раз на день повертає союзнику очко волі.",
     "playerLblStorageCapacity": "Макс. золота й самоцвітів",
-    "playerPouchTextLimited": "Мішечок максимум на {n} золота й самоцвітів"
+    "playerPouchTextLimited": "Мішечок максимум на {n} золота й самоцвітів",
+    "playerLblStorageSlots": "Золото й самоцвіти"
   },
   "ur": {
     "nativeName": "اردو",
@@ -4571,7 +4616,8 @@ const LANGUAGES = {
     "playerClassClericName": "پادری",
     "playerClassClericPerk": "روزانہ ایک بار ساتھی کو ایک قوت ارادی پوائنٹ واپس دیتا ہے۔",
     "playerLblStorageCapacity": "زیادہ سے زیادہ سونا و جواہرات",
-    "playerPouchTextLimited": "زیادہ سے زیادہ {n} سونے اور جواہرات کے لیے تھیلا"
+    "playerPouchTextLimited": "زیادہ سے زیادہ {n} سونے اور جواہرات کے لیے تھیلا",
+    "playerLblStorageSlots": "سونا اور جواہرات"
   },
   "vi": {
     "nativeName": "Tiếng Việt",
@@ -4669,7 +4715,8 @@ const LANGUAGES = {
     "playerClassClericName": "Giáo sĩ",
     "playerClassClericPerk": "Mỗi ngày hồi một điểm ý chí cho đồng minh.",
     "playerLblStorageCapacity": "Vàng & đá quý tối đa",
-    "playerPouchTextLimited": "Túi chứa tối đa {n} vàng và đá quý"
+    "playerPouchTextLimited": "Túi chứa tối đa {n} vàng và đá quý",
+    "playerLblStorageSlots": "Vàng và đá quý"
   },
   "zh": {
     "nativeName": "中文",
@@ -4767,6 +4814,7 @@ const LANGUAGES = {
     "playerClassClericName": "牧师",
     "playerClassClericPerk": "每天可为盟友恢复一点意志点。",
     "playerLblStorageCapacity": "最大金币与宝石数",
-    "playerPouchTextLimited": "最多可存放 {n} 个金币和宝石的袋子"
+    "playerPouchTextLimited": "最多可存放 {n} 个金币和宝石的袋子",
+    "playerLblStorageSlots": "金币与宝石"
   }
 };
