@@ -224,6 +224,13 @@
     transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
   }
 
+  .button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+  }
+
   .button:hover {
     transform: translateY(-2px);
     background: linear-gradient(180deg, #9c6a2c, #7a4e1e);
@@ -295,9 +302,14 @@
       bereit für dein nächstes Abenteuer.
     </p>
 
-    <a href="map.html" class="button">
-      <span>🗺️</span> <span data-i18n="buttonText">Zur Karte</span>
-    </a>
+    <div class="button-row">
+      <a href="map.html" class="button">
+        <span>🗺️</span> <span data-i18n="buttonText">Zur Karte</span>
+      </a>
+      <a href="player.html" class="button">
+        <span>🛡️</span> <span data-i18n="playerButtonText">Zur Heldentafel</span>
+      </a>
+    </div>
 
     <footer><span data-i18n="indexFooter">Kartenwerkstatt</span></footer>
   </div>
