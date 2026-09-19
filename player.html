@@ -51,7 +51,7 @@
   .panel{
     background:linear-gradient(180deg, var(--stone-2), var(--stone-1));
     border-right:1px solid #000;
-    padding:34px 30px 40px;
+    padding:64px 30px 40px;
     box-shadow:inset -18px 0 30px -28px #000;
   }
   .panel h1{
@@ -186,6 +186,45 @@
     cursor:pointer;
   }
   .share-btn:hover{background:rgba(182,144,63,.12);}
+  .share-btn.active{
+    background:linear-gradient(180deg, var(--gold-bright), var(--gold));
+    color:#241a08;
+  }
+
+  .share-panel{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-top:8px;
+    padding:12px;
+    background:rgba(0,0,0,.25);
+    border:1px solid var(--gold);
+    border-radius:4px;
+  }
+  .share-panel.collapsed{ display:none; }
+  .share-panel .field{ margin-bottom:0; }
+  .share-panel-btn{
+    font-family:'Cinzel', serif;
+    font-size:.85rem;
+    font-weight:600;
+    color:#241a08;
+    background:linear-gradient(180deg, #f3e8c8, #d8c599);
+    border:1px solid #7a5c22;
+    border-radius:4px;
+    padding:9px;
+    cursor:pointer;
+  }
+  .share-panel-btn.primary{
+    background:linear-gradient(180deg, var(--gold-bright), var(--gold));
+  }
+  .share-panel-btn:hover{filter:brightness(1.07);}
+  .share-panel-btn:active{transform:translateY(1px);}
+  .paste-settings-feedback{
+    font-size:.8rem;
+    color:var(--text-muted);
+    min-height:1em;
+  }
+  .paste-settings-feedback.success{ color:#7fae6a; }
   .export-status{font-size:.8rem; color:var(--text-muted); margin-top:8px; min-height:1em;}
 
   /* ---------- Right: preview stage ---------- */
@@ -503,10 +542,36 @@
     font-size: 11px;
   }
 
+  .back-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(180deg, var(--parchment) 0%, var(--parchment-dark) 100%);
+    border: 1px solid var(--gold);
+    border-radius: 6px;
+    padding: 8px 14px;
+    box-shadow: 0 6px 16px var(--shadow);
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .back-btn:hover { filter: brightness(1.06); }
+
   /* RTL-Anpassung für Arabisch, Urdu, Persisch */
   html[dir="rtl"] .lang-picker {
     right: auto;
     left: 20px;
+  }
+  html[dir="rtl"] .back-btn {
+    left: auto;
+    right: 20px;
   }
 
   @media (max-width: 480px) {
@@ -518,10 +583,21 @@
     html[dir="rtl"] .lang-picker {
       left: 12px;
     }
+    .back-btn {
+      top: 12px;
+      left: 12px;
+      padding: 6px 10px;
+    }
+    html[dir="rtl"] .back-btn {
+      left: auto;
+      right: 12px;
+    }
   }
 </style>
 </head>
 <body>
+
+  <a href="index.html" class="back-btn"><span aria-hidden="true">←</span> <span data-i18n="backToHome">Start</span></a>
 
   <div class="lang-picker">
     <span class="globe">🌐</span>
@@ -613,7 +689,17 @@
     </div>
 
     <button class="export-btn" id="exportBtn" data-i18n="playerExportBtn">Als PNG speichern</button>
-    <button class="share-btn" id="shareBtn" data-i18n="playerShareBtn">🔗 Link kopieren</button>
+    <button class="share-btn" id="shareToggleBtn" data-i18n="shareToggleBtn">🔗 Teilen</button>
+
+    <div class="share-panel collapsed" id="sharePanel">
+      <button class="share-panel-btn" id="copySettingsBtn" data-i18n="copySettingsBtn">📋 Kopieren</button>
+      <div class="field">
+        <input type="text" id="pasteSettingsInput" data-i18n-placeholder="pasteSettingsPrompt" placeholder="Link oder Code hier einfügen:">
+      </div>
+      <button class="share-panel-btn primary" id="applyPasteSettingsBtn" data-i18n="applyPasteSettingsBtn">✓ Anwenden</button>
+      <span class="paste-settings-feedback" id="pasteSettingsFeedback"></span>
+    </div>
+
     <div class="export-status" id="exportStatus"></div>
   </div>
 
@@ -882,16 +968,63 @@
     return ok;
   }
 
-  document.getElementById('shareBtn').addEventListener('click', () => {
+  function toggleSharePanel(){
+    const panel = document.getElementById('sharePanel');
+    const input = document.getElementById('pasteSettingsInput');
+    const feedback = document.getElementById('pasteSettingsFeedback');
+    const toggleBtn = document.getElementById('shareToggleBtn');
+    const willShow = panel.classList.contains('collapsed');
+    panel.classList.toggle('collapsed');
+    toggleBtn.classList.toggle('active', willShow);
+    feedback.textContent = '';
+    feedback.className = 'paste-settings-feedback';
+    if(willShow){
+      input.value = '';
+      input.focus();
+    }
+  }
+
+  function copyHeroLinkToClipboard(){
     const link = buildHeroShareURL();
-    const status = document.getElementById('exportStatus');
+    const btn = document.getElementById('copySettingsBtn');
+    const original = btn.textContent;
+    const flash = (msg) => { btn.textContent = msg; setTimeout(() => btn.textContent = original, 1800); };
     if(navigator.clipboard && navigator.clipboard.writeText){
       navigator.clipboard.writeText(link)
-        .then(() => flashStatus(status, t('playerShareCopied')))
-        .catch(() => flashStatus(status, fallbackCopyToClipboard(link) ? t('playerShareCopied') : t('playerShareCopyError')));
+        .then(() => flash(t('settingsCopied')))
+        .catch(() => flash(fallbackCopyToClipboard(link) ? t('settingsCopied') : t('settingsCopyError')));
     } else {
-      flashStatus(status, fallbackCopyToClipboard(link) ? t('playerShareCopied') : t('playerShareCopyError'));
+      flash(fallbackCopyToClipboard(link) ? t('settingsCopied') : t('settingsCopyError'));
     }
+  }
+
+  function applyPastedHeroSettings(){
+    const input = document.getElementById('pasteSettingsInput');
+    const feedback = document.getElementById('pasteSettingsFeedback');
+    const code = input.value.trim();
+    if(!code) return;
+    try{
+      applyHeroSettings(decodeHeroSettings(code));
+      feedback.textContent = t('settingsCopied');
+      feedback.className = 'paste-settings-feedback success';
+      input.value = '';
+      setTimeout(() => {
+        document.getElementById('sharePanel').classList.add('collapsed');
+        document.getElementById('shareToggleBtn').classList.remove('active');
+        feedback.textContent = '';
+        feedback.className = 'paste-settings-feedback';
+      }, 1200);
+    } catch(e){
+      feedback.textContent = t('pasteSettingsError');
+      feedback.className = 'paste-settings-feedback';
+    }
+  }
+
+  document.getElementById('shareToggleBtn').addEventListener('click', toggleSharePanel);
+  document.getElementById('copySettingsBtn').addEventListener('click', copyHeroLinkToClipboard);
+  document.getElementById('applyPasteSettingsBtn').addEventListener('click', applyPastedHeroSettings);
+  document.getElementById('pasteSettingsInput').addEventListener('keydown', function(e){
+    if(e.key === 'Enter') applyPastedHeroSettings();
   });
 
   // ---------- Sprachauswahl ----------
