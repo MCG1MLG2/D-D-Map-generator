@@ -124,7 +124,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 نسخ الرابط",
     "playerShareCopied": "تم نسخ الرابط!",
     "playerShareCopyError": "فشل النسخ.",
-    "backToHome": "الرئيسية"
+    "backToHome": "الرئيسية",
+    "playerLblPortrait": "صورة شخصية (اختياري)",
+    "playerUploadBtn": "🖼 رفع صورة",
+    "playerRemoveImageBtn": "✕ إزالة"
   },
   "bg": {
     "nativeName": "Български",
@@ -227,7 +230,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Копирай връзка",
     "playerShareCopied": "Връзката е копирана!",
     "playerShareCopyError": "Копирането не бе успешно.",
-    "backToHome": "Начало"
+    "backToHome": "Начало",
+    "playerLblPortrait": "Портретна снимка (незадължително)",
+    "playerUploadBtn": "🖼 Качи изображение",
+    "playerRemoveImageBtn": "✕ Премахни"
   },
   "bn": {
     "nativeName": "বাংলা",
@@ -330,7 +336,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 লিংক কপি করুন",
     "playerShareCopied": "লিংক কপি হয়েছে!",
     "playerShareCopyError": "কপি ব্যর্থ হয়েছে।",
-    "backToHome": "হোম"
+    "backToHome": "হোম",
+    "playerLblPortrait": "প্রতিকৃতি ছবি (ঐচ্ছিক)",
+    "playerUploadBtn": "🖼 ছবি আপলোড করুন",
+    "playerRemoveImageBtn": "✕ সরান"
   },
   "ca": {
     "nativeName": "Català",
@@ -440,7 +449,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Copia l'enllaç",
     "playerShareCopied": "S'ha copiat l'enllaç!",
     "playerShareCopyError": "Ha fallat la còpia.",
-    "backToHome": "Inici"
+    "backToHome": "Inici",
+    "playerLblPortrait": "Imatge de retrat (opcional)",
+    "playerUploadBtn": "🖼 Puja una imatge",
+    "playerRemoveImageBtn": "✕ Elimina"
   },
   "cs": {
     "nativeName": "Čeština",
@@ -543,7 +555,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Kopírovat odkaz",
     "playerShareCopied": "Odkaz zkopírován!",
     "playerShareCopyError": "Kopírování selhalo.",
-    "backToHome": "Domů"
+    "backToHome": "Domů",
+    "playerLblPortrait": "Portrétní obrázek (volitelné)",
+    "playerUploadBtn": "🖼 Nahrát obrázek",
+    "playerRemoveImageBtn": "✕ Odebrat"
   },
   "da": {
     "nativeName": "Dansk",
@@ -646,7 +661,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Kopiér link",
     "playerShareCopied": "Link kopieret!",
     "playerShareCopyError": "Kopiering mislykkedes.",
-    "backToHome": "Start"
+    "backToHome": "Start",
+    "playerLblPortrait": "Portrætbillede (valgfrit)",
+    "playerUploadBtn": "🖼 Upload billede",
+    "playerRemoveImageBtn": "✕ Fjern"
   },
   "de": {
     "nativeName": "Deutsch",
@@ -756,7 +774,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Link kopieren",
     "playerShareCopied": "Link kopiert!",
     "playerShareCopyError": "Kopieren fehlgeschlagen.",
-    "backToHome": "Start"
+    "backToHome": "Start",
+    "playerLblPortrait": "Porträtbild (optional)",
+    "playerUploadBtn": "🖼 Bild hochladen",
+    "playerRemoveImageBtn": "✕ Entfernen"
   },
   "el": {
     "nativeName": "Ελληνικά",
@@ -859,7 +880,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Αντιγραφή συνδέσμου",
     "playerShareCopied": "Ο σύνδεσμος αντιγράφηκε!",
     "playerShareCopyError": "Η αντιγραφή απέτυχε.",
-    "backToHome": "Αρχική"
+    "backToHome": "Αρχική",
+    "playerLblPortrait": "Εικόνα πορτρέτου (προαιρετικό)",
+    "playerUploadBtn": "🖼 Μεταφόρτωση εικόνας",
+    "playerRemoveImageBtn": "✕ Αφαίρεση"
   },
   "en": {
     "nativeName": "English",
@@ -969,7 +993,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Copy link",
     "playerShareCopied": "Link copied!",
     "playerShareCopyError": "Copy failed.",
-    "backToHome": "Home"
+    "backToHome": "Home",
+    "playerLblPortrait": "Portrait image (optional)",
+    "playerUploadBtn": "🖼 Upload image",
+    "playerRemoveImageBtn": "✕ Remove"
   },
   "es": {
     "nativeName": "Español",
@@ -1072,7 +1099,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Copiar enlace",
     "playerShareCopied": "¡Enlace copiado!",
     "playerShareCopyError": "Error al copiar.",
-    "backToHome": "Inicio"
+    "backToHome": "Inicio",
+    "playerLblPortrait": "Imagen de retrato (opcional)",
+    "playerUploadBtn": "🖼 Subir imagen",
+    "playerRemoveImageBtn": "✕ Quitar"
   },
   "et": {
     "nativeName": "Eesti",
@@ -1175,7 +1205,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Kopeeri link",
     "playerShareCopied": "Link kopeeritud!",
     "playerShareCopyError": "Kopeerimine ebaõnnestus.",
-    "backToHome": "Avaleht"
+    "backToHome": "Avaleht",
+    "playerLblPortrait": "Portreepilt (valikuline)",
+    "playerUploadBtn": "🖼 Laadi pilt üles",
+    "playerRemoveImageBtn": "✕ Eemalda"
   },
   "eu": {
     "nativeName": "Euskara",
@@ -1285,7 +1318,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Kopiatu lotura",
     "playerShareCopied": "Lotura kopiatu da!",
     "playerShareCopyError": "Kopiatzeak huts egin du.",
-    "backToHome": "Hasiera"
+    "backToHome": "Hasiera",
+    "playerLblPortrait": "Erretratu-irudia (aukerakoa)",
+    "playerUploadBtn": "🖼 Igo irudia",
+    "playerRemoveImageBtn": "✕ Kendu"
   },
   "fa": {
     "nativeName": "فارسی",
@@ -1395,7 +1431,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 کپی لینک",
     "playerShareCopied": "لینک کپی شد!",
     "playerShareCopyError": "کپی ناموفق بود.",
-    "backToHome": "خانه"
+    "backToHome": "خانه",
+    "playerLblPortrait": "تصویر پرتره (اختیاری)",
+    "playerUploadBtn": "🖼 بارگذاری تصویر",
+    "playerRemoveImageBtn": "✕ حذف"
   },
   "fi": {
     "nativeName": "Suomi",
@@ -1498,7 +1537,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Kopioi linkki",
     "playerShareCopied": "Linkki kopioitu!",
     "playerShareCopyError": "Kopiointi epäonnistui.",
-    "backToHome": "Etusivu"
+    "backToHome": "Etusivu",
+    "playerLblPortrait": "Muotokuva (valinnainen)",
+    "playerUploadBtn": "🖼 Lataa kuva",
+    "playerRemoveImageBtn": "✕ Poista"
   },
   "fr": {
     "nativeName": "Français",
@@ -1601,7 +1643,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Copier le lien",
     "playerShareCopied": "Lien copié !",
     "playerShareCopyError": "Échec de la copie.",
-    "backToHome": "Accueil"
+    "backToHome": "Accueil",
+    "playerLblPortrait": "Image du portrait (facultatif)",
+    "playerUploadBtn": "🖼 Importer une image",
+    "playerRemoveImageBtn": "✕ Retirer"
   },
   "ga": {
     "nativeName": "Gaeilge",
@@ -1704,7 +1749,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Cóipeáil an nasc",
     "playerShareCopied": "Nasc cóipeáilte!",
     "playerShareCopyError": "Theip ar an gcóipeáil.",
-    "backToHome": "Baile"
+    "backToHome": "Baile",
+    "playerLblPortrait": "Íomhá phortráide (roghnach)",
+    "playerUploadBtn": "🖼 Uaslódáil íomhá",
+    "playerRemoveImageBtn": "✕ Bain"
   },
   "hi": {
     "nativeName": "हिन्दी",
@@ -1807,7 +1855,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 लिंक कॉपी करें",
     "playerShareCopied": "लिंक कॉपी हो गया!",
     "playerShareCopyError": "कॉपी विफल रहा।",
-    "backToHome": "होम"
+    "backToHome": "होम",
+    "playerLblPortrait": "चित्र छवि (वैकल्पिक)",
+    "playerUploadBtn": "🖼 छवि अपलोड करें",
+    "playerRemoveImageBtn": "✕ हटाएं"
   },
   "hr": {
     "nativeName": "Hrvatski",
@@ -1910,7 +1961,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Kopiraj poveznicu",
     "playerShareCopied": "Poveznica kopirana!",
     "playerShareCopyError": "Kopiranje nije uspjelo.",
-    "backToHome": "Početna"
+    "backToHome": "Početna",
+    "playerLblPortrait": "Slika portreta (neobavezno)",
+    "playerUploadBtn": "🖼 Prenesi sliku",
+    "playerRemoveImageBtn": "✕ Ukloni"
   },
   "hu": {
     "nativeName": "Magyar",
@@ -2013,7 +2067,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Link másolása",
     "playerShareCopied": "Link másolva!",
     "playerShareCopyError": "A másolás nem sikerült.",
-    "backToHome": "Kezdőlap"
+    "backToHome": "Kezdőlap",
+    "playerLblPortrait": "Portrékép (opcionális)",
+    "playerUploadBtn": "🖼 Kép feltöltése",
+    "playerRemoveImageBtn": "✕ Eltávolítás"
   },
   "id": {
     "nativeName": "Bahasa Indonesia",
@@ -2116,7 +2173,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Salin tautan",
     "playerShareCopied": "Tautan disalin!",
     "playerShareCopyError": "Gagal menyalin.",
-    "backToHome": "Beranda"
+    "backToHome": "Beranda",
+    "playerLblPortrait": "Gambar potret (opsional)",
+    "playerUploadBtn": "🖼 Unggah gambar",
+    "playerRemoveImageBtn": "✕ Hapus"
   },
   "is": {
     "nativeName": "Íslenska",
@@ -2219,7 +2279,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Afrita tengil",
     "playerShareCopied": "Tengill afritaður!",
     "playerShareCopyError": "Afritun mistókst.",
-    "backToHome": "Heim"
+    "backToHome": "Heim",
+    "playerLblPortrait": "Andlitsmynd (valfrjálst)",
+    "playerUploadBtn": "🖼 Hlaða upp mynd",
+    "playerRemoveImageBtn": "✕ Fjarlægja"
   },
   "it": {
     "nativeName": "Italiano",
@@ -2322,7 +2385,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Copia link",
     "playerShareCopied": "Link copiato!",
     "playerShareCopyError": "Copia non riuscita.",
-    "backToHome": "Home"
+    "backToHome": "Home",
+    "playerLblPortrait": "Immagine ritratto (opzionale)",
+    "playerUploadBtn": "🖼 Carica immagine",
+    "playerRemoveImageBtn": "✕ Rimuovi"
   },
   "ja": {
     "nativeName": "日本語",
@@ -2425,7 +2491,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 リンクをコピー",
     "playerShareCopied": "リンクをコピーしました！",
     "playerShareCopyError": "コピーに失敗しました。",
-    "backToHome": "ホーム"
+    "backToHome": "ホーム",
+    "playerLblPortrait": "肖像画像（任意）",
+    "playerUploadBtn": "🖼 画像をアップロード",
+    "playerRemoveImageBtn": "✕ 削除"
   },
   "ko": {
     "nativeName": "한국어",
@@ -2528,7 +2597,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 링크 복사",
     "playerShareCopied": "링크가 복사되었습니다!",
     "playerShareCopyError": "복사에 실패했습니다.",
-    "backToHome": "홈"
+    "backToHome": "홈",
+    "playerLblPortrait": "초상 이미지 (선택 사항)",
+    "playerUploadBtn": "🖼 이미지 업로드",
+    "playerRemoveImageBtn": "✕ 제거"
   },
   "lt": {
     "nativeName": "Lietuvių",
@@ -2631,7 +2703,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Kopijuoti nuorodą",
     "playerShareCopied": "Nuoroda nukopijuota!",
     "playerShareCopyError": "Kopijuoti nepavyko.",
-    "backToHome": "Pradžia"
+    "backToHome": "Pradžia",
+    "playerLblPortrait": "Portreto nuotrauka (neprivaloma)",
+    "playerUploadBtn": "🖼 Įkelti nuotrauką",
+    "playerRemoveImageBtn": "✕ Pašalinti"
   },
   "lv": {
     "nativeName": "Latviešu",
@@ -2734,7 +2809,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Kopēt saiti",
     "playerShareCopied": "Saite nokopēta!",
     "playerShareCopyError": "Kopēšana neizdevās.",
-    "backToHome": "Sākums"
+    "backToHome": "Sākums",
+    "playerLblPortrait": "Portreta attēls (nav obligāti)",
+    "playerUploadBtn": "🖼 Augšupielādēt attēlu",
+    "playerRemoveImageBtn": "✕ Noņemt"
   },
   "mr": {
     "nativeName": "मराठी",
@@ -2837,7 +2915,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 लिंक कॉपी करा",
     "playerShareCopied": "लिंक कॉपी झाली!",
     "playerShareCopyError": "कॉपी करणे अयशस्वी.",
-    "backToHome": "मुख्यपृष्ठ"
+    "backToHome": "मुख्यपृष्ठ",
+    "playerLblPortrait": "चित्र प्रतिमा (ऐच्छिक)",
+    "playerUploadBtn": "🖼 प्रतिमा अपलोड करा",
+    "playerRemoveImageBtn": "✕ काढा"
   },
   "mt": {
     "nativeName": "Malti",
@@ -2940,7 +3021,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Ikkopja l-link",
     "playerShareCopied": "Il-link ġie kkopjat!",
     "playerShareCopyError": "Il-kopjar falla.",
-    "backToHome": "Home"
+    "backToHome": "Home",
+    "playerLblPortrait": "Ritratt (fakultattiv)",
+    "playerUploadBtn": "🖼 Tella' stampa",
+    "playerRemoveImageBtn": "✕ Neħħi"
   },
   "nl": {
     "nativeName": "Nederlands",
@@ -3043,7 +3127,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Link kopiëren",
     "playerShareCopied": "Link gekopieerd!",
     "playerShareCopyError": "Kopiëren mislukt.",
-    "backToHome": "Start"
+    "backToHome": "Start",
+    "playerLblPortrait": "Portretafbeelding (optioneel)",
+    "playerUploadBtn": "🖼 Afbeelding uploaden",
+    "playerRemoveImageBtn": "✕ Verwijderen"
   },
   "no": {
     "nativeName": "Norsk",
@@ -3146,7 +3233,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Kopier lenke",
     "playerShareCopied": "Lenke kopiert!",
     "playerShareCopyError": "Kopiering mislyktes.",
-    "backToHome": "Start"
+    "backToHome": "Start",
+    "playerLblPortrait": "Portrettbilde (valgfritt)",
+    "playerUploadBtn": "🖼 Last opp bilde",
+    "playerRemoveImageBtn": "✕ Fjern"
   },
   "pl": {
     "nativeName": "Polski",
@@ -3249,7 +3339,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Kopiuj link",
     "playerShareCopied": "Link skopiowany!",
     "playerShareCopyError": "Kopiowanie nie powiodło się.",
-    "backToHome": "Start"
+    "backToHome": "Start",
+    "playerLblPortrait": "Portret (opcjonalnie)",
+    "playerUploadBtn": "🖼 Prześlij obraz",
+    "playerRemoveImageBtn": "✕ Usuń"
   },
   "pt": {
     "nativeName": "Português",
@@ -3352,7 +3445,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Copiar link",
     "playerShareCopied": "Link copiado!",
     "playerShareCopyError": "Falha ao copiar.",
-    "backToHome": "Início"
+    "backToHome": "Início",
+    "playerLblPortrait": "Imagem de retrato (opcional)",
+    "playerUploadBtn": "🖼 Carregar imagem",
+    "playerRemoveImageBtn": "✕ Remover"
   },
   "ro": {
     "nativeName": "Română",
@@ -3455,7 +3551,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Copiază linkul",
     "playerShareCopied": "Link copiat!",
     "playerShareCopyError": "Copierea a eșuat.",
-    "backToHome": "Acasă"
+    "backToHome": "Acasă",
+    "playerLblPortrait": "Imagine portret (opțional)",
+    "playerUploadBtn": "🖼 Încarcă imagine",
+    "playerRemoveImageBtn": "✕ Elimină"
   },
   "ru": {
     "nativeName": "Русский",
@@ -3558,7 +3657,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Скопировать ссылку",
     "playerShareCopied": "Ссылка скопирована!",
     "playerShareCopyError": "Не удалось скопировать.",
-    "backToHome": "Главная"
+    "backToHome": "Главная",
+    "playerLblPortrait": "Изображение портрета (необязательно)",
+    "playerUploadBtn": "🖼 Загрузить изображение",
+    "playerRemoveImageBtn": "✕ Удалить"
   },
   "sk": {
     "nativeName": "Slovenčina",
@@ -3661,7 +3763,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Kopírovať odkaz",
     "playerShareCopied": "Odkaz skopírovaný!",
     "playerShareCopyError": "Kopírovanie zlyhalo.",
-    "backToHome": "Domov"
+    "backToHome": "Domov",
+    "playerLblPortrait": "Portrétový obrázok (voliteľné)",
+    "playerUploadBtn": "🖼 Nahrať obrázok",
+    "playerRemoveImageBtn": "✕ Odstrániť"
   },
   "sl": {
     "nativeName": "Slovenščina",
@@ -3764,7 +3869,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Kopiraj povezavo",
     "playerShareCopied": "Povezava kopirana!",
     "playerShareCopyError": "Kopiranje ni uspelo.",
-    "backToHome": "Domov"
+    "backToHome": "Domov",
+    "playerLblPortrait": "Slika portreta (neobvezno)",
+    "playerUploadBtn": "🖼 Naloži sliko",
+    "playerRemoveImageBtn": "✕ Odstrani"
   },
   "sq": {
     "nativeName": "Shqip",
@@ -3867,7 +3975,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Kopjo lidhjen",
     "playerShareCopied": "Lidhja u kopjua!",
     "playerShareCopyError": "Kopjimi dështoi.",
-    "backToHome": "Kryefaqja"
+    "backToHome": "Kryefaqja",
+    "playerLblPortrait": "Fotografi portreti (opsionale)",
+    "playerUploadBtn": "🖼 Ngarko foto",
+    "playerRemoveImageBtn": "✕ Hiq"
   },
   "sr": {
     "nativeName": "Српски",
@@ -3970,7 +4081,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Копирај везу",
     "playerShareCopied": "Веза копирана!",
     "playerShareCopyError": "Копирање није успело.",
-    "backToHome": "Почетна"
+    "backToHome": "Почетна",
+    "playerLblPortrait": "Слика портрета (опционо)",
+    "playerUploadBtn": "🖼 Отпреми слику",
+    "playerRemoveImageBtn": "✕ Уклони"
   },
   "sv": {
     "nativeName": "Svenska",
@@ -4073,7 +4187,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Kopiera länk",
     "playerShareCopied": "Länk kopierad!",
     "playerShareCopyError": "Kopiering misslyckades.",
-    "backToHome": "Start"
+    "backToHome": "Start",
+    "playerLblPortrait": "Porträttbild (valfritt)",
+    "playerUploadBtn": "🖼 Ladda upp bild",
+    "playerRemoveImageBtn": "✕ Ta bort"
   },
   "sw": {
     "nativeName": "Kiswahili",
@@ -4176,7 +4293,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Nakili kiungo",
     "playerShareCopied": "Kiungo kimenakiliwa!",
     "playerShareCopyError": "Kunakili kumeshindwa.",
-    "backToHome": "Nyumbani"
+    "backToHome": "Nyumbani",
+    "playerLblPortrait": "Picha ya sura (si lazima)",
+    "playerUploadBtn": "🖼 Pakia picha",
+    "playerRemoveImageBtn": "✕ Ondoa"
   },
   "ta": {
     "nativeName": "தமிழ்",
@@ -4279,7 +4399,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 இணைப்பை நகலெடு",
     "playerShareCopied": "இணைப்பு நகலெடுக்கப்பட்டது!",
     "playerShareCopyError": "நகலெடுப்பு தோல்வியடைந்தது.",
-    "backToHome": "முகப்பு"
+    "backToHome": "முகப்பு",
+    "playerLblPortrait": "உருவப்படம் (விருப்பத்திற்குரியது)",
+    "playerUploadBtn": "🖼 படத்தை பதிவேற்று",
+    "playerRemoveImageBtn": "✕ அகற்று"
   },
   "te": {
     "nativeName": "తెలుగు",
@@ -4382,7 +4505,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 లింక్ కాపీ చేయి",
     "playerShareCopied": "లింక్ కాపీ చేయబడింది!",
     "playerShareCopyError": "కాపీ విఫలమైంది.",
-    "backToHome": "హోమ్"
+    "backToHome": "హోమ్",
+    "playerLblPortrait": "చిత్తరువు (ఐచ్ఛికం)",
+    "playerUploadBtn": "🖼 చిత్రాన్ని అప్‌లోడ్ చేయండి",
+    "playerRemoveImageBtn": "✕ తీసివేయండి"
   },
   "th": {
     "nativeName": "ไทย",
@@ -4492,7 +4618,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 คัดลอกลิงก์",
     "playerShareCopied": "คัดลอกลิงก์แล้ว!",
     "playerShareCopyError": "คัดลอกไม่สำเร็จ",
-    "backToHome": "หน้าแรก"
+    "backToHome": "หน้าแรก",
+    "playerLblPortrait": "ภาพเหมือน (ไม่บังคับ)",
+    "playerUploadBtn": "🖼 อัปโหลดภาพ",
+    "playerRemoveImageBtn": "✕ ลบ"
   },
   "tr": {
     "nativeName": "Türkçe",
@@ -4595,7 +4724,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Bağlantıyı kopyala",
     "playerShareCopied": "Bağlantı kopyalandı!",
     "playerShareCopyError": "Kopyalama başarısız.",
-    "backToHome": "Ana Sayfa"
+    "backToHome": "Ana Sayfa",
+    "playerLblPortrait": "Portre resmi (isteğe bağlı)",
+    "playerUploadBtn": "🖼 Resim yükle",
+    "playerRemoveImageBtn": "✕ Kaldır"
   },
   "uk": {
     "nativeName": "Українська",
@@ -4698,7 +4830,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Копіювати посилання",
     "playerShareCopied": "Посилання скопійовано!",
     "playerShareCopyError": "Не вдалося скопіювати.",
-    "backToHome": "Головна"
+    "backToHome": "Головна",
+    "playerLblPortrait": "Зображення портрета (необов’язково)",
+    "playerUploadBtn": "🖼 Завантажити зображення",
+    "playerRemoveImageBtn": "✕ Видалити"
   },
   "ur": {
     "nativeName": "اردو",
@@ -4801,7 +4936,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 لنک کاپی کریں",
     "playerShareCopied": "لنک کاپی ہو گیا!",
     "playerShareCopyError": "کاپی ناکام ہوگئی۔",
-    "backToHome": "ہوم"
+    "backToHome": "ہوم",
+    "playerLblPortrait": "تصویر (اختیاری)",
+    "playerUploadBtn": "🖼 تصویر اپ لوڈ کریں",
+    "playerRemoveImageBtn": "✕ ہٹائیں"
   },
   "vi": {
     "nativeName": "Tiếng Việt",
@@ -4904,7 +5042,10 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 Sao chép liên kết",
     "playerShareCopied": "Đã sao chép liên kết!",
     "playerShareCopyError": "Sao chép thất bại.",
-    "backToHome": "Trang chủ"
+    "backToHome": "Trang chủ",
+    "playerLblPortrait": "Ảnh chân dung (tùy chọn)",
+    "playerUploadBtn": "🖼 Tải ảnh lên",
+    "playerRemoveImageBtn": "✕ Xóa"
   },
   "zh": {
     "nativeName": "中文",
@@ -5007,6 +5148,9 @@ const LANGUAGES = {
     "playerShareBtn": "🔗 复制链接",
     "playerShareCopied": "链接已复制！",
     "playerShareCopyError": "复制失败。",
-    "backToHome": "首页"
+    "backToHome": "首页",
+    "playerLblPortrait": "肖像图片（可选）",
+    "playerUploadBtn": "🖼 上传图片",
+    "playerRemoveImageBtn": "✕ 移除"
   }
 };
