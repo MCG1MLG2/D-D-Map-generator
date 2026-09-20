@@ -277,7 +277,34 @@
     .board {
       padding: 70px 24px 36px;
     }
+    .github-link {
+      bottom: 12px;
+      right: 12px;
+      padding: 6px 10px;
+      font-size: 12px;
+    }
   }
+
+  .github-link {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(180deg, var(--parchment) 0%, var(--parchment-dark) 100%);
+    border: 1px solid var(--gold);
+    border-radius: 6px;
+    padding: 8px 12px;
+    box-shadow: 0 6px 16px var(--shadow);
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .github-link:hover { filter: brightness(1.06); }
 </style>
 </head>
 
@@ -287,6 +314,10 @@
     <span class="globe">🌐</span>
     <select id="langSelect" aria-label="Sprache wählen"></select>
   </div>
+
+  <a href="https://github.com/MCG1MLG2/D-D-Map-generator" class="github-link" target="_blank" rel="noopener">
+    <span aria-hidden="true">🐙</span> <span>GitHub</span>
+  </a>
 
   <div class="board">
     <div class="frame"></div>
