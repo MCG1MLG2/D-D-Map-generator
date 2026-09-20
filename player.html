@@ -323,7 +323,35 @@
     display:flex; align-items:center; justify-content:center;
     font-size:2.4rem;
     box-shadow:inset 0 0 12px rgba(0,0,0,.35);
+    overflow:hidden;
   }
+  .medallion img{
+    width:100%; height:100%;
+    object-fit:cover;
+    border-radius:50%;
+  }
+  .portrait-upload-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .upload-btn{
+    font-family:'Cinzel', serif;
+    font-size:.82rem;
+    font-weight:600;
+    color:var(--gold-bright);
+    background:transparent;
+    border:1px solid var(--gold);
+    border-radius:4px;
+    padding:9px 14px;
+    cursor:pointer;
+  }
+  .upload-btn:hover{ background:rgba(182,144,63,.12); }
+  .upload-btn.remove{
+    color:#d98a8a;
+    border-color:#7c2020;
+  }
+  .upload-btn.remove:hover{ background:rgba(124,32,32,.15); }
   .ability-box{
     flex:1;
     background:rgba(255,255,255,.28);
@@ -637,6 +665,15 @@
     <p class="hint" data-i18n-html="playerHintEmoji">Tipp: Emoji-Tastatur öffnen mit <kbd>⊞ Win</kbd> + <kbd>.</kbd> (Windows) oder <kbd>⌃⌘Space</kbd> (Mac)</p>
 
     <div class="field">
+      <label data-i18n="playerLblPortrait">Porträtbild (optional)</label>
+      <div class="portrait-upload-row">
+        <input type="file" id="heroImageUpload" accept="image/*" hidden>
+        <button type="button" class="upload-btn" id="heroImageUploadBtn" data-i18n="playerUploadBtn">🖼 Bild hochladen</button>
+        <button type="button" class="upload-btn remove" id="heroImageRemoveBtn" data-i18n="playerRemoveImageBtn" hidden>✕ Entfernen</button>
+      </div>
+    </div>
+
+    <div class="field">
       <label for="heroClass" data-i18n="playerLblClass">Klasse</label>
       <select id="heroClass">
         <option value="" data-i18n="playerClassNone">— Keine —</option>
@@ -815,6 +852,50 @@
     }
   }
 
+  let heroImageData = null;
+
+  function setHeroImage(dataUrl){
+    heroImageData = dataUrl;
+    document.getElementById('heroImageRemoveBtn').hidden = !dataUrl;
+    render();
+  }
+
+  function resizeImageToDataURL(file, callback){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      const img = new Image();
+      img.onload = function(){
+        const size = 240;
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        const scale = Math.max(size / img.width, size / img.height);
+        const sw = img.width * scale;
+        const sh = img.height * scale;
+        ctx.drawImage(img, (size - sw) / 2, (size - sh) / 2, sw, sh);
+        callback(canvas.toDataURL('image/jpeg', 0.85));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  document.getElementById('heroImageUploadBtn').addEventListener('click', () => {
+    document.getElementById('heroImageUpload').click();
+  });
+
+  document.getElementById('heroImageUpload').addEventListener('change', function(){
+    const file = this.files && this.files[0];
+    if(!file) return;
+    resizeImageToDataURL(file, setHeroImage);
+    this.value = '';
+  });
+
+  document.getElementById('heroImageRemoveBtn').addEventListener('click', () => {
+    setHeroImage(null);
+  });
+
   const CLASSES = {
     mage:      { icon:'🧙', nameKey:'playerClassMageName',      perkKey:'playerClassMagePerk' },
     knight:    { icon:'🛡️', nameKey:'playerClassKnightName',    perkKey:'playerClassKnightPerk' },
@@ -838,7 +919,16 @@
     document.getElementById('epithetOut').textContent = epithet;
     document.getElementById('rankOut').textContent = rank;
     document.getElementById('abilityOut').innerHTML = ability;
-    document.getElementById('medallionOut').textContent = document.getElementById('heroIcon').value || '🐺';
+    const medallionOut = document.getElementById('medallionOut');
+    if(heroImageData){
+      medallionOut.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = heroImageData;
+      img.alt = '';
+      medallionOut.appendChild(img);
+    } else {
+      medallionOut.textContent = document.getElementById('heroIcon').value || '🐺';
+    }
 
     const classKey = document.getElementById('heroClass').value;
     const classPerkRow = document.getElementById('classPerkRow');
@@ -907,7 +997,8 @@
       willCount: document.getElementById('willCount').value,
       accent: PALETTE.indexOf(selectedPalette),
       showStorage: document.getElementById('showStorage').checked,
-      storageCapacity: document.getElementById('storageCapacity').value
+      storageCapacity: document.getElementById('storageCapacity').value,
+      img: heroImageData || undefined
     };
   }
 
@@ -941,6 +1032,8 @@
     setVal('willCount', s.willCount);
     setChecked('showStorage', s.showStorage);
     setVal('storageCapacity', s.storageCapacity);
+    heroImageData = s.img || null;
+    document.getElementById('heroImageRemoveBtn').hidden = !heroImageData;
 
     if(typeof s.accent === 'number' && PALETTE[s.accent]){
       selectedPalette = PALETTE[s.accent];
