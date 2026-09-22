@@ -870,7 +870,7 @@
     reader.onload = function(e){
       const img = new Image();
       img.onload = function(){
-        const size = 240;
+        const size = 160;
         const canvas = document.createElement('canvas');
         canvas.width = size;
         canvas.height = size;
@@ -879,7 +879,7 @@
         const sw = img.width * scale;
         const sh = img.height * scale;
         ctx.drawImage(img, (size - sw) / 2, (size - sh) / 2, sw, sh);
-        callback(canvas.toDataURL('image/jpeg', 0.85));
+        callback(canvas.toDataURL('image/jpeg', 0.7));
       };
       img.src = e.target.result;
     };
@@ -989,22 +989,23 @@
 
   // ---------- Held kopieren / per Link teilen ----------
   function collectHeroSettings(){
-    return {
-      v: 1,
-      lang: currentLang,
-      name: document.getElementById('heroName').value,
-      epithet: document.getElementById('heroEpithet').value,
-      rank: document.getElementById('heroRank').value,
-      icon: document.getElementById('heroIcon').value,
-      cls: document.getElementById('heroClass').value,
-      ability: document.getElementById('heroAbility').innerHTML,
-      strengthCount: document.getElementById('strengthCount').value,
-      willCount: document.getElementById('willCount').value,
-      accent: PALETTE.indexOf(selectedPalette),
-      showStorage: document.getElementById('showStorage').checked,
-      storageCapacity: document.getElementById('storageCapacity').value,
-      img: heroImageData || undefined
+    const s = {
+      v: 2,
+      l: currentLang,
+      n: document.getElementById('heroName').value,
+      e: document.getElementById('heroEpithet').value,
+      r: document.getElementById('heroRank').value,
+      i: document.getElementById('heroIcon').value,
+      c: document.getElementById('heroClass').value,
+      a: document.getElementById('heroAbility').innerHTML,
+      sc: document.getElementById('strengthCount').value,
+      wc: document.getElementById('willCount').value,
+      ac: PALETTE.indexOf(selectedPalette),
+      ss: document.getElementById('showStorage').checked,
+      sca: document.getElementById('storageCapacity').value
     };
+    if(heroImageData) s.im = heroImageData;
+    return s;
   }
 
   function encodeHeroSettings(obj){
@@ -1026,26 +1027,40 @@
   function applyHeroSettings(s){
     const setVal = (id, v) => { if(v !== undefined){ document.getElementById(id).value = v; } };
     const setChecked = (id, v) => { if(v !== undefined){ document.getElementById(id).checked = v; } };
+    // v2 uses short keys; fall back to legacy v1 long keys for older shared links
+    const name = s.n !== undefined ? s.n : s.name;
+    const epithet = s.e !== undefined ? s.e : s.epithet;
+    const rank = s.r !== undefined ? s.r : s.rank;
+    const icon = s.i !== undefined ? s.i : s.icon;
+    const cls = s.c !== undefined ? s.c : s.cls;
+    const ability = s.a !== undefined ? s.a : s.ability;
+    const strengthCount = s.sc !== undefined ? s.sc : s.strengthCount;
+    const willCount = s.wc !== undefined ? s.wc : s.willCount;
+    const accent = s.ac !== undefined ? s.ac : s.accent;
+    const showStorage = s.ss !== undefined ? s.ss : s.showStorage;
+    const storageCapacity = s.sca !== undefined ? s.sca : s.storageCapacity;
+    const img = s.im !== undefined ? s.im : s.img;
+    const lang = s.l !== undefined ? s.l : s.lang;
 
-    setVal('heroName', s.name);
-    setVal('heroEpithet', s.epithet);
-    setVal('heroRank', s.rank);
-    setVal('heroIcon', s.icon);
-    setVal('heroClass', s.cls);
-    if(s.ability !== undefined) document.getElementById('heroAbility').innerHTML = s.ability;
-    setVal('strengthCount', s.strengthCount);
-    setVal('willCount', s.willCount);
-    setChecked('showStorage', s.showStorage);
-    setVal('storageCapacity', s.storageCapacity);
-    heroImageData = s.img || null;
+    setVal('heroName', name);
+    setVal('heroEpithet', epithet);
+    setVal('heroRank', rank);
+    setVal('heroIcon', icon);
+    setVal('heroClass', cls);
+    if(ability !== undefined) document.getElementById('heroAbility').innerHTML = ability;
+    setVal('strengthCount', strengthCount);
+    setVal('willCount', willCount);
+    setChecked('showStorage', showStorage);
+    setVal('storageCapacity', storageCapacity);
+    heroImageData = img || null;
     document.getElementById('heroImageRemoveBtn').hidden = !heroImageData;
 
-    if(typeof s.accent === 'number' && PALETTE[s.accent]){
-      selectedPalette = PALETTE[s.accent];
-      document.querySelectorAll('.swatch').forEach((el, i) => el.classList.toggle('active', i === s.accent));
+    if(typeof accent === 'number' && PALETTE[accent]){
+      selectedPalette = PALETTE[accent];
+      document.querySelectorAll('.swatch').forEach((el, i) => el.classList.toggle('active', i === accent));
     }
 
-    if(s.lang && LANGUAGES[s.lang]) applyLanguage(s.lang);
+    if(lang && LANGUAGES[lang]) applyLanguage(lang);
     render();
   }
 
