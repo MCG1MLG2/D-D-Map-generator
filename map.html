@@ -1478,7 +1478,94 @@ function collectSettings(){
   };
 }
 
+// Compact code (v2): eight dot-separated fields, numbers in base 36, every
+// dropdown stored as its position in the live <select> list. Roughly 25
+// characters instead of ~460. If a value can't be stored exactly (unusual
+// numbers typed by hand, ...), the old JSON/base64 code is used instead, so a
+// shared link never silently changes a setting. Old links keep working.
+// NOTE: new dropdown options must be appended at the END of their list,
+// otherwise existing v2 links would point at the wrong entry.
+//   2.<seed>.<lang>.<fields>.<castle><mountain><sea><forest><desert>.<outposts><bridges>.<flags>.<merchant>
+const SHARE_SELECT_IDS = ['castlePosition', 'mountainPosition', 'seaPosition', 'forestPosition', 'desertPosition'];
+const SHARE_FLAG_IDS = ['disableOutposts', 'showRiver', 'showActionFields', 'showFlowArrows'];
+const SHARE_INT_RE = /^(0|[1-9]\d*)$/;
+
+function shareSelectValues(id){
+  return Array.from(document.getElementById(id).options).map(o => o.value);
+}
+
+function encodeCompactSettings(s){
+  if(!Number.isSafeInteger(s.seed)) return null;
+  if(typeof s.lang !== 'string' || !/^[a-z]{2}$/.test(s.lang)) return null;
+
+  const smallNum = v => (typeof v === 'string' && SHARE_INT_RE.test(v) && +v <= 35) ? +v : null;
+  const fieldCount = (typeof s.fieldCount === 'string' && SHARE_INT_RE.test(s.fieldCount) && Number.isSafeInteger(+s.fieldCount)) ? +s.fieldCount : null;
+  const outposts = smallNum(s.outpostCount);
+  const bridges = smallNum(s.bridgeCount);
+  let merchant = null;
+  if(s.merchantFieldNumber === '') merchant = 0;
+  else if(typeof s.merchantFieldNumber === 'string' && SHARE_INT_RE.test(s.merchantFieldNumber) && +s.merchantFieldNumber >= 1 && Number.isSafeInteger(+s.merchantFieldNumber)) merchant = +s.merchantFieldNumber;
+  if(fieldCount === null || outposts === null || bridges === null || merchant === null) return null;
+
+  let positions = '';
+  for(const id of SHARE_SELECT_IDS){
+    const idx = shareSelectValues(id).indexOf(s[id]);
+    if(idx < 0 || idx > 35) return null;
+    positions += idx.toString(36);
+  }
+
+  let flags = 0;
+  for(let i = 0; i < SHARE_FLAG_IDS.length; i++){
+    const v = s[SHARE_FLAG_IDS[i]];
+    if(typeof v !== 'boolean') return null;
+    if(v) flags |= (1 << i);
+  }
+
+  return ['2', s.seed.toString(36), s.lang, fieldCount.toString(36), positions,
+          outposts.toString(36) + bridges.toString(36), flags.toString(36), merchant.toString(36)].join('.');
+}
+
+function decodeCompactSettings(raw){
+  const bad = () => new Error('invalid share code');
+  const p = raw.split('.');
+  if(p.length !== 8 || p[0] !== '2') throw bad();
+  const b36 = str => {
+    if(!/^-?[0-9a-z]+$/.test(str)) throw bad();
+    const n = parseInt(str, 36);
+    if(!Number.isSafeInteger(n)) throw bad();
+    return n;
+  };
+
+  if(!/^[a-z]{2}$/.test(p[2])) throw bad();
+  if(!/^[0-9a-z]{5}$/.test(p[4]) || !/^[0-9a-z]{2}$/.test(p[5])) throw bad();
+
+  const s = {
+    v: 2,
+    seed: b36(p[1]),
+    lang: p[2],
+    fieldCount: String(b36(p[3])),
+    outpostCount: String(parseInt(p[5][0], 36)),
+    bridgeCount: String(parseInt(p[5][1], 36))
+  };
+
+  SHARE_SELECT_IDS.forEach((id, i) => {
+    const value = shareSelectValues(id)[parseInt(p[4][i], 36)];
+    if(value === undefined) throw bad();
+    s[id] = value;
+  });
+
+  const flags = b36(p[6]);
+  SHARE_FLAG_IDS.forEach((id, i) => { s[id] = !!(flags & (1 << i)); });
+
+  const merchant = b36(p[7]);
+  if(merchant < 0) throw bad();
+  s.merchantFieldNumber = merchant === 0 ? '' : String(merchant);
+  return s;
+}
+
 function encodeSettings(obj){
+  const compact = encodeCompactSettings(obj);
+  if(compact !== null) return compact;
   return btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
 }
 
@@ -1488,6 +1575,7 @@ function decodeSettings(code){
   const trimmed = code.trim();
   const hashMatch = trimmed.match(/[#&]s=([^&]+)/);
   const raw = hashMatch ? decodeURIComponent(hashMatch[1]) : trimmed;
+  if(/^2\./.test(raw)) return decodeCompactSettings(raw);
   return JSON.parse(decodeURIComponent(escape(atob(raw))));
 }
 
