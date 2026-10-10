@@ -227,6 +227,38 @@
   .paste-settings-feedback.success{ color:#7fae6a; }
   .export-status{font-size:.8rem; color:var(--text-muted); margin-top:8px; min-height:1em;}
 
+  .fs-overlay{
+    position:fixed;
+    inset:0;
+    z-index:200;
+    background:rgba(5,4,3,.94);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:40px;
+  }
+  .fs-overlay.active{ display:flex; }
+  .fs-overlay #card{
+    transition:transform .15s ease;
+  }
+  .fs-close{
+    position:fixed;
+    top:20px;
+    right:20px;
+    z-index:210;
+    width:44px; height:44px;
+    border-radius:50%;
+    background:linear-gradient(180deg, var(--parchment) 0%, var(--parchment-dark, #d3c092) 100%);
+    border:1px solid var(--gold);
+    color:var(--ink);
+    font-family:'Cinzel', serif;
+    font-size:18px;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow:0 6px 16px rgba(0,0,0,.5);
+  }
+  .fs-close:hover{ filter:brightness(1.06); }
+
   /* ---------- Right: preview stage ---------- */
   .stage{
     display:flex;
@@ -264,6 +296,7 @@
 
   .seal{
     position:absolute; top:-20px; right:26px;
+    z-index:5;
     width:64px; height:64px;
     border-radius:50%;
     background:radial-gradient(circle at 35% 30%, var(--accent-bright,#d9b56a), var(--accent,#a8823a) 70%);
@@ -734,6 +767,7 @@
 
     <button class="export-btn" id="exportBtn" data-i18n="playerExportBtn">Als PNG speichern</button>
     <button class="share-btn" id="shareToggleBtn" data-i18n="shareToggleBtn">🔗 Teilen</button>
+    <button class="share-btn" id="fsToggleBtn" data-i18n="playerFullscreenBtn">⛶ Vollbild anzeigen</button>
 
     <div class="share-panel collapsed" id="sharePanel">
       <button class="share-panel-btn" id="copySettingsBtn" data-i18n="copySettingsBtn">📋 Kopieren</button>
@@ -800,6 +834,10 @@
     </div>
   </div>
 
+</div>
+
+<div class="fs-overlay" id="fsOverlay">
+  <button class="fs-close" id="fsCloseBtn" data-i18n-title="playerFullscreenCloseBtn" title="Schließen (Esc)">✕</button>
 </div>
 
 <script>
@@ -1165,6 +1203,51 @@
   document.getElementById('applyPasteSettingsBtn').addEventListener('click', applyPastedHeroSettings);
   document.getElementById('pasteSettingsInput').addEventListener('keydown', function(e){
     if(e.key === 'Enter') applyPastedHeroSettings();
+  });
+
+  // ---------- Heldentafel im Vollbild anzeigen ----------
+  const fsOverlay = document.getElementById('fsOverlay');
+  const cardEl = document.getElementById('card');
+  const cardOriginalParent = cardEl.parentNode;
+  const cardOriginalNextSibling = cardEl.nextSibling;
+
+  function scaleCardToFit(){
+    cardEl.style.transform = 'none';
+    const rect = cardEl.getBoundingClientRect();
+    const availW = window.innerWidth - 80;
+    const availH = window.innerHeight - 80;
+    const scale = Math.min(availW / rect.width, availH / rect.height);
+    cardEl.style.transform = 'scale(' + scale + ')';
+  }
+
+  function enterCardFullscreen(){
+    fsOverlay.appendChild(cardEl);
+    fsOverlay.classList.add('active');
+    scaleCardToFit();
+    document.addEventListener('keydown', onFsKeydown);
+    window.addEventListener('resize', scaleCardToFit);
+  }
+
+  function exitCardFullscreen(){
+    fsOverlay.classList.remove('active');
+    cardEl.style.transform = '';
+    if(cardOriginalNextSibling){
+      cardOriginalParent.insertBefore(cardEl, cardOriginalNextSibling);
+    } else {
+      cardOriginalParent.appendChild(cardEl);
+    }
+    document.removeEventListener('keydown', onFsKeydown);
+    window.removeEventListener('resize', scaleCardToFit);
+  }
+
+  function onFsKeydown(e){
+    if(e.key === 'Escape') exitCardFullscreen();
+  }
+
+  document.getElementById('fsToggleBtn').addEventListener('click', enterCardFullscreen);
+  document.getElementById('fsCloseBtn').addEventListener('click', exitCardFullscreen);
+  fsOverlay.addEventListener('click', function(e){
+    if(e.target === fsOverlay) exitCardFullscreen();
   });
 
   // ---------- Sprachauswahl ----------
