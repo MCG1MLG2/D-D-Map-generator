@@ -127,7 +127,10 @@ const LANGUAGES = {
     "backToHome": "الرئيسية",
     "playerLblPortrait": "صورة شخصية (اختياري)",
     "playerUploadBtn": "🖼 رفع صورة",
-    "playerRemoveImageBtn": "✕ إزالة"
+    "playerRemoveImageBtn": "✕ إزالة",
+    "playerFullscreenBtn": "⛶ عرض بملء الشاشة",
+    "playerFullscreenCloseBtn": "إغلاق (Esc)",
+    "lblFlowArrows": "إظهار أسهم الاتجاه"
   },
   "bg": {
     "nativeName": "Български",
@@ -233,7 +236,10 @@ const LANGUAGES = {
     "backToHome": "Начало",
     "playerLblPortrait": "Портретна снимка (незадължително)",
     "playerUploadBtn": "🖼 Качи изображение",
-    "playerRemoveImageBtn": "✕ Премахни"
+    "playerRemoveImageBtn": "✕ Премахни",
+    "playerFullscreenBtn": "⛶ Показване на цял екран",
+    "playerFullscreenCloseBtn": "Затвори (Esc)",
+    "lblFlowArrows": "Показване на стрелки за посока"
   },
   "bn": {
     "nativeName": "বাংলা",
@@ -339,7 +345,10 @@ const LANGUAGES = {
     "backToHome": "হোম",
     "playerLblPortrait": "প্রতিকৃতি ছবি (ঐচ্ছিক)",
     "playerUploadBtn": "🖼 ছবি আপলোড করুন",
-    "playerRemoveImageBtn": "✕ সরান"
+    "playerRemoveImageBtn": "✕ সরান",
+    "playerFullscreenBtn": "⛶ পূর্ণ স্ক্রিনে দেখুন",
+    "playerFullscreenCloseBtn": "বন্ধ করুন (Esc)",
+    "lblFlowArrows": "দিক নির্দেশক তীর দেখান"
   },
   "ca": {
     "nativeName": "Català",
@@ -452,7 +461,10 @@ const LANGUAGES = {
     "backToHome": "Inici",
     "playerLblPortrait": "Imatge de retrat (opcional)",
     "playerUploadBtn": "🖼 Puja una imatge",
-    "playerRemoveImageBtn": "✕ Elimina"
+    "playerRemoveImageBtn": "✕ Elimina",
+    "playerFullscreenBtn": "⛶ Mostra a pantalla completa",
+    "playerFullscreenCloseBtn": "Tanca (Esc)",
+    "lblFlowArrows": "Mostra fletxes de direcció"
   },
   "cs": {
     "nativeName": "Čeština",
@@ -558,7 +570,10 @@ const LANGUAGES = {
     "backToHome": "Domů",
     "playerLblPortrait": "Portrétní obrázek (volitelné)",
     "playerUploadBtn": "🖼 Nahrát obrázek",
-    "playerRemoveImageBtn": "✕ Odebrat"
+    "playerRemoveImageBtn": "✕ Odebrat",
+    "playerFullscreenBtn": "⛶ Zobrazit na celou obrazovku",
+    "playerFullscreenCloseBtn": "Zavřít (Esc)",
+    "lblFlowArrows": "Zobrazit směrové šipky"
   },
   "da": {
     "nativeName": "Dansk",
@@ -664,7 +679,10 @@ const LANGUAGES = {
     "backToHome": "Start",
     "playerLblPortrait": "Portrætbillede (valgfrit)",
     "playerUploadBtn": "🖼 Upload billede",
-    "playerRemoveImageBtn": "✕ Fjern"
+    "playerRemoveImageBtn": "✕ Fjern",
+    "playerFullscreenBtn": "⛶ Vis fuld skærm",
+    "playerFullscreenCloseBtn": "Luk (Esc)",
+    "lblFlowArrows": "Vis retningspile"
   },
   "de": {
     "nativeName": "Deutsch",
@@ -777,7 +795,10 @@ const LANGUAGES = {
     "backToHome": "Start",
     "playerLblPortrait": "Porträtbild (optional)",
     "playerUploadBtn": "🖼 Bild hochladen",
-    "playerRemoveImageBtn": "✕ Entfernen"
+    "playerRemoveImageBtn": "✕ Entfernen",
+    "playerFullscreenBtn": "⛶ Vollbild anzeigen",
+    "playerFullscreenCloseBtn": "Schließen (Esc)",
+    "lblFlowArrows": "Richtungspfeile anzeigen"
   },
   "el": {
     "nativeName": "Ελληνικά",
@@ -883,7 +904,10 @@ const LANGUAGES = {
     "backToHome": "Αρχική",
     "playerLblPortrait": "Εικόνα πορτρέτου (προαιρετικό)",
     "playerUploadBtn": "🖼 Μεταφόρτωση εικόνας",
-    "playerRemoveImageBtn": "✕ Αφαίρεση"
+    "playerRemoveImageBtn": "✕ Αφαίρεση",
+    "playerFullscreenBtn": "⛶ Προβολή σε πλήρη οθόνη",
+    "playerFullscreenCloseBtn": "Κλείσιμο (Esc)",
+    "lblFlowArrows": "Εμφάνιση βελών κατεύθυνσης"
   },
   "en": {
     "nativeName": "English",
@@ -996,7 +1020,10 @@ const LANGUAGES = {
     "backToHome": "Home",
     "playerLblPortrait": "Portrait image (optional)",
     "playerUploadBtn": "🖼 Upload image",
-    "playerRemoveImageBtn": "✕ Remove"
+    "playerRemoveImageBtn": "✕ Remove",
+    "playerFullscreenBtn": "⛶ Show Fullscreen",
+    "playerFullscreenCloseBtn": "Close (Esc)",
+    "lblFlowArrows": "Show direction arrows"
   },
   "es": {
     "nativeName": "Español",
@@ -1102,7 +1129,10 @@ const LANGUAGES = {
     "backToHome": "Inicio",
     "playerLblPortrait": "Imagen de retrato (opcional)",
     "playerUploadBtn": "🖼 Subir imagen",
-    "playerRemoveImageBtn": "✕ Quitar"
+    "playerRemoveImageBtn": "✕ Quitar",
+    "playerFullscreenBtn": "⛶ Ver a pantalla completa",
+    "playerFullscreenCloseBtn": "Cerrar (Esc)",
+    "lblFlowArrows": "Mostrar flechas de dirección"
   },
   "et": {
     "nativeName": "Eesti",
@@ -1208,7 +1238,10 @@ const LANGUAGES = {
     "backToHome": "Avaleht",
     "playerLblPortrait": "Portreepilt (valikuline)",
     "playerUploadBtn": "🖼 Laadi pilt üles",
-    "playerRemoveImageBtn": "✕ Eemalda"
+    "playerRemoveImageBtn": "✕ Eemalda",
+    "playerFullscreenBtn": "⛶ Kuva täisekraanil",
+    "playerFullscreenCloseBtn": "Sulge (Esc)",
+    "lblFlowArrows": "Kuva suunanooled"
   },
   "eu": {
     "nativeName": "Euskara",
@@ -1321,7 +1354,10 @@ const LANGUAGES = {
     "backToHome": "Hasiera",
     "playerLblPortrait": "Erretratu-irudia (aukerakoa)",
     "playerUploadBtn": "🖼 Igo irudia",
-    "playerRemoveImageBtn": "✕ Kendu"
+    "playerRemoveImageBtn": "✕ Kendu",
+    "playerFullscreenBtn": "⛶ Erakutsi pantaila osoan",
+    "playerFullscreenCloseBtn": "Itxi (Esc)",
+    "lblFlowArrows": "Erakutsi norabide-geziak"
   },
   "fa": {
     "nativeName": "فارسی",
@@ -1434,7 +1470,10 @@ const LANGUAGES = {
     "backToHome": "خانه",
     "playerLblPortrait": "تصویر پرتره (اختیاری)",
     "playerUploadBtn": "🖼 بارگذاری تصویر",
-    "playerRemoveImageBtn": "✕ حذف"
+    "playerRemoveImageBtn": "✕ حذف",
+    "playerFullscreenBtn": "⛶ نمایش تمام‌صفحه",
+    "playerFullscreenCloseBtn": "بستن (Esc)",
+    "lblFlowArrows": "نمایش فلش‌های جهت"
   },
   "fi": {
     "nativeName": "Suomi",
@@ -1540,7 +1579,10 @@ const LANGUAGES = {
     "backToHome": "Etusivu",
     "playerLblPortrait": "Muotokuva (valinnainen)",
     "playerUploadBtn": "🖼 Lataa kuva",
-    "playerRemoveImageBtn": "✕ Poista"
+    "playerRemoveImageBtn": "✕ Poista",
+    "playerFullscreenBtn": "⛶ Näytä koko näytöllä",
+    "playerFullscreenCloseBtn": "Sulje (Esc)",
+    "lblFlowArrows": "Näytä suuntanuolet"
   },
   "fr": {
     "nativeName": "Français",
@@ -1646,7 +1688,10 @@ const LANGUAGES = {
     "backToHome": "Accueil",
     "playerLblPortrait": "Image du portrait (facultatif)",
     "playerUploadBtn": "🖼 Importer une image",
-    "playerRemoveImageBtn": "✕ Retirer"
+    "playerRemoveImageBtn": "✕ Retirer",
+    "playerFullscreenBtn": "⛶ Afficher en plein écran",
+    "playerFullscreenCloseBtn": "Fermer (Échap)",
+    "lblFlowArrows": "Afficher les flèches de direction"
   },
   "ga": {
     "nativeName": "Gaeilge",
@@ -1752,7 +1797,10 @@ const LANGUAGES = {
     "backToHome": "Baile",
     "playerLblPortrait": "Íomhá phortráide (roghnach)",
     "playerUploadBtn": "🖼 Uaslódáil íomhá",
-    "playerRemoveImageBtn": "✕ Bain"
+    "playerRemoveImageBtn": "✕ Bain",
+    "playerFullscreenBtn": "⛶ Taispeáin lánscáileáin",
+    "playerFullscreenCloseBtn": "Dún (Esc)",
+    "lblFlowArrows": "Taispeáin saigheada treo"
   },
   "hi": {
     "nativeName": "हिन्दी",
@@ -1858,7 +1906,10 @@ const LANGUAGES = {
     "backToHome": "होम",
     "playerLblPortrait": "चित्र छवि (वैकल्पिक)",
     "playerUploadBtn": "🖼 छवि अपलोड करें",
-    "playerRemoveImageBtn": "✕ हटाएं"
+    "playerRemoveImageBtn": "✕ हटाएं",
+    "playerFullscreenBtn": "⛶ पूर्ण स्क्रीन में देखें",
+    "playerFullscreenCloseBtn": "बंद करें (Esc)",
+    "lblFlowArrows": "दिशा तीर दिखाएं"
   },
   "hr": {
     "nativeName": "Hrvatski",
@@ -1964,7 +2015,10 @@ const LANGUAGES = {
     "backToHome": "Početna",
     "playerLblPortrait": "Slika portreta (neobavezno)",
     "playerUploadBtn": "🖼 Prenesi sliku",
-    "playerRemoveImageBtn": "✕ Ukloni"
+    "playerRemoveImageBtn": "✕ Ukloni",
+    "playerFullscreenBtn": "⛶ Prikaži preko cijelog zaslona",
+    "playerFullscreenCloseBtn": "Zatvori (Esc)",
+    "lblFlowArrows": "Prikaži strelice smjera"
   },
   "hu": {
     "nativeName": "Magyar",
@@ -2070,7 +2124,10 @@ const LANGUAGES = {
     "backToHome": "Kezdőlap",
     "playerLblPortrait": "Portrékép (opcionális)",
     "playerUploadBtn": "🖼 Kép feltöltése",
-    "playerRemoveImageBtn": "✕ Eltávolítás"
+    "playerRemoveImageBtn": "✕ Eltávolítás",
+    "playerFullscreenBtn": "⛶ Teljes képernyő",
+    "playerFullscreenCloseBtn": "Bezárás (Esc)",
+    "lblFlowArrows": "Irányjelző nyilak megjelenítése"
   },
   "id": {
     "nativeName": "Bahasa Indonesia",
@@ -2176,7 +2233,10 @@ const LANGUAGES = {
     "backToHome": "Beranda",
     "playerLblPortrait": "Gambar potret (opsional)",
     "playerUploadBtn": "🖼 Unggah gambar",
-    "playerRemoveImageBtn": "✕ Hapus"
+    "playerRemoveImageBtn": "✕ Hapus",
+    "playerFullscreenBtn": "⛶ Tampilkan Layar Penuh",
+    "playerFullscreenCloseBtn": "Tutup (Esc)",
+    "lblFlowArrows": "Tampilkan panah arah"
   },
   "is": {
     "nativeName": "Íslenska",
@@ -2282,7 +2342,10 @@ const LANGUAGES = {
     "backToHome": "Heim",
     "playerLblPortrait": "Andlitsmynd (valfrjálst)",
     "playerUploadBtn": "🖼 Hlaða upp mynd",
-    "playerRemoveImageBtn": "✕ Fjarlægja"
+    "playerRemoveImageBtn": "✕ Fjarlægja",
+    "playerFullscreenBtn": "⛶ Sýna í heilskjá",
+    "playerFullscreenCloseBtn": "Loka (Esc)",
+    "lblFlowArrows": "Sýna stefnuörvar"
   },
   "it": {
     "nativeName": "Italiano",
@@ -2388,7 +2451,10 @@ const LANGUAGES = {
     "backToHome": "Home",
     "playerLblPortrait": "Immagine ritratto (opzionale)",
     "playerUploadBtn": "🖼 Carica immagine",
-    "playerRemoveImageBtn": "✕ Rimuovi"
+    "playerRemoveImageBtn": "✕ Rimuovi",
+    "playerFullscreenBtn": "⛶ Schermo intero",
+    "playerFullscreenCloseBtn": "Chiudi (Esc)",
+    "lblFlowArrows": "Mostra frecce di direzione"
   },
   "ja": {
     "nativeName": "日本語",
@@ -2494,7 +2560,10 @@ const LANGUAGES = {
     "backToHome": "ホーム",
     "playerLblPortrait": "肖像画像（任意）",
     "playerUploadBtn": "🖼 画像をアップロード",
-    "playerRemoveImageBtn": "✕ 削除"
+    "playerRemoveImageBtn": "✕ 削除",
+    "playerFullscreenBtn": "⛶ フルスクリーン表示",
+    "playerFullscreenCloseBtn": "閉じる（Esc）",
+    "lblFlowArrows": "方向矢印を表示"
   },
   "ko": {
     "nativeName": "한국어",
@@ -2600,7 +2669,10 @@ const LANGUAGES = {
     "backToHome": "홈",
     "playerLblPortrait": "초상 이미지 (선택 사항)",
     "playerUploadBtn": "🖼 이미지 업로드",
-    "playerRemoveImageBtn": "✕ 제거"
+    "playerRemoveImageBtn": "✕ 제거",
+    "playerFullscreenBtn": "⛶ 전체 화면으로 보기",
+    "playerFullscreenCloseBtn": "닫기 (Esc)",
+    "lblFlowArrows": "방향 화살표 표시"
   },
   "lt": {
     "nativeName": "Lietuvių",
@@ -2706,7 +2778,10 @@ const LANGUAGES = {
     "backToHome": "Pradžia",
     "playerLblPortrait": "Portreto nuotrauka (neprivaloma)",
     "playerUploadBtn": "🖼 Įkelti nuotrauką",
-    "playerRemoveImageBtn": "✕ Pašalinti"
+    "playerRemoveImageBtn": "✕ Pašalinti",
+    "playerFullscreenBtn": "⛶ Rodyti visame ekrane",
+    "playerFullscreenCloseBtn": "Uždaryti (Esc)",
+    "lblFlowArrows": "Rodyti krypties rodykles"
   },
   "lv": {
     "nativeName": "Latviešu",
@@ -2812,7 +2887,10 @@ const LANGUAGES = {
     "backToHome": "Sākums",
     "playerLblPortrait": "Portreta attēls (nav obligāti)",
     "playerUploadBtn": "🖼 Augšupielādēt attēlu",
-    "playerRemoveImageBtn": "✕ Noņemt"
+    "playerRemoveImageBtn": "✕ Noņemt",
+    "playerFullscreenBtn": "⛶ Rādīt pilnekrānā",
+    "playerFullscreenCloseBtn": "Aizvērt (Esc)",
+    "lblFlowArrows": "Rādīt virziena bultas"
   },
   "mr": {
     "nativeName": "मराठी",
@@ -2918,7 +2996,10 @@ const LANGUAGES = {
     "backToHome": "मुख्यपृष्ठ",
     "playerLblPortrait": "चित्र प्रतिमा (ऐच्छिक)",
     "playerUploadBtn": "🖼 प्रतिमा अपलोड करा",
-    "playerRemoveImageBtn": "✕ काढा"
+    "playerRemoveImageBtn": "✕ काढा",
+    "playerFullscreenBtn": "⛶ पूर्ण स्क्रीनवर दर्शवा",
+    "playerFullscreenCloseBtn": "बंद करा (Esc)",
+    "lblFlowArrows": "दिशा बाण दाखवा"
   },
   "mt": {
     "nativeName": "Malti",
@@ -3024,7 +3105,10 @@ const LANGUAGES = {
     "backToHome": "Home",
     "playerLblPortrait": "Ritratt (fakultattiv)",
     "playerUploadBtn": "🖼 Tella' stampa",
-    "playerRemoveImageBtn": "✕ Neħħi"
+    "playerRemoveImageBtn": "✕ Neħħi",
+    "playerFullscreenBtn": "⛶ Uri skrin sħiħ",
+    "playerFullscreenCloseBtn": "Agħlaq (Esc)",
+    "lblFlowArrows": "Uri vleġeġ ta' direzzjoni"
   },
   "nl": {
     "nativeName": "Nederlands",
@@ -3130,7 +3214,10 @@ const LANGUAGES = {
     "backToHome": "Start",
     "playerLblPortrait": "Portretafbeelding (optioneel)",
     "playerUploadBtn": "🖼 Afbeelding uploaden",
-    "playerRemoveImageBtn": "✕ Verwijderen"
+    "playerRemoveImageBtn": "✕ Verwijderen",
+    "playerFullscreenBtn": "⛶ Volledig scherm tonen",
+    "playerFullscreenCloseBtn": "Sluiten (Esc)",
+    "lblFlowArrows": "Richtingspijlen tonen"
   },
   "no": {
     "nativeName": "Norsk",
@@ -3236,7 +3323,10 @@ const LANGUAGES = {
     "backToHome": "Start",
     "playerLblPortrait": "Portrettbilde (valgfritt)",
     "playerUploadBtn": "🖼 Last opp bilde",
-    "playerRemoveImageBtn": "✕ Fjern"
+    "playerRemoveImageBtn": "✕ Fjern",
+    "playerFullscreenBtn": "⛶ Vis i fullskjerm",
+    "playerFullscreenCloseBtn": "Lukk (Esc)",
+    "lblFlowArrows": "Vis retningspiler"
   },
   "pl": {
     "nativeName": "Polski",
@@ -3342,7 +3432,10 @@ const LANGUAGES = {
     "backToHome": "Start",
     "playerLblPortrait": "Portret (opcjonalnie)",
     "playerUploadBtn": "🖼 Prześlij obraz",
-    "playerRemoveImageBtn": "✕ Usuń"
+    "playerRemoveImageBtn": "✕ Usuń",
+    "playerFullscreenBtn": "⛶ Pokaż pełny ekran",
+    "playerFullscreenCloseBtn": "Zamknij (Esc)",
+    "lblFlowArrows": "Pokaż strzałki kierunku"
   },
   "pt": {
     "nativeName": "Português",
@@ -3448,7 +3541,10 @@ const LANGUAGES = {
     "backToHome": "Início",
     "playerLblPortrait": "Imagem de retrato (opcional)",
     "playerUploadBtn": "🖼 Carregar imagem",
-    "playerRemoveImageBtn": "✕ Remover"
+    "playerRemoveImageBtn": "✕ Remover",
+    "playerFullscreenBtn": "⛶ Ver em ecrã inteiro",
+    "playerFullscreenCloseBtn": "Fechar (Esc)",
+    "lblFlowArrows": "Mostrar setas de direção"
   },
   "ro": {
     "nativeName": "Română",
@@ -3554,7 +3650,10 @@ const LANGUAGES = {
     "backToHome": "Acasă",
     "playerLblPortrait": "Imagine portret (opțional)",
     "playerUploadBtn": "🖼 Încarcă imagine",
-    "playerRemoveImageBtn": "✕ Elimină"
+    "playerRemoveImageBtn": "✕ Elimină",
+    "playerFullscreenBtn": "⛶ Afișează pe tot ecranul",
+    "playerFullscreenCloseBtn": "Închide (Esc)",
+    "lblFlowArrows": "Afișează săgețile de direcție"
   },
   "ru": {
     "nativeName": "Русский",
@@ -3660,7 +3759,10 @@ const LANGUAGES = {
     "backToHome": "Главная",
     "playerLblPortrait": "Изображение портрета (необязательно)",
     "playerUploadBtn": "🖼 Загрузить изображение",
-    "playerRemoveImageBtn": "✕ Удалить"
+    "playerRemoveImageBtn": "✕ Удалить",
+    "playerFullscreenBtn": "⛶ Во весь экран",
+    "playerFullscreenCloseBtn": "Закрыть (Esc)",
+    "lblFlowArrows": "Показывать стрелки направления"
   },
   "sk": {
     "nativeName": "Slovenčina",
@@ -3766,7 +3868,10 @@ const LANGUAGES = {
     "backToHome": "Domov",
     "playerLblPortrait": "Portrétový obrázok (voliteľné)",
     "playerUploadBtn": "🖼 Nahrať obrázok",
-    "playerRemoveImageBtn": "✕ Odstrániť"
+    "playerRemoveImageBtn": "✕ Odstrániť",
+    "playerFullscreenBtn": "⛶ Zobraziť na celú obrazovku",
+    "playerFullscreenCloseBtn": "Zavrieť (Esc)",
+    "lblFlowArrows": "Zobraziť smerové šípky"
   },
   "sl": {
     "nativeName": "Slovenščina",
@@ -3872,7 +3977,10 @@ const LANGUAGES = {
     "backToHome": "Domov",
     "playerLblPortrait": "Slika portreta (neobvezno)",
     "playerUploadBtn": "🖼 Naloži sliko",
-    "playerRemoveImageBtn": "✕ Odstrani"
+    "playerRemoveImageBtn": "✕ Odstrani",
+    "playerFullscreenBtn": "⛶ Prikaži čez cel zaslon",
+    "playerFullscreenCloseBtn": "Zapri (Esc)",
+    "lblFlowArrows": "Prikaži smerne puščice"
   },
   "sq": {
     "nativeName": "Shqip",
@@ -3978,7 +4086,10 @@ const LANGUAGES = {
     "backToHome": "Kryefaqja",
     "playerLblPortrait": "Fotografi portreti (opsionale)",
     "playerUploadBtn": "🖼 Ngarko foto",
-    "playerRemoveImageBtn": "✕ Hiq"
+    "playerRemoveImageBtn": "✕ Hiq",
+    "playerFullscreenBtn": "⛶ Shfaq në ekran të plotë",
+    "playerFullscreenCloseBtn": "Mbyll (Esc)",
+    "lblFlowArrows": "Shfaq shigjetat e drejtimit"
   },
   "sr": {
     "nativeName": "Српски",
@@ -4084,7 +4195,10 @@ const LANGUAGES = {
     "backToHome": "Почетна",
     "playerLblPortrait": "Слика портрета (опционо)",
     "playerUploadBtn": "🖼 Отпреми слику",
-    "playerRemoveImageBtn": "✕ Уклони"
+    "playerRemoveImageBtn": "✕ Уклони",
+    "playerFullscreenBtn": "⛶ Прикажи преко целог екрана",
+    "playerFullscreenCloseBtn": "Затвори (Esc)",
+    "lblFlowArrows": "Прикажи стрелице смера"
   },
   "sv": {
     "nativeName": "Svenska",
@@ -4190,7 +4304,10 @@ const LANGUAGES = {
     "backToHome": "Start",
     "playerLblPortrait": "Porträttbild (valfritt)",
     "playerUploadBtn": "🖼 Ladda upp bild",
-    "playerRemoveImageBtn": "✕ Ta bort"
+    "playerRemoveImageBtn": "✕ Ta bort",
+    "playerFullscreenBtn": "⛶ Visa i helskärm",
+    "playerFullscreenCloseBtn": "Stäng (Esc)",
+    "lblFlowArrows": "Visa riktningspilar"
   },
   "sw": {
     "nativeName": "Kiswahili",
@@ -4296,7 +4413,10 @@ const LANGUAGES = {
     "backToHome": "Nyumbani",
     "playerLblPortrait": "Picha ya sura (si lazima)",
     "playerUploadBtn": "🖼 Pakia picha",
-    "playerRemoveImageBtn": "✕ Ondoa"
+    "playerRemoveImageBtn": "✕ Ondoa",
+    "playerFullscreenBtn": "⛶ Onyesha Skrini Nzima",
+    "playerFullscreenCloseBtn": "Funga (Esc)",
+    "lblFlowArrows": "Onyesha mishale ya mwelekeo"
   },
   "ta": {
     "nativeName": "தமிழ்",
@@ -4402,7 +4522,10 @@ const LANGUAGES = {
     "backToHome": "முகப்பு",
     "playerLblPortrait": "உருவப்படம் (விருப்பத்திற்குரியது)",
     "playerUploadBtn": "🖼 படத்தை பதிவேற்று",
-    "playerRemoveImageBtn": "✕ அகற்று"
+    "playerRemoveImageBtn": "✕ அகற்று",
+    "playerFullscreenBtn": "⛶ முழுத்திரையில் காட்டு",
+    "playerFullscreenCloseBtn": "மூடு (Esc)",
+    "lblFlowArrows": "திசை அம்புகளைக் காட்டு"
   },
   "te": {
     "nativeName": "తెలుగు",
@@ -4508,7 +4631,10 @@ const LANGUAGES = {
     "backToHome": "హోమ్",
     "playerLblPortrait": "చిత్తరువు (ఐచ్ఛికం)",
     "playerUploadBtn": "🖼 చిత్రాన్ని అప్‌లోడ్ చేయండి",
-    "playerRemoveImageBtn": "✕ తీసివేయండి"
+    "playerRemoveImageBtn": "✕ తీసివేయండి",
+    "playerFullscreenBtn": "⛶ పూర్తి స్క్రీన్‌లో చూపించు",
+    "playerFullscreenCloseBtn": "మూసివేయి (Esc)",
+    "lblFlowArrows": "దిశ బాణాలను చూపించు"
   },
   "th": {
     "nativeName": "ไทย",
@@ -4621,7 +4747,10 @@ const LANGUAGES = {
     "backToHome": "หน้าแรก",
     "playerLblPortrait": "ภาพเหมือน (ไม่บังคับ)",
     "playerUploadBtn": "🖼 อัปโหลดภาพ",
-    "playerRemoveImageBtn": "✕ ลบ"
+    "playerRemoveImageBtn": "✕ ลบ",
+    "playerFullscreenBtn": "⛶ แสดงเต็มจอ",
+    "playerFullscreenCloseBtn": "ปิด (Esc)",
+    "lblFlowArrows": "แสดงลูกศรบอกทิศทาง"
   },
   "tr": {
     "nativeName": "Türkçe",
@@ -4727,7 +4856,10 @@ const LANGUAGES = {
     "backToHome": "Ana Sayfa",
     "playerLblPortrait": "Portre resmi (isteğe bağlı)",
     "playerUploadBtn": "🖼 Resim yükle",
-    "playerRemoveImageBtn": "✕ Kaldır"
+    "playerRemoveImageBtn": "✕ Kaldır",
+    "playerFullscreenBtn": "⛶ Tam Ekran Göster",
+    "playerFullscreenCloseBtn": "Kapat (Esc)",
+    "lblFlowArrows": "Yön oklarını göster"
   },
   "uk": {
     "nativeName": "Українська",
@@ -4833,7 +4965,10 @@ const LANGUAGES = {
     "backToHome": "Головна",
     "playerLblPortrait": "Зображення портрета (необов’язково)",
     "playerUploadBtn": "🖼 Завантажити зображення",
-    "playerRemoveImageBtn": "✕ Видалити"
+    "playerRemoveImageBtn": "✕ Видалити",
+    "playerFullscreenBtn": "⛶ Показати на весь екран",
+    "playerFullscreenCloseBtn": "Закрити (Esc)",
+    "lblFlowArrows": "Показати стрілки напрямку"
   },
   "ur": {
     "nativeName": "اردو",
@@ -4939,7 +5074,10 @@ const LANGUAGES = {
     "backToHome": "ہوم",
     "playerLblPortrait": "تصویر (اختیاری)",
     "playerUploadBtn": "🖼 تصویر اپ لوڈ کریں",
-    "playerRemoveImageBtn": "✕ ہٹائیں"
+    "playerRemoveImageBtn": "✕ ہٹائیں",
+    "playerFullscreenBtn": "⛶ فل اسکرین میں دیکھیں",
+    "playerFullscreenCloseBtn": "بند کریں (Esc)",
+    "lblFlowArrows": "سمت کے تیر دکھائیں"
   },
   "vi": {
     "nativeName": "Tiếng Việt",
@@ -5045,7 +5183,10 @@ const LANGUAGES = {
     "backToHome": "Trang chủ",
     "playerLblPortrait": "Ảnh chân dung (tùy chọn)",
     "playerUploadBtn": "🖼 Tải ảnh lên",
-    "playerRemoveImageBtn": "✕ Xóa"
+    "playerRemoveImageBtn": "✕ Xóa",
+    "playerFullscreenBtn": "⛶ Xem toàn màn hình",
+    "playerFullscreenCloseBtn": "Đóng (Esc)",
+    "lblFlowArrows": "Hiển thị mũi tên chỉ hướng"
   },
   "zh": {
     "nativeName": "中文",
@@ -5151,6 +5292,9 @@ const LANGUAGES = {
     "backToHome": "首页",
     "playerLblPortrait": "肖像图片（可选）",
     "playerUploadBtn": "🖼 上传图片",
-    "playerRemoveImageBtn": "✕ 移除"
+    "playerRemoveImageBtn": "✕ 移除",
+    "playerFullscreenBtn": "⛶ 全屏显示",
+    "playerFullscreenCloseBtn": "关闭（Esc）",
+    "lblFlowArrows": "显示方向箭头"
   }
 };
