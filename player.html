@@ -913,10 +913,12 @@
     }
   }
 
-  let heroImageData = null;
+  let heroImageData = null;       // portrait shown on the card / used for the PNG export
+  let heroImageShareData = null;  // smaller copy that goes into share links (keeps links short)
 
-  function setHeroImage(dataUrl){
+  function setHeroImage(dataUrl, shareDataUrl){
     heroImageData = dataUrl;
+    heroImageShareData = dataUrl ? (shareDataUrl || dataUrl) : null;
     document.getElementById('heroImageRemoveBtn').hidden = !dataUrl;
     render();
   }
@@ -926,16 +928,19 @@
     reader.onload = function(e){
       const img = new Image();
       img.onload = function(){
-        const size = 160;
-        const canvas = document.createElement('canvas');
-        canvas.width = size;
-        canvas.height = size;
-        const ctx = canvas.getContext('2d');
-        const scale = Math.max(size / img.width, size / img.height);
-        const sw = img.width * scale;
-        const sh = img.height * scale;
-        ctx.drawImage(img, (size - sw) / 2, (size - sh) / 2, sw, sh);
-        callback(canvas.toDataURL('image/jpeg', 0.7));
+        const drawSquare = (size, quality) => {
+          const canvas = document.createElement('canvas');
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext('2d');
+          const scale = Math.max(size / img.width, size / img.height);
+          const sw = img.width * scale;
+          const sh = img.height * scale;
+          ctx.drawImage(img, (size - sw) / 2, (size - sh) / 2, sw, sh);
+          return canvas.toDataURL('image/jpeg', quality);
+        };
+        // card + export: 160 px. share link: 128 px / lower quality (about 35 % smaller)
+        callback(drawSquare(160, 0.7), drawSquare(128, 0.6));
       };
       img.src = e.target.result;
     };
@@ -1067,18 +1072,257 @@
       ss: document.getElementById('showStorage').checked,
       sca: document.getElementById('storageCapacity').value
     };
-    if(heroImageData) s.im = heroImageData;
+    if(heroImageData) s.im = heroImageShareData || heroImageData;
+    return s;
+  }
+
+  // ---- Compact share code (v3) ----
+  //   3.<text>.<head>[.<portrait>]
+  //   text     name, epithet, symbol and ability, packed with whichever of two methods is shorter
+  //            (flag 4 in the head): plain "escaped text" (Latin scripts) or "alphabet + index"
+  //            (Cyrillic, Greek, Arabic, Hindi, ...).
+  //   head     <lang 2><class 1><strength 1><will 1><accent 1><storage 1><flags 1><rank 1-3>, base 36
+  //   portrait raw JPEG bytes as base64url (no data: prefix, no second round of base64)
+  //   The very last character is a check digit, so a link that got cut off or mangled is
+  //   rejected instead of silently loading wrong values.
+  // Anything that cannot be stored exactly (hand-typed odd numbers, ...) falls back to the older
+  // JSON/base64 code, so a shared link never silently changes a setting. Old links keep working.
+  // NOTE: new class options must be appended at the END of the class list, otherwise existing v3
+  // links would point at the wrong class.
+  const B64URL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+  const SHARE_INT_RE = /^(0|[1-9]\d*)$/;
+  const SHARE_JPEG_PREFIX = 'data:image/jpeg;base64,';
+  const SHARE_SEP = '\u001f';
+
+  function shareClassValues(){
+    return Array.from(document.getElementById('heroClass').options).map(o => o.value);
+  }
+
+  // number as base64url digits: 5 data bits + 1 "more follows" bit per character
+  function varintEncode(n){
+    let out = '';
+    do {
+      const d = n % 32;
+      n = Math.floor(n / 32);
+      out += B64URL[d + (n > 0 ? 32 : 0)];
+    } while(n > 0);
+    return out;
+  }
+
+  function varintDecode(str, pos){
+    let value = 0, mul = 1;
+    for(let i = 0; i < 6; i++){
+      const d = B64URL.indexOf(str[pos++]);
+      if(d < 0) throw new Error('invalid share code');
+      value += (d & 31) * mul;
+      if(!(d & 32)) return [value, pos];
+      mul *= 32;
+    }
+    throw new Error('invalid share code');
+  }
+
+  // method 0: letters/digits/"-" stay as they are, space becomes "_". The 32 characters below
+  // (field separator, common punctuation, German umlauts, typographic quotes/dashes) become "~" +
+  // one character; any other character becomes "~" + its code point (at least two characters).
+  // NOTE: this list is part of the link format. Never reorder or change it.
+  const SHARE_SPECIALS = ['\u001f', '.', ',', ':', ';', '!', '?', '(', ')', '+', '/', '<', '>', "'", '"',
+                          'ä', 'ö', 'ü', 'Ä', 'Ö', 'Ü', 'ß', '&', '=', '*', '–', '—', '…', '„', '“', '’', '\n'];
+
+  function escapeShareText(str){
+    let out = '';
+    for(const ch of str){
+      const special = SHARE_SPECIALS.indexOf(ch);
+      if(ch === ' ') out += '_';
+      else if(/[A-Za-z0-9-]/.test(ch)) out += ch;
+      else if(special >= 0) out += '~' + B64URL[special];
+      else {
+        const cp = ch.codePointAt(0);
+        out += '~' + (cp < 32 ? B64URL[cp + 32] + B64URL[0] : varintEncode(cp));
+      }
+    }
+    return out;
+  }
+
+  function unescapeShareText(str){
+    let out = '';
+    let pos = 0;
+    while(pos < str.length){
+      const ch = str[pos++];
+      if(ch === '_') out += ' ';
+      else if(/[A-Za-z0-9-]/.test(ch)) out += ch;
+      else if(ch === '~'){
+        const first = B64URL.indexOf(str[pos]);
+        if(first < 0) throw new Error('invalid share code');
+        if(first < 32){
+          out += SHARE_SPECIALS[first];
+          pos++;
+        } else {
+          const r = varintDecode(str, pos);
+          pos = r[1];
+          if(r[0] > 0x10FFFF) throw new Error('invalid share code');
+          out += String.fromCodePoint(r[0]);
+        }
+      } else throw new Error('invalid share code');
+    }
+    return out;
+  }
+
+  // method 1: list the characters that occur once (sorted, as small steps), then one or two
+  // base64url characters per letter pointing into that list. Short for small alphabets.
+  function alphabetEncode(str){
+    const cps = Array.from(str, ch => ch.codePointAt(0));
+    const alpha = Array.from(new Set(cps)).sort((a, b) => a - b);
+    if(alpha.length < 1 || alpha.length > 4096) return null;
+    const wide = alpha.length > 64;
+    let out = varintEncode(alpha.length);
+    let prev = -1;
+    for(const cp of alpha){ out += varintEncode(cp - prev - 1); prev = cp; }
+    const index = new Map(alpha.map((cp, i) => [cp, i]));
+    for(const cp of cps){
+      const i = index.get(cp);
+      out += wide ? B64URL[i >> 6] + B64URL[i & 63] : B64URL[i];
+    }
+    return out;
+  }
+
+  function alphabetDecode(str){
+    const bad = () => new Error('invalid share code');
+    let r = varintDecode(str, 0);
+    const count = r[0];
+    let pos = r[1];
+    if(count < 1 || count > 4096) throw bad();
+    const alpha = [];
+    let prev = -1;
+    for(let i = 0; i < count; i++){
+      r = varintDecode(str, pos);
+      pos = r[1];
+      prev = prev + r[0] + 1;
+      if(prev > 0x10FFFF) throw bad();
+      alpha.push(prev);
+    }
+    const width = count > 64 ? 2 : 1;
+    const rest = str.slice(pos);
+    if(rest.length % width) throw bad();
+    let out = '';
+    for(let i = 0; i < rest.length; i += width){
+      const hi = B64URL.indexOf(rest[i]);
+      const lo = width === 2 ? B64URL.indexOf(rest[i + 1]) : 0;
+      if(hi < 0 || lo < 0) throw bad();
+      const idx = width === 2 ? hi * 64 + lo : hi;
+      if(idx >= count) throw bad();
+      out += String.fromCodePoint(alpha[idx]);
+    }
+    return out;
+  }
+
+  function shareChecksum(str){
+    let sum = 0;
+    for(let i = 0; i < str.length; i++) sum = (sum + str.charCodeAt(i) * (i + 1)) % 36;
+    return sum.toString(36);
+  }
+
+  // JPEG data starts with FF D8 and ends with FF D9; anything else is a damaged picture
+  function looksLikeJpeg(base64){
+    const bin = atob(base64);
+    return bin.length > 4 && bin.charCodeAt(0) === 0xFF && bin.charCodeAt(1) === 0xD8 &&
+           bin.charCodeAt(bin.length - 2) === 0xFF && bin.charCodeAt(bin.length - 1) === 0xD9;
+  }
+
+  const toB64Url = b64 => b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const fromB64Url = s => { let b = s.replace(/-/g, '+').replace(/_/g, '/'); while(b.length % 4) b += '='; return b; };
+
+  function encodeCompactHeroSettings(s){
+    try{
+      if(typeof s.l !== 'string' || !/^[a-z]{2}$/.test(s.l)) return null;
+      const small = v => (typeof v === 'string' && SHARE_INT_RE.test(v) && +v <= 35) ? +v : null;
+      const strength = small(s.sc), will = small(s.wc), capacity = small(s.sca);
+      const rank = (typeof s.r === 'string' && SHARE_INT_RE.test(s.r) && +s.r <= 46655) ? +s.r : null;
+      const cls = shareClassValues().indexOf(s.c);
+      if(strength === null || will === null || capacity === null || rank === null) return null;
+      if(cls < 0 || cls > 35) return null;
+      if(!Number.isInteger(s.ac) || s.ac < 0 || s.ac > 35) return null;
+      if(typeof s.ss !== 'boolean') return null;
+      for(const k of ['n', 'e', 'i', 'a']) if(typeof s[k] !== 'string') return null;
+
+      const joined = [s.n, s.e, s.i, s.a].join(SHARE_SEP);
+      if([s.n, s.e, s.i, s.a].some(f => f.indexOf(SHARE_SEP) >= 0)) return null;
+      let text = escapeShareText(joined);
+      let alphabetMode = 0;
+      const alt = alphabetEncode(joined);
+      if(alt !== null && alt.length < text.length){ text = alt; alphabetMode = 1; }
+
+      let image = null;
+      if(s.im !== undefined){
+        if(typeof s.im !== 'string' || s.im.indexOf(SHARE_JPEG_PREFIX) !== 0) return null;
+        const body = s.im.slice(SHARE_JPEG_PREFIX.length);
+        if(!/^[A-Za-z0-9+/]+={0,2}$/.test(body) || body.length % 4 !== 0 || !looksLikeJpeg(body)) return null;
+        image = toB64Url(body);
+      }
+
+      const flags = (s.ss ? 1 : 0) | (image ? 2 : 0) | (alphabetMode ? 4 : 0);
+      const head = s.l + cls.toString(36) + strength.toString(36) + will.toString(36) +
+                   s.ac.toString(36) + capacity.toString(36) + flags.toString(36) + rank.toString(36);
+      const parts = ['3', text, head];
+      if(image) parts.push(image);
+      const code = parts.join('.');
+      return code + shareChecksum(code);
+    } catch(e){
+      return null;
+    }
+  }
+
+  function decodeCompactHeroSettings(raw){
+    const bad = () => new Error('invalid share code');
+    if(raw.length < 8 || shareChecksum(raw.slice(0, -1)) !== raw[raw.length - 1]) throw bad();
+    const p = raw.slice(0, -1).split('.');
+    if((p.length !== 3 && p.length !== 4) || p[0] !== '3') throw bad();
+    const head = p[2];
+    if(!/^[a-z]{2}[0-9a-z]{6}[0-9a-z]{1,3}$/.test(head)) throw bad();
+    const digit = i => parseInt(head[i], 36);
+    const cls = shareClassValues()[digit(2)];
+    const flags = digit(7);
+    const accent = digit(5);
+    if(cls === undefined || accent >= PALETTE.length || flags > 7) throw bad();
+    if(!!(flags & 2) !== (p.length === 4)) throw bad();
+
+    const joined = (flags & 4) ? alphabetDecode(p[1]) : unescapeShareText(p[1]);
+    const fields = joined.split(SHARE_SEP);
+    if(fields.length !== 4) throw bad();
+
+    const s = {
+      v: 3,
+      l: head.slice(0, 2),
+      n: fields[0], e: fields[1], i: fields[2], a: fields[3],
+      c: cls,
+      r: String(parseInt(head.slice(8), 36)),
+      sc: String(digit(3)),
+      wc: String(digit(4)),
+      ac: accent,
+      ss: !!(flags & 1),
+      sca: String(digit(6))
+    };
+    if(flags & 2){
+      if(!/^[A-Za-z0-9_-]+$/.test(p[3]) || p[3].length % 4 === 1) throw bad();
+      const body = fromB64Url(p[3]);
+      if(!looksLikeJpeg(body)) throw bad();
+      s.im = SHARE_JPEG_PREFIX + body;
+    }
     return s;
   }
 
   function encodeHeroSettings(obj){
+    const compact = encodeCompactHeroSettings(obj);
+    if(compact !== null) return compact;
     return btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
   }
 
   function decodeHeroSettings(code){
     const trimmed = code.trim();
     const hashMatch = trimmed.match(/[#&]h=([^&]+)/);
-    const raw = hashMatch ? decodeURIComponent(hashMatch[1]) : trimmed;
+    const captured = hashMatch ? hashMatch[1] : trimmed;
+    // v3 codes contain their own escapes, so they must not be URL-decoded as a whole
+    if(/^3\./.test(captured)) return decodeCompactHeroSettings(captured);
+    const raw = hashMatch ? decodeURIComponent(captured) : trimmed;
     return JSON.parse(decodeURIComponent(escape(atob(raw))));
   }
 
@@ -1116,6 +1360,7 @@
     setChecked('showStorage', showStorage);
     setVal('storageCapacity', storageCapacity);
     heroImageData = img || null;
+    heroImageShareData = heroImageData;
     document.getElementById('heroImageRemoveBtn').hidden = !heroImageData;
 
     if(typeof accent === 'number' && PALETTE[accent]){
