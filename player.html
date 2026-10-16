@@ -27,11 +27,18 @@
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
+  /* page background follows the chosen accent colour (set from render()); registered so it fades smoothly */
+  @property --bg-base   { syntax:'<color>'; inherits:true; initial-value:#171310; }
+  @property --bg-glow-1 { syntax:'<color>'; inherits:true; initial-value:#3a2c1c; }
+  @property --bg-glow-2 { syntax:'<color>'; inherits:true; initial-value:#2a1f14; }
+  @property --bg-spot   { syntax:'<color>'; inherits:true; initial-value:rgba(217,181,106,.12); }
   body{
+    transition:--bg-base .5s ease, --bg-glow-1 .5s ease, --bg-glow-2 .5s ease, --bg-spot .5s ease;
     background:
-      radial-gradient(ellipse at 20% -10%, #3a2c1c 0%, transparent 55%),
-      radial-gradient(ellipse at 90% 110%, #2a1f14 0%, transparent 55%),
-      var(--stone-1);
+      radial-gradient(ellipse at 70% 45%, var(--bg-spot) 0%, transparent 55%),
+      radial-gradient(ellipse at 20% -10%, var(--bg-glow-1) 0%, transparent 55%),
+      radial-gradient(ellipse at 90% 110%, var(--bg-glow-2) 0%, transparent 55%),
+      var(--bg-base);
     color:var(--parchment);
     font-family:'EB Garamond', serif;
     min-height:100vh;
@@ -132,7 +139,7 @@
   }
   .rich-editable:focus{outline:none; border-color:var(--gold);}
 
-  .swatches{display:flex; gap:10px;}
+  .swatches{display:flex; flex-wrap:wrap; gap:10px;}
   .swatch{
     width:34px; height:34px; border-radius:50%;
     border:2px solid #000;
@@ -231,7 +238,9 @@
     position:fixed;
     inset:0;
     z-index:200;
-    background:rgba(5,4,3,.94);
+    background:
+      radial-gradient(ellipse at 50% 45%, var(--bg-glow-1) 0%, transparent 70%),
+      var(--bg-base);
     display:none;
     align-items:center;
     justify-content:center;
@@ -723,6 +732,14 @@
         <option value="barbarian" data-i18n="playerClassBarbarianName">Barbar</option>
         <option value="rogue" data-i18n="playerClassRogueName">Schurke</option>
         <option value="cleric" data-i18n="playerClassClericName">Kleriker</option>
+        <option value="paladin" data-i18n="playerClassPaladinName">Paladin</option>
+        <option value="ranger" data-i18n="playerClassRangerName">Waldläufer</option>
+        <option value="druid" data-i18n="playerClassDruidName">Druide</option>
+        <option value="bard" data-i18n="playerClassBardName">Barde</option>
+        <option value="monk" data-i18n="playerClassMonkName">Mönch</option>
+        <option value="warlock" data-i18n="playerClassWarlockName">Hexenmeister</option>
+        <option value="necromancer" data-i18n="playerClassNecromancerName">Nekromant</option>
+        <option value="alchemist" data-i18n="playerClassAlchemistName">Alchemist</option>
       </select>
     </div>
 
@@ -846,7 +863,15 @@
     { name:'Karmesin',key:'playerColorCrimson', accent:'#7c2020', bright:'#b34d4d' },
     { name:'Wald',    key:'playerColorForest',  accent:'#2f4a2b', bright:'#5c8a52' },
     { name:'Azur',    key:'playerColorAzure',   accent:'#2a4a66', bright:'#5c8fb3' },
-    { name:'Purpur',  key:'playerColorPurple',  accent:'#4a2a5c', bright:'#7d5399' }
+    { name:'Purpur',  key:'playerColorPurple',  accent:'#4a2a5c', bright:'#7d5399' },
+    // appended later - the position in this list is stored in share links, so only ever add at the END
+    { name:'Orange',  key:'playerColorOrange',  accent:'#a8501c', bright:'#e08a4a' },
+    { name:'Türkis',  key:'playerColorTeal',    accent:'#1f6b6b', bright:'#4fb3b0' },
+    { name:'Rosa',    key:'playerColorRose',    accent:'#8a3a5c', bright:'#d17aa0' },
+    { name:'Silber',  key:'playerColorSilver',  accent:'#6b7078', bright:'#b8bec8' },
+    { name:'Bronze',  key:'playerColorBronze',  accent:'#6e4a2a', bright:'#a8794a' },
+    { name:'Oliv',    key:'playerColorOlive',   accent:'#5c6023', bright:'#9aa04a' },
+    { name:'Obsidian',key:'playerColorObsidian',accent:'#2b2b33', bright:'#6a6a78' }
   ];
 
   let selectedPalette = PALETTE[0];
@@ -970,7 +995,15 @@
     dwarf:     { icon:'⛏️', nameKey:'playerClassDwarfName',     perkKey:'playerClassDwarfPerk' },
     barbarian: { icon:'🪓', nameKey:'playerClassBarbarianName', perkKey:'playerClassBarbarianPerk' },
     rogue:     { icon:'🗡️', nameKey:'playerClassRogueName',     perkKey:'playerClassRoguePerk' },
-    cleric:    { icon:'✨', nameKey:'playerClassClericName',    perkKey:'playerClassClericPerk' }
+    cleric:    { icon:'✨', nameKey:'playerClassClericName',    perkKey:'playerClassClericPerk' },
+    paladin:   { icon:'⚜️', nameKey:'playerClassPaladinName',   perkKey:'playerClassPaladinPerk' },
+    ranger:    { icon:'🏹', nameKey:'playerClassRangerName',    perkKey:'playerClassRangerPerk' },
+    druid:     { icon:'🌿', nameKey:'playerClassDruidName',     perkKey:'playerClassDruidPerk' },
+    bard:      { icon:'🎶', nameKey:'playerClassBardName',      perkKey:'playerClassBardPerk' },
+    monk:      { icon:'🥋', nameKey:'playerClassMonkName',      perkKey:'playerClassMonkPerk' },
+    warlock:   { icon:'🔮', nameKey:'playerClassWarlockName',   perkKey:'playerClassWarlockPerk' },
+    necromancer:{ icon:'💀', nameKey:'playerClassNecromancerName', perkKey:'playerClassNecromancerPerk' },
+    alchemist: { icon:'⚗️', nameKey:'playerClassAlchemistName', perkKey:'playerClassAlchemistPerk' }
   };
 
   function render(){
@@ -1023,6 +1056,11 @@
     card.style.setProperty('--accent-bright', selectedPalette.bright);
     document.body.style.setProperty('--accent', selectedPalette.accent);
     document.body.style.setProperty('--accent-bright', selectedPalette.bright);
+    const bgDark = '#0a0806';
+    document.body.style.setProperty('--bg-base', mixHex(selectedPalette.accent, bgDark, 0.10));
+    document.body.style.setProperty('--bg-glow-1', mixHex(selectedPalette.bright, bgDark, 0.22));
+    document.body.style.setProperty('--bg-glow-2', mixHex(selectedPalette.accent, bgDark, 0.20));
+    document.body.style.setProperty('--bg-spot', mixWithAlpha(selectedPalette.bright, 0.12));
 
     // Precompute color-mix() results in JS (instead of using CSS color-mix()),
     // since html2canvas can't parse color-mix() and export would silently fail.
