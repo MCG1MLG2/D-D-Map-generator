@@ -1078,8 +1078,29 @@
   let selectedPalette = PALETTE[0];
 
   const swatches = document.getElementById('swatches');
-  PALETTE.forEach((p, i) => {
+  // Display order only: sorted by hue (reds -> yellows -> greens -> blues -> purples), greys last.
+  // PALETTE itself must keep its order, because the index is stored in share links.
+  function hueSortKey(hex){
+    const r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255;
+    const max = Math.max(r,g,b), min = Math.min(r,g,b), l = (max+min)/2, d = max-min;
+    let h = 0;
+    if(d){
+      if(max === r) h = ((g-b)/d) % 6; else if(max === g) h = (b-r)/d + 2; else h = (r-g)/d + 4;
+      h *= 60; if(h < 0) h += 360;
+    }
+    const sat = d ? d/(1-Math.abs(2*l-1)) : 0;
+    return { h, l, neutral: sat < 0.2 };
+  }
+  const swatchOrder = PALETTE.map((p, i) => ({ i, k: hueSortKey(p.accent) })).sort((a, b) => {
+    if(a.k.neutral !== b.k.neutral) return a.k.neutral ? 1 : -1;
+    if(a.k.neutral) return a.k.l - b.k.l;
+    return a.k.h - b.k.h || a.k.l - b.k.l;
+  }).map(o => o.i);
+
+  swatchOrder.forEach(i => {
+    const p = PALETTE[i];
     const div = document.createElement('div');
+    div.dataset.idx = i;
     div.className = 'swatch' + (i === 0 ? ' active' : '');
     div.style.background = `radial-gradient(circle at 35% 30%, ${p.bright}, ${p.accent} 75%)`;
     div.title = p.name;
@@ -1659,7 +1680,7 @@
 
     if(typeof accent === 'number' && PALETTE[accent]){
       selectedPalette = PALETTE[accent];
-      document.querySelectorAll('.swatch').forEach((el, i) => el.classList.toggle('active', i === accent));
+      document.querySelectorAll('.swatch').forEach(el => el.classList.toggle('active', Number(el.dataset.idx) === accent));
     }
 
     if(lang && LANGUAGES[lang]) applyLanguage(lang);
@@ -1833,7 +1854,8 @@
       const val = s[key] !== undefined ? s[key] : LANGUAGES.en[key];
       if(val !== undefined) el.title = val;
     });
-    document.querySelectorAll('#swatches .swatch').forEach((el, i) => {
+    document.querySelectorAll('#swatches .swatch').forEach(el => {
+      const i = Number(el.dataset.idx);
       const key = PALETTE[i] && PALETTE[i].key;
       if(key){
         const val = s[key] !== undefined ? s[key] : LANGUAGES.en[key];
