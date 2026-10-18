@@ -487,12 +487,12 @@
     justify-content:space-between;
   }
   .pips{
-    display:flex;
-    flex-wrap:wrap;
+    display:grid;
+    grid-template-columns:repeat(15, 24px);   /* 15 pips per row */
     gap:5px;
   }
   .pip{
-    width:23px; height:23px;
+    width:24px; height:24px;
     background:rgba(255,255,255,.35);
     border:1.5px solid #5a4a30;
     border-radius:4px;
@@ -1060,7 +1060,19 @@
     { name:'Silber',  key:'playerColorSilver',  accent:'#6b7078', bright:'#b8bec8' },
     { name:'Bronze',  key:'playerColorBronze',  accent:'#6e4a2a', bright:'#a8794a' },
     { name:'Oliv',    key:'playerColorOlive',   accent:'#5c6023', bright:'#9aa04a' },
-    { name:'Obsidian',key:'playerColorObsidian',accent:'#2b2b33', bright:'#6a6a78' }
+    { name:'Obsidian',key:'playerColorObsidian',accent:'#2b2b33', bright:'#6a6a78' },
+    { name:'Indigo',   key:'playerColorIndigo',   accent:'#2d3a7c', bright:'#6574c4' },
+    { name:'Weinrot',  key:'playerColorWine',     accent:'#5e1a2f', bright:'#a8475f' },
+    { name:'Smaragd',  key:'playerColorEmerald',  accent:'#1d5c45', bright:'#3fae83' },
+    { name:'Königsblau',key:'playerColorRoyal',   accent:'#1c3f94', bright:'#4f7be0' },
+    { name:'Kupfer',   key:'playerColorCopper',   accent:'#8a4a2e', bright:'#d98560' },
+    { name:'Ocker',    key:'playerColorOchre',    accent:'#8a6a12', bright:'#d6b23c' },
+    { name:'Flieder',  key:'playerColorLilac',    accent:'#6a5a8e', bright:'#a899d1' },
+    { name:'Petrol',   key:'playerColorPetrol',   accent:'#17505c', bright:'#3d9db0' },
+    { name:'Kastanie', key:'playerColorChestnut', accent:'#5a2e1a', bright:'#94593a' },
+    { name:'Schiefer', key:'playerColorSlate',    accent:'#3a4a5a', bright:'#7a93ad' },
+    { name:'Magenta',  key:'playerColorMagenta',  accent:'#8a1f6a', bright:'#d65aa8' },
+    { name:'Scharlach',key:'playerColorScarlet',  accent:'#b02a1c', bright:'#e8604d' }
   ];
 
   let selectedPalette = PALETTE[0];
