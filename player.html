@@ -579,6 +579,26 @@
   }
   .equip-track{ margin:0; flex:0 0 260px; }
   #footerRow.no-storage .equip-track{ flex:1; }
+
+  /* side layout: equipment + inventory in a column to the right of the stats */
+  #card{ flex:none; }
+  #card.side-layout{ width:832px; min-height:0; }   /* height follows the content, no empty strip at the bottom */
+  #card.side-layout .card-body{ display:flex; gap:28px; align-items:flex-start; }
+  #card.side-layout .card-main{ flex:0 0 444px; min-width:0; }
+  #card.side-layout #footerRow{
+    flex:0 0 284px;
+    flex-direction:column;
+    gap:16px;
+    margin-top:0;
+    padding-top:0;
+    padding-left:24px;
+    border-top:none;
+    border-left:1px dashed var(--parchment-shadow);
+  }
+  #card.side-layout #footerRow .equip-track,
+  #card.side-layout #footerRow .storage-track{ flex:none; width:260px; }
+  #card.side-layout #footerRow .pouch-slots{ display:grid; grid-template-columns:repeat(3, 72px); gap:12px; }   /* 3 per row */
+  #card.side-layout #footerRow .pouch-slot{ width:72px; height:72px; }
   #footerRow .storage-track{ margin:0; flex:1; min-width:0; }
   #footerRow .pouch-slots{ justify-content:flex-start; }
   #footerRow.no-equip .pouch-slots{ justify-content:space-between; }
@@ -859,6 +879,14 @@
 
     <div class="field">
       <label class="toggle-row">
+        <input type="checkbox" id="equipSide" checked>
+        <span class="toggle-switch"></span>
+        <span class="toggle-label" data-i18n="playerToggleEquipSide">Ausstattung &amp; Inventar rechts neben den Werten</span>
+      </label>
+    </div>
+
+    <div class="field">
+      <label class="toggle-row">
         <input type="checkbox" id="showHand1">
         <span class="toggle-switch"></span>
         <span class="toggle-label" data-i18n="playerToggleHand1">Hand 1 (Kreis) anzeigen</span>
@@ -942,6 +970,8 @@
         <span class="cap" data-i18n="playerLblRank">Rang</span>
       </div>
 
+      <div class="card-body" id="cardBody">
+      <div class="card-main">
       <div class="header">
         <h2 id="nameOut">Orfen</h2>
         <div class="epithet" id="epithetOut">Wolfskrieger aus dem Hochgebirge</div>
@@ -979,6 +1009,8 @@
           <div class="label"><span data-i18n="playerTrackWill">Willenspunkte</span></div>
           <div class="pips" id="willPips"></div>
         </div>
+      </div>
+
       </div>
 
       <div class="footer-row" id="footerRow">
@@ -1052,6 +1084,7 @@
           <div class="label"><span class="icon">💰</span> <span data-i18n="playerLblInventory">Inventar</span></div>
           <div class="pouch-slots" id="pouchSlots"></div>
         </div>
+      </div>
       </div>
     </div>
   </div>
@@ -1255,7 +1288,8 @@
     { toggle:'showBelt',   slot:'beltSlot',   bit:64 }
   ];
   function equipMask(){
-    return EQUIP.reduce((m, e) => m | (document.getElementById(e.toggle).checked ? e.bit : 0), 0);
+    // bit 256 = layout flag: equipment + inventory to the right of the stats (bit 128 was an earlier, dropped layout flag)
+    return EQUIP.reduce((m, e) => m | (document.getElementById(e.toggle).checked ? e.bit : 0), document.getElementById('equipSide').checked ? 256 : 0);
   }
 
   function render(){
@@ -1313,7 +1347,9 @@
     const footerRow = document.getElementById('footerRow');
     footerRow.classList.toggle('no-equip', !anyEquip);
     footerRow.classList.toggle('no-storage', collapse);
-    footerRow.style.display = (anyEquip || !collapse) ? '' : 'none';
+    const showSide = anyEquip || !collapse;
+    footerRow.style.display = showSide ? '' : 'none';
+    document.getElementById('card').classList.toggle('side-layout', showSide && document.getElementById('equipSide').checked);
 
     const capacity = document.getElementById('storageCapacity').value;
     buildSlots(document.getElementById('pouchSlots'), capacity);
@@ -1567,8 +1603,8 @@
         if(s.st !== undefined && typeof s.st !== 'string') return null;
         fieldList.push(s.st !== undefined ? s.st : '');
         if(s.eq !== undefined){
-          if(!Number.isInteger(s.eq) || s.eq < 1 || s.eq > 127) return null;
-          fieldList.push(s.eq.toString(36));   // 6th field: equipment slots (1 hand 1, 2 helmet, 4 chest, 8 pants, 16 shoes, 32 hand 2, 64 belt)
+          if(!Number.isInteger(s.eq) || s.eq < 1 || s.eq > 511) return null;
+          fieldList.push(s.eq.toString(36));   // 6th field: equipment slots (1 hand 1, 2 helmet, 4 chest, 8 pants, 16 shoes, 32 hand 2, 64 belt, 256 side layout)
         }
       }
       const joined = fieldList.join(SHARE_SEP);
@@ -1633,7 +1669,7 @@
     if(fields.length === 6){
       if(!/^[0-9a-z]{1,2}$/.test(fields[5])) throw bad();
       eq = parseInt(fields[5], 36);
-      if(eq > 127) throw bad();
+      if(eq > 511) throw bad();
     }
     if(flags & 8) eq |= 1;     // earlier links: weapon flag (now hand 1)
     if(flags & 16) eq |= 30;   // earlier links: armor flag = all four armor pieces
@@ -1697,6 +1733,7 @@
     setVal('willCount', willCount);
     setChecked('showStorage', showStorage);
     EQUIP.forEach(e => setChecked(e.toggle, !!(s.eq & e.bit)));
+    setChecked('equipSide', !!(s.eq & 256));
     setVal('storageCapacity', storageCapacity);
     heroImageData = img || null;
     heroImageShareData = heroImageData;
