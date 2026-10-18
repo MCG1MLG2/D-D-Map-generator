@@ -282,7 +282,7 @@
     background:
       linear-gradient(155deg, var(--accent-mix-20-transparent, rgba(168,130,58,.2)), transparent 65%),
       radial-gradient(circle at 15% 10%, rgba(255,255,255,.08), transparent 40%),
-      linear-gradient(155deg, var(--parchment) 0%, #ded0a6 60%, #d3c092 100%);
+      linear-gradient(155deg, var(--card-tint-1, var(--parchment)) 0%, var(--card-tint-2, #ded0a6) 60%, var(--card-tint-3, #d3c092) 100%);
     border-radius:2px;
     position:relative;
     padding:34px 38px 30px;
@@ -415,6 +415,30 @@
     font-size:.92rem;
     line-height:1.45;
     color:var(--ink);
+  }
+
+  .story-box{
+    background:rgba(255,255,255,.28);
+    border:1px solid var(--parchment-shadow);
+    border-radius:3px;
+    padding:12px 14px;
+    margin-bottom:18px;
+  }
+  .story-box .label{
+    font-family:'Cinzel', serif;
+    font-size:.68rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--crimson);
+    margin-bottom:5px;
+  }
+  .story-box p{
+    margin:0;
+    font-size:.88rem;
+    line-height:1.5;
+    color:var(--ink);
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
   }
 
   .class-perk{
@@ -551,6 +575,41 @@
     justify-content:space-between;
     width:100%;
     gap:10px;
+  }
+  .equip-track{ margin-bottom:16px; }
+  .equip-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px 22px;
+  }
+  .equip-slot{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    min-width:64px;
+  }
+  .equip-shape{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:30px;
+    line-height:1;
+    width:64px; height:64px;
+    background:rgba(230,190,90,.35);
+    border:2px solid #8a7142;
+  }
+  .equip-shape.circle{ border-radius:50%; }
+  .equip-shape.square{ border-radius:8px; }
+  .equip-group-title{
+    font-family:'Cinzel', serif;
+    font-size:.8rem;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--gold-bright);
+    border-top:1px solid var(--gold);
+    padding-top:14px;
+    margin:6px 0 12px;
   }
   .pouch-slot{
     width:62px; height:62px;
@@ -753,6 +812,11 @@
       <div class="rich-editable" id="heroAbility" contenteditable="true">Orfen hat im Kampf mindestens Stärkepunkte in Höhe der 10er-Stelle seiner aktuellen Feldzahl.</div>
     </div>
 
+    <div class="field">
+      <label for="heroStory" data-i18n="playerLblStory">Geschichte des Helden</label>
+      <textarea id="heroStory" rows="5" maxlength="1200" data-i18n-placeholder="playerStoryPlaceholder" placeholder="Woher kommt dein Held? Was hat er erlebt?"></textarea>
+    </div>
+
     <div class="field row2">
       <div>
         <label for="strengthCount" data-i18n="playerLblStrengthCount">Stärkepunkte-Felder</label>
@@ -774,6 +838,56 @@
         <input type="checkbox" id="showStorage" checked>
         <span class="toggle-switch"></span>
         <span class="toggle-label" data-i18n="playerToggleStorage">Ablage für Gold &amp; Edelsteine anzeigen</span>
+      </label>
+    </div>
+
+    <div class="equip-group-title" data-i18n="playerGroupEquipment">Ausstattung</div>
+
+    <div class="field">
+      <label class="toggle-row">
+        <input type="checkbox" id="showHand1">
+        <span class="toggle-switch"></span>
+        <span class="toggle-label" data-i18n="playerToggleHand1">Hand 1 (Kreis) anzeigen</span>
+      </label>
+    </div>
+
+    <div class="field">
+      <label class="toggle-row">
+        <input type="checkbox" id="showHand2">
+        <span class="toggle-switch"></span>
+        <span class="toggle-label" data-i18n="playerToggleHand2">Hand 2 (Kreis) anzeigen</span>
+      </label>
+    </div>
+
+    <div class="field">
+      <label class="toggle-row">
+        <input type="checkbox" id="showHelmet">
+        <span class="toggle-switch"></span>
+        <span class="toggle-label" data-i18n="playerToggleHelmet">Helm anzeigen</span>
+      </label>
+    </div>
+
+    <div class="field">
+      <label class="toggle-row">
+        <input type="checkbox" id="showChest">
+        <span class="toggle-switch"></span>
+        <span class="toggle-label" data-i18n="playerToggleChest">Brustpanzer anzeigen</span>
+      </label>
+    </div>
+
+    <div class="field">
+      <label class="toggle-row">
+        <input type="checkbox" id="showPants">
+        <span class="toggle-switch"></span>
+        <span class="toggle-label" data-i18n="playerTogglePants">Hose anzeigen</span>
+      </label>
+    </div>
+
+    <div class="field">
+      <label class="toggle-row">
+        <input type="checkbox" id="showShoes">
+        <span class="toggle-switch"></span>
+        <span class="toggle-label" data-i18n="playerToggleShoes">Schuhe anzeigen</span>
       </label>
     </div>
 
@@ -821,6 +935,11 @@
         </div>
       </div>
 
+      <div class="story-box" id="storyBox" style="display:none;">
+        <div class="label" data-i18n="playerLblStory">Geschichte des Helden</div>
+        <p id="storyOut"></p>
+      </div>
+
       <div class="class-perk" id="classPerkRow" style="display:none;">
         <div class="class-icon" id="classIconOut">🧙</div>
         <div class="class-text">
@@ -843,6 +962,30 @@
       <div class="track storage-track" id="storageTrack">
         <div class="label"><span class="icon">💰</span> <span data-i18n="playerLblStorageSlots">Gold &amp; Edelsteine</span></div>
         <div class="pouch-slots" id="pouchSlots"></div>
+      </div>
+
+      <div class="track equip-track" id="equipTrack" style="display:none;">
+        <div class="label"><span class="icon">⚔️</span> <span data-i18n="playerGroupEquipment">Ausstattung</span></div>
+        <div class="equip-row">
+          <div class="equip-slot" id="hand1Slot" style="display:none;" data-i18n-title="playerLblHand1" title="Hand 1">
+            <div class="equip-shape circle">✋</div>
+          </div>
+          <div class="equip-slot" id="hand2Slot" style="display:none;" data-i18n-title="playerLblHand2" title="Hand 2">
+            <div class="equip-shape circle">🤚</div>
+          </div>
+          <div class="equip-slot" id="helmetSlot" style="display:none;" data-i18n-title="playerLblHelmet" title="Helm">
+            <div class="equip-shape square">🪖</div>
+          </div>
+          <div class="equip-slot" id="chestSlot" style="display:none;" data-i18n-title="playerLblChest" title="Brust">
+            <div class="equip-shape square">🦺</div>
+          </div>
+          <div class="equip-slot" id="pantsSlot" style="display:none;" data-i18n-title="playerLblPants" title="Hose">
+            <div class="equip-shape square">👖</div>
+          </div>
+          <div class="equip-slot" id="shoesSlot" style="display:none;" data-i18n-title="playerLblShoes" title="Schuhe">
+            <div class="equip-shape square">👢</div>
+          </div>
+        </div>
       </div>
 
       <div class="footer-row">
@@ -1006,6 +1149,19 @@
     alchemist: { icon:'⚗️', nameKey:'playerClassAlchemistName', perkKey:'playerClassAlchemistPerk' }
   };
 
+  // equipment slots; bit = position in the share code (never reorder, only append)
+  const EQUIP = [
+    { toggle:'showHand1',  slot:'hand1Slot',  bit:1 },
+    { toggle:'showHelmet', slot:'helmetSlot', bit:2 },
+    { toggle:'showChest',  slot:'chestSlot',  bit:4 },
+    { toggle:'showPants',  slot:'pantsSlot',  bit:8 },
+    { toggle:'showShoes',  slot:'shoesSlot',  bit:16 },
+    { toggle:'showHand2',  slot:'hand2Slot',  bit:32 }
+  ];
+  function equipMask(){
+    return EQUIP.reduce((m, e) => m | (document.getElementById(e.toggle).checked ? e.bit : 0), 0);
+  }
+
   function render(){
     const name = document.getElementById('heroName').value || 'Namenloser Held';
     const epithet = document.getElementById('heroEpithet').value || '';
@@ -1018,6 +1174,9 @@
     document.getElementById('epithetOut').textContent = epithet;
     document.getElementById('rankOut').textContent = rank;
     document.getElementById('abilityOut').innerHTML = ability;
+    const story = document.getElementById('heroStory').value.trim();
+    document.getElementById('storyOut').textContent = story;
+    document.getElementById('storyBox').style.display = story ? '' : 'none';
     const medallionOut = document.getElementById('medallionOut');
     if(heroImageData){
       medallionOut.innerHTML = '';
@@ -1048,6 +1207,14 @@
     document.getElementById('storageTrack').classList.toggle('no-storage', collapse);
     document.getElementById('card').classList.toggle('no-storage', collapse);
 
+    let anyEquip = false;
+    EQUIP.forEach(e => {
+      const on = document.getElementById(e.toggle).checked;
+      document.getElementById(e.slot).style.display = on ? '' : 'none';
+      if(on) anyEquip = true;
+    });
+    document.getElementById('equipTrack').style.display = anyEquip ? '' : 'none';
+
     const capacity = document.getElementById('storageCapacity').value;
     buildSlots(document.getElementById('pouchSlots'), capacity);
 
@@ -1067,6 +1234,10 @@
     card.style.setProperty('--accent-mix-20-transparent', mixWithAlpha(selectedPalette.accent, 0.2));
     card.style.setProperty('--accent-mix-60-black', mixHex(selectedPalette.accent, '#000000', 0.6));
     card.style.setProperty('--accent-mix-55-transparent', mixWithAlpha(selectedPalette.accent, 0.55));
+    // Parchment base color shifts slightly toward the accent color (plain rgb() values, html2canvas-safe)
+    card.style.setProperty('--card-tint-1', mixHex(selectedPalette.accent, '#e7d9b6', 0.14));
+    card.style.setProperty('--card-tint-2', mixHex(selectedPalette.accent, '#ded0a6', 0.16));
+    card.style.setProperty('--card-tint-3', mixHex(selectedPalette.accent, '#d3c092', 0.18));
   }
 
   document.querySelectorAll('.panel input, .panel textarea, .panel select').forEach(el => {
@@ -1110,6 +1281,10 @@
       ss: document.getElementById('showStorage').checked,
       sca: document.getElementById('storageCapacity').value
     };
+    const story = document.getElementById('heroStory').value;
+    if(story) s.st = story;
+    const eq = equipMask();
+    if(eq) s.eq = eq;
     if(heroImageData) s.im = heroImageShareData || heroImageData;
     return s;
   }
@@ -1282,8 +1457,18 @@
       if(typeof s.ss !== 'boolean') return null;
       for(const k of ['n', 'e', 'i', 'a']) if(typeof s[k] !== 'string') return null;
 
-      const joined = [s.n, s.e, s.i, s.a].join(SHARE_SEP);
-      if([s.n, s.e, s.i, s.a].some(f => f.indexOf(SHARE_SEP) >= 0)) return null;
+      // optional 5th field (story); without a story the code stays identical to the 4-field format
+      const fieldList = [s.n, s.e, s.i, s.a];
+      if(s.st !== undefined || s.eq !== undefined){
+        if(s.st !== undefined && typeof s.st !== 'string') return null;
+        fieldList.push(s.st !== undefined ? s.st : '');
+        if(s.eq !== undefined){
+          if(!Number.isInteger(s.eq) || s.eq < 1 || s.eq > 63) return null;
+          fieldList.push(s.eq.toString(36));   // 6th field: equipment slots (1 hand 1, 2 helmet, 4 chest, 8 pants, 16 shoes, 32 hand 2)
+        }
+      }
+      const joined = fieldList.join(SHARE_SEP);
+      if(fieldList.some(f => f.indexOf(SHARE_SEP) >= 0)) return null;
       let text = escapeShareText(joined);
       let alphabetMode = 0;
       const alt = alphabetEncode(joined);
@@ -1320,12 +1505,12 @@
     const cls = shareClassValues()[digit(2)];
     const flags = digit(7);
     const accent = digit(5);
-    if(cls === undefined || accent >= PALETTE.length || flags > 7) throw bad();
+    if(cls === undefined || accent >= PALETTE.length || flags > 31) throw bad();  // bits 8/16 were an earlier weapon/armor flag, still read below
     if(!!(flags & 2) !== (p.length === 4)) throw bad();
 
     const joined = (flags & 4) ? alphabetDecode(p[1]) : unescapeShareText(p[1]);
     const fields = joined.split(SHARE_SEP);
-    if(fields.length !== 4) throw bad();
+    if(fields.length < 4 || fields.length > 6) throw bad();
 
     const s = {
       v: 3,
@@ -1339,6 +1524,16 @@
       ss: !!(flags & 1),
       sca: String(digit(6))
     };
+    if(fields.length >= 5 && fields[4] !== '') s.st = fields[4];
+    let eq = 0;
+    if(fields.length === 6){
+      if(!/^[0-9a-z]{1,2}$/.test(fields[5])) throw bad();
+      eq = parseInt(fields[5], 36);
+      if(eq > 63) throw bad();
+    }
+    if(flags & 8) eq |= 1;     // earlier links: weapon flag (now hand 1)
+    if(flags & 16) eq |= 30;   // earlier links: armor flag = all four armor pieces
+    if(eq) s.eq = eq;
     if(flags & 2){
       if(!/^[A-Za-z0-9_-]+$/.test(p[3]) || p[3].length % 4 === 1) throw bad();
       const body = fromB64Url(p[3]);
@@ -1387,6 +1582,7 @@
     const img = s.im !== undefined ? s.im : s.img;
     const lang = s.l !== undefined ? s.l : s.lang;
 
+    document.getElementById('heroStory').value = s.st !== undefined ? s.st : '';
     setVal('heroName', name);
     setVal('heroEpithet', epithet);
     setVal('heroRank', rank);
@@ -1396,6 +1592,7 @@
     setVal('strengthCount', strengthCount);
     setVal('willCount', willCount);
     setChecked('showStorage', showStorage);
+    EQUIP.forEach(e => setChecked(e.toggle, !!(s.eq & e.bit)));
     setVal('storageCapacity', storageCapacity);
     heroImageData = img || null;
     heroImageShareData = heroImageData;
