@@ -563,7 +563,8 @@
 
   .footer-row{
     display:flex;
-    align-items:center;
+    align-items:flex-start;
+    gap:20px;
     justify-content:flex-start;
     margin-top:22px;
     padding-top:14px;
@@ -576,7 +577,11 @@
     width:100%;
     gap:10px;
   }
-  .equip-track{ margin:0; flex:1; }
+  .equip-track{ margin:0; flex:0 0 260px; }
+  #footerRow.no-storage .equip-track{ flex:1; }
+  #footerRow .storage-track{ margin:0; flex:1; min-width:0; }
+  #footerRow .pouch-slots{ justify-content:flex-start; }
+  #footerRow.no-equip .pouch-slots{ justify-content:space-between; }
   .equip-track .label{ margin-bottom:6px; }
   .equip-row{
     position:relative;
@@ -595,6 +600,7 @@
   #chestSlot { left:102px; top:92px; }
   #hand1Slot { left:22px;  top:168px; }
   #hand2Slot { left:182px; top:168px; }
+  #beltSlot  { left:85px;  top:149px; }
   #pantsSlot { left:102px; top:178px; }
   #shoesSlot { left:102px; top:262px; }
   .equip-shape{
@@ -602,10 +608,11 @@
     align-items:center;
     justify-content:center;
     width:56px; height:56px;
-    background:rgba(230,190,90,.5);
-    border:2px solid #8a7142;
+    background:var(--slot-bg-strong, rgba(230,190,90,.5));
+    border:2px solid var(--slot-border, #8a7142);
   }
   .equip-shape svg{ width:86%; height:auto; display:block; }
+  .equip-shape.belt{ width:90px; height:28px; border-radius:5px; }
   .equip-shape.circle{ border-radius:50%; }
   .equip-shape.square{ border-radius:6px; }
   .equip-group-title{
@@ -620,8 +627,8 @@
   }
   .pouch-slot{
     width:62px; height:62px;
-    background:rgba(230,190,90,.35);
-    border:2px solid #8a7142;
+    background:var(--slot-bg, rgba(230,190,90,.35));
+    border:2px solid var(--slot-border, #8a7142);
     border-radius:8px;
   }
   .storage-track .icon{ font-size:1.1rem; margin-right:4px; }
@@ -884,6 +891,14 @@
 
     <div class="field">
       <label class="toggle-row">
+        <input type="checkbox" id="showBelt">
+        <span class="toggle-switch"></span>
+        <span class="toggle-label" data-i18n="playerToggleBelt">Gürtel anzeigen</span>
+      </label>
+    </div>
+
+    <div class="field">
+      <label class="toggle-row">
         <input type="checkbox" id="showPants">
         <span class="toggle-switch"></span>
         <span class="toggle-label" data-i18n="playerTogglePants">Hose anzeigen</span>
@@ -966,11 +981,6 @@
         </div>
       </div>
 
-      <div class="track storage-track" id="storageTrack">
-        <div class="label"><span class="icon">💰</span> <span data-i18n="playerLblInventory">Inventar</span></div>
-        <div class="pouch-slots" id="pouchSlots"></div>
-      </div>
-
       <div class="footer-row" id="footerRow">
         <div class="track equip-track" id="equipTrack" style="display:none;">
           <div class="label"><span class="icon">⚔️</span> <span data-i18n="playerGroupEquipment">Ausstattung</span></div>
@@ -1019,13 +1029,14 @@
   <path d="M14 29Q24 33 34 29M14 35Q24 39 34 35" stroke="#d9c393" stroke-width="1.2" fill="none"/>
   <g fill="#8a7142" stroke="#2f2416" stroke-width="1"><circle cx="13" cy="15.5" r="2"/><circle cx="35" cy="15.5" r="2"/></g></svg></div>
             </div>
+            <div class="equip-slot" id="beltSlot" style="display:none;" data-i18n-title="playerLblBelt" title="Gürtel">
+              <div class="equip-shape belt"><svg width="84" height="24" viewBox="0 0 96 28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-linejoin="round" stroke-linecap="round"><rect x="2" y="6" width="92" height="16" rx="3" fill="#5a4630" stroke="#2f2416" stroke-width="1.5"/><path d="M8 14H34M62 14H88" stroke="#d9c393" stroke-width="1.2" stroke-dasharray="3 3" fill="none"/><rect x="36" y="3" width="24" height="22" rx="2" fill="#8a7142" stroke="#2f2416" stroke-width="1.8"/><rect x="42" y="9" width="12" height="10" rx="1" fill="#5a4630" stroke="#2f2416" stroke-width="1"/><path d="M48 14H64" stroke="#d9c393" stroke-width="1.6" fill="none"/><g fill="#1c150d"><circle cx="72" cy="14" r="1.5"/><circle cx="80" cy="14" r="1.5"/><circle cx="88" cy="14" r="1.5"/></g></svg></div>
+            </div>
             <div class="equip-slot" id="pantsSlot" style="display:none;" data-i18n-title="playerLblPants" title="Hose">
               <div class="equip-shape square"><svg width="42" height="42" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-linejoin="round" stroke-linecap="round"><polygon points="12,10 23,10 22,42 14,42" fill="#5a4630" stroke="#2f2416" stroke-width="1.5"/>
   <polygon points="25,10 36,10 34,42 26,42" fill="#5a4630" stroke="#2f2416" stroke-width="1.5"/>
   <g fill="#8a7142" stroke="#2f2416" stroke-width="1.2"><circle cx="17.5" cy="25" r="4"/><circle cx="30.5" cy="25" r="4"/></g>
-  <path d="M13.5 35h8M26.5 35h8" stroke="#d9c393" stroke-width="1.2"/>
-  <rect x="10" y="6" width="28" height="5" rx="1" fill="#3b2a1a" stroke="#2f2416" stroke-width="1.2"/>
-  <rect x="21" y="5.5" width="6" height="6" rx="1" fill="#d9c393" stroke="#2f2416" stroke-width="1"/></svg></div>
+  <path d="M13.5 35h8M26.5 35h8" stroke="#d9c393" stroke-width="1.2"/></svg></div>
             </div>
             <div class="equip-slot" id="shoesSlot" style="display:none;" data-i18n-title="playerLblShoes" title="Schuhe">
               <div class="equip-shape square"><svg width="42" height="42" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-linejoin="round" stroke-linecap="round"><path d="M13 6H27V28Q27 31 31 32.5L42 36Q45 38 41 41H13z" fill="#5a4630" stroke="#2f2416" stroke-width="1.5"/>
@@ -1035,6 +1046,11 @@
   <rect x="12" y="41" width="31" height="3" rx="1" fill="#2f2416"/></svg></div>
             </div>
           </div>
+        </div>
+
+        <div class="track storage-track" id="storageTrack">
+          <div class="label"><span class="icon">💰</span> <span data-i18n="playerLblInventory">Inventar</span></div>
+          <div class="pouch-slots" id="pouchSlots"></div>
         </div>
       </div>
     </div>
@@ -1235,7 +1251,8 @@
     { toggle:'showChest',  slot:'chestSlot',  bit:4 },
     { toggle:'showPants',  slot:'pantsSlot',  bit:8 },
     { toggle:'showShoes',  slot:'shoesSlot',  bit:16 },
-    { toggle:'showHand2',  slot:'hand2Slot',  bit:32 }
+    { toggle:'showHand2',  slot:'hand2Slot',  bit:32 },
+    { toggle:'showBelt',   slot:'beltSlot',   bit:64 }
   ];
   function equipMask(){
     return EQUIP.reduce((m, e) => m | (document.getElementById(e.toggle).checked ? e.bit : 0), 0);
@@ -1293,7 +1310,10 @@
       if(on) anyEquip = true;
     });
     document.getElementById('equipTrack').style.display = anyEquip ? '' : 'none';
-    document.getElementById('footerRow').style.display = anyEquip ? '' : 'none';
+    const footerRow = document.getElementById('footerRow');
+    footerRow.classList.toggle('no-equip', !anyEquip);
+    footerRow.classList.toggle('no-storage', collapse);
+    footerRow.style.display = (anyEquip || !collapse) ? '' : 'none';
 
     const capacity = document.getElementById('storageCapacity').value;
     buildSlots(document.getElementById('pouchSlots'), capacity);
@@ -1315,6 +1335,10 @@
     card.style.setProperty('--accent-mix-60-black', mixHex(selectedPalette.accent, '#000000', 0.6));
     card.style.setProperty('--accent-mix-55-transparent', mixWithAlpha(selectedPalette.accent, 0.55));
     // Parchment base color shifts slightly toward the accent color (plain rgb() values, html2canvas-safe)
+    // inventory + equipment slots follow the accent color slightly
+    card.style.setProperty('--slot-bg', mixWithAlpha(selectedPalette.bright, 0.35));
+    card.style.setProperty('--slot-bg-strong', mixWithAlpha(selectedPalette.bright, 0.5));
+    card.style.setProperty('--slot-border', mixHex(selectedPalette.accent, '#8a7142', 0.45));
     card.style.setProperty('--card-tint-1', mixHex(selectedPalette.accent, '#e7d9b6', 0.14));
     card.style.setProperty('--card-tint-2', mixHex(selectedPalette.accent, '#ded0a6', 0.16));
     card.style.setProperty('--card-tint-3', mixHex(selectedPalette.accent, '#d3c092', 0.18));
@@ -1543,8 +1567,8 @@
         if(s.st !== undefined && typeof s.st !== 'string') return null;
         fieldList.push(s.st !== undefined ? s.st : '');
         if(s.eq !== undefined){
-          if(!Number.isInteger(s.eq) || s.eq < 1 || s.eq > 63) return null;
-          fieldList.push(s.eq.toString(36));   // 6th field: equipment slots (1 hand 1, 2 helmet, 4 chest, 8 pants, 16 shoes, 32 hand 2)
+          if(!Number.isInteger(s.eq) || s.eq < 1 || s.eq > 127) return null;
+          fieldList.push(s.eq.toString(36));   // 6th field: equipment slots (1 hand 1, 2 helmet, 4 chest, 8 pants, 16 shoes, 32 hand 2, 64 belt)
         }
       }
       const joined = fieldList.join(SHARE_SEP);
@@ -1609,7 +1633,7 @@
     if(fields.length === 6){
       if(!/^[0-9a-z]{1,2}$/.test(fields[5])) throw bad();
       eq = parseInt(fields[5], 36);
-      if(eq > 63) throw bad();
+      if(eq > 127) throw bad();
     }
     if(flags & 8) eq |= 1;     // earlier links: weapon flag (now hand 1)
     if(flags & 16) eq |= 30;   // earlier links: armor flag = all four armor pieces
