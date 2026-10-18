@@ -564,7 +564,7 @@
   .footer-row{
     display:flex;
     align-items:center;
-    justify-content:flex-end;
+    justify-content:flex-start;
     margin-top:22px;
     padding-top:14px;
     border-top:1px dashed var(--parchment-shadow);
@@ -576,31 +576,38 @@
     width:100%;
     gap:10px;
   }
-  .equip-track{ margin-bottom:16px; }
+  .equip-track{ margin:0; flex:1; }
+  .equip-track .label{ margin-bottom:6px; }
   .equip-row{
-    display:flex;
-    flex-wrap:wrap;
-    gap:14px 22px;
+    position:relative;
+    width:260px;
+    height:330px;
+    margin:0 auto;
   }
-  .equip-slot{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:6px;
-    min-width:64px;
+  .doll-bg{
+    position:absolute;
+    inset:0;
+    width:100%; height:100%;
+    pointer-events:none;
   }
+  .equip-slot{ position:absolute; }
+  #helmetSlot{ left:102px; top:6px; }
+  #chestSlot { left:102px; top:92px; }
+  #hand1Slot { left:22px;  top:168px; }
+  #hand2Slot { left:182px; top:168px; }
+  #pantsSlot { left:102px; top:178px; }
+  #shoesSlot { left:102px; top:262px; }
   .equip-shape{
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:30px;
-    line-height:1;
-    width:64px; height:64px;
-    background:rgba(230,190,90,.35);
+    width:56px; height:56px;
+    background:rgba(230,190,90,.5);
     border:2px solid #8a7142;
   }
+  .equip-shape svg{ width:86%; height:auto; display:block; }
   .equip-shape.circle{ border-radius:50%; }
-  .equip-shape.square{ border-radius:8px; }
+  .equip-shape.square{ border-radius:6px; }
   .equip-group-title{
     font-family:'Cinzel', serif;
     font-size:.8rem;
@@ -960,64 +967,75 @@
       </div>
 
       <div class="track storage-track" id="storageTrack">
-        <div class="label"><span class="icon">💰</span> <span data-i18n="playerLblStorageSlots">Gold &amp; Edelsteine</span></div>
+        <div class="label"><span class="icon">💰</span> <span data-i18n="playerLblInventory">Inventar</span></div>
         <div class="pouch-slots" id="pouchSlots"></div>
       </div>
 
-      <div class="track equip-track" id="equipTrack" style="display:none;">
-        <div class="label"><span class="icon">⚔️</span> <span data-i18n="playerGroupEquipment">Ausstattung</span></div>
-        <div class="equip-row">
-          <div class="equip-slot" id="hand1Slot" style="display:none;" data-i18n-title="playerLblHand1" title="Hand 1">
-            <div class="equip-shape circle"><svg width="42" height="42" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-linejoin="round" stroke-linecap="round"><g><g fill="#5a4630" stroke="#2f2416" stroke-width="1.5">
-<rect x="15" y="12" width="5" height="15" rx="2.5"/><rect x="20" y="9" width="5" height="18" rx="2.5"/><rect x="25" y="9" width="5" height="18" rx="2.5"/><rect x="30" y="12" width="5" height="15" rx="2.5"/>
-<path d="M15 24h20v10q0 3-3 3H18q-3 0-3-3z"/>
-<path d="M15 28L8 22q-1.5-1.5 0-3t3 0l6 6z"/>
-<rect x="13" y="37" width="24" height="7" rx="1.5" fill="#8a7142"/></g>
-<g stroke="#d9c393" stroke-width="1" fill="none"><path d="M15.5 19h4M20.5 17h4M25.5 17h4M30.5 19h4"/></g>
-<g fill="#d9c393"><circle cx="17" cy="40.5" r="1"/><circle cx="25" cy="40.5" r="1"/><circle cx="33" cy="40.5" r="1"/></g></g></svg></div>
-          </div>
-          <div class="equip-slot" id="hand2Slot" style="display:none;" data-i18n-title="playerLblHand2" title="Hand 2">
-            <div class="equip-shape circle"><svg width="42" height="42" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-linejoin="round" stroke-linecap="round"><g transform="translate(48 0) scale(-1 1)"><g fill="#5a4630" stroke="#2f2416" stroke-width="1.5">
-<rect x="15" y="12" width="5" height="15" rx="2.5"/><rect x="20" y="9" width="5" height="18" rx="2.5"/><rect x="25" y="9" width="5" height="18" rx="2.5"/><rect x="30" y="12" width="5" height="15" rx="2.5"/>
-<path d="M15 24h20v10q0 3-3 3H18q-3 0-3-3z"/>
-<path d="M15 28L8 22q-1.5-1.5 0-3t3 0l6 6z"/>
-<rect x="13" y="37" width="24" height="7" rx="1.5" fill="#8a7142"/></g>
-<g stroke="#d9c393" stroke-width="1" fill="none"><path d="M15.5 19h4M20.5 17h4M25.5 17h4M30.5 19h4"/></g>
-<g fill="#d9c393"><circle cx="17" cy="40.5" r="1"/><circle cx="25" cy="40.5" r="1"/><circle cx="33" cy="40.5" r="1"/></g></g></svg></div>
-          </div>
-          <div class="equip-slot" id="helmetSlot" style="display:none;" data-i18n-title="playerLblHelmet" title="Helm">
-            <div class="equip-shape square"><svg width="42" height="42" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-linejoin="round" stroke-linecap="round"><path d="M13 41V21Q13 7 24 7T35 21V41z" fill="#5a4630" stroke="#2f2416" stroke-width="1.5"/>
-<rect x="13" y="21" width="22" height="4" fill="#1c150d"/>
-<rect x="22.5" y="8" width="3" height="33" fill="#8a7142" stroke="#2f2416" stroke-width="1"/>
-<path d="M13 38h22" stroke="#d9c393" stroke-width="1.2"/>
-<g fill="#1c150d"><circle cx="17" cy="30" r="1.2"/><circle cx="17" cy="34" r="1.2"/><circle cx="31" cy="30" r="1.2"/><circle cx="31" cy="34" r="1.2"/></g></svg></div>
-          </div>
-          <div class="equip-slot" id="chestSlot" style="display:none;" data-i18n-title="playerLblChest" title="Brust">
-            <div class="equip-shape square"><svg width="42" height="42" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-linejoin="round" stroke-linecap="round"><path d="M9 13L18 8Q24 13 30 8L39 13L37 22L34 23V40Q24 45 14 40V23L11 22z" fill="#5a4630" stroke="#2f2416" stroke-width="1.5"/>
-<path d="M24 13V43" stroke="#d9c393" stroke-width="1.4" fill="none"/>
-<path d="M14 29Q24 33 34 29M14 35Q24 39 34 35" stroke="#d9c393" stroke-width="1.2" fill="none"/>
-<g fill="#8a7142" stroke="#2f2416" stroke-width="1"><circle cx="13" cy="15.5" r="2"/><circle cx="35" cy="15.5" r="2"/></g></svg></div>
-          </div>
-          <div class="equip-slot" id="pantsSlot" style="display:none;" data-i18n-title="playerLblPants" title="Hose">
-            <div class="equip-shape square"><svg width="42" height="42" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-linejoin="round" stroke-linecap="round"><polygon points="12,10 23,10 22,42 14,42" fill="#5a4630" stroke="#2f2416" stroke-width="1.5"/>
-<polygon points="25,10 36,10 34,42 26,42" fill="#5a4630" stroke="#2f2416" stroke-width="1.5"/>
-<g fill="#8a7142" stroke="#2f2416" stroke-width="1.2"><circle cx="17.5" cy="25" r="4"/><circle cx="30.5" cy="25" r="4"/></g>
-<path d="M13.5 35h8M26.5 35h8" stroke="#d9c393" stroke-width="1.2"/>
-<rect x="10" y="6" width="28" height="5" rx="1" fill="#3b2a1a" stroke="#2f2416" stroke-width="1.2"/>
-<rect x="21" y="5.5" width="6" height="6" rx="1" fill="#d9c393" stroke="#2f2416" stroke-width="1"/></svg></div>
-          </div>
-          <div class="equip-slot" id="shoesSlot" style="display:none;" data-i18n-title="playerLblShoes" title="Schuhe">
-            <div class="equip-shape square"><svg width="42" height="42" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-linejoin="round" stroke-linecap="round"><path d="M13 6H27V28Q27 31 31 32.5L42 36Q45 38 41 41H13z" fill="#5a4630" stroke="#2f2416" stroke-width="1.5"/>
-<rect x="12" y="6" width="16" height="4" fill="#8a7142" stroke="#2f2416" stroke-width="1"/>
-<path d="M13 16h14M13 22h14" stroke="#d9c393" stroke-width="1.2"/>
-<rect x="21" y="14.5" width="4" height="3" fill="#d9c393" stroke="#2f2416" stroke-width=".8"/>
-<rect x="12" y="41" width="31" height="3" rx="1" fill="#2f2416"/></svg></div>
+      <div class="footer-row" id="footerRow">
+        <div class="track equip-track" id="equipTrack" style="display:none;">
+          <div class="label"><span class="icon">⚔️</span> <span data-i18n="playerGroupEquipment">Ausstattung</span></div>
+          <div class="equip-row">
+          <svg class="doll-bg" viewBox="0 0 260 330" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <g fill="#5a4630" fill-opacity="0.2" stroke="#5a4630" stroke-opacity="0.4" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+              <circle cx="130" cy="34" r="27"/>
+              <rect x="122" y="58" width="16" height="16"/>
+              <path d="M88 76Q130 66 172 76L168 170Q130 178 92 170Z"/>
+              <path d="M84 86L52 178" fill="none" stroke-width="20" stroke-opacity="0.2"/>
+              <path d="M176 86L208 178" fill="none" stroke-width="20" stroke-opacity="0.2"/>
+              <path d="M100 168H124L121 306H96Z"/>
+              <path d="M136 168H160L164 306H139Z"/>
+              <ellipse cx="104" cy="312" rx="18" ry="8"/>
+              <ellipse cx="156" cy="312" rx="18" ry="8"/>
+            </g>
+          </svg>
+                      <div class="equip-slot" id="hand1Slot" style="display:none;" data-i18n-title="playerLblHand1" title="Hand 1">
+              <div class="equip-shape circle"><svg width="42" height="42" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-linejoin="round" stroke-linecap="round"><g><g fill="#5a4630" stroke="#2f2416" stroke-width="1.5">
+  <rect x="15" y="12" width="5" height="15" rx="2.5"/><rect x="20" y="9" width="5" height="18" rx="2.5"/><rect x="25" y="9" width="5" height="18" rx="2.5"/><rect x="30" y="12" width="5" height="15" rx="2.5"/>
+  <path d="M15 24h20v10q0 3-3 3H18q-3 0-3-3z"/>
+  <path d="M15 28L8 22q-1.5-1.5 0-3t3 0l6 6z"/>
+  <rect x="13" y="37" width="24" height="7" rx="1.5" fill="#8a7142"/></g>
+  <g stroke="#d9c393" stroke-width="1" fill="none"><path d="M15.5 19h4M20.5 17h4M25.5 17h4M30.5 19h4"/></g>
+  <g fill="#d9c393"><circle cx="17" cy="40.5" r="1"/><circle cx="25" cy="40.5" r="1"/><circle cx="33" cy="40.5" r="1"/></g></g></svg></div>
+            </div>
+            <div class="equip-slot" id="hand2Slot" style="display:none;" data-i18n-title="playerLblHand2" title="Hand 2">
+              <div class="equip-shape circle"><svg width="42" height="42" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-linejoin="round" stroke-linecap="round"><g transform="translate(48 0) scale(-1 1)"><g fill="#5a4630" stroke="#2f2416" stroke-width="1.5">
+  <rect x="15" y="12" width="5" height="15" rx="2.5"/><rect x="20" y="9" width="5" height="18" rx="2.5"/><rect x="25" y="9" width="5" height="18" rx="2.5"/><rect x="30" y="12" width="5" height="15" rx="2.5"/>
+  <path d="M15 24h20v10q0 3-3 3H18q-3 0-3-3z"/>
+  <path d="M15 28L8 22q-1.5-1.5 0-3t3 0l6 6z"/>
+  <rect x="13" y="37" width="24" height="7" rx="1.5" fill="#8a7142"/></g>
+  <g stroke="#d9c393" stroke-width="1" fill="none"><path d="M15.5 19h4M20.5 17h4M25.5 17h4M30.5 19h4"/></g>
+  <g fill="#d9c393"><circle cx="17" cy="40.5" r="1"/><circle cx="25" cy="40.5" r="1"/><circle cx="33" cy="40.5" r="1"/></g></g></svg></div>
+            </div>
+            <div class="equip-slot" id="helmetSlot" style="display:none;" data-i18n-title="playerLblHelmet" title="Helm">
+              <div class="equip-shape square"><svg width="42" height="42" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-linejoin="round" stroke-linecap="round"><path d="M13 41V21Q13 7 24 7T35 21V41z" fill="#5a4630" stroke="#2f2416" stroke-width="1.5"/>
+  <rect x="13" y="21" width="22" height="4" fill="#1c150d"/>
+  <rect x="22.5" y="8" width="3" height="33" fill="#8a7142" stroke="#2f2416" stroke-width="1"/>
+  <path d="M13 38h22" stroke="#d9c393" stroke-width="1.2"/>
+  <g fill="#1c150d"><circle cx="17" cy="30" r="1.2"/><circle cx="17" cy="34" r="1.2"/><circle cx="31" cy="30" r="1.2"/><circle cx="31" cy="34" r="1.2"/></g></svg></div>
+            </div>
+            <div class="equip-slot" id="chestSlot" style="display:none;" data-i18n-title="playerLblChest" title="Brust">
+              <div class="equip-shape square"><svg width="42" height="42" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-linejoin="round" stroke-linecap="round"><path d="M9 13L18 8Q24 13 30 8L39 13L37 22L34 23V40Q24 45 14 40V23L11 22z" fill="#5a4630" stroke="#2f2416" stroke-width="1.5"/>
+  <path d="M24 13V43" stroke="#d9c393" stroke-width="1.4" fill="none"/>
+  <path d="M14 29Q24 33 34 29M14 35Q24 39 34 35" stroke="#d9c393" stroke-width="1.2" fill="none"/>
+  <g fill="#8a7142" stroke="#2f2416" stroke-width="1"><circle cx="13" cy="15.5" r="2"/><circle cx="35" cy="15.5" r="2"/></g></svg></div>
+            </div>
+            <div class="equip-slot" id="pantsSlot" style="display:none;" data-i18n-title="playerLblPants" title="Hose">
+              <div class="equip-shape square"><svg width="42" height="42" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-linejoin="round" stroke-linecap="round"><polygon points="12,10 23,10 22,42 14,42" fill="#5a4630" stroke="#2f2416" stroke-width="1.5"/>
+  <polygon points="25,10 36,10 34,42 26,42" fill="#5a4630" stroke="#2f2416" stroke-width="1.5"/>
+  <g fill="#8a7142" stroke="#2f2416" stroke-width="1.2"><circle cx="17.5" cy="25" r="4"/><circle cx="30.5" cy="25" r="4"/></g>
+  <path d="M13.5 35h8M26.5 35h8" stroke="#d9c393" stroke-width="1.2"/>
+  <rect x="10" y="6" width="28" height="5" rx="1" fill="#3b2a1a" stroke="#2f2416" stroke-width="1.2"/>
+  <rect x="21" y="5.5" width="6" height="6" rx="1" fill="#d9c393" stroke="#2f2416" stroke-width="1"/></svg></div>
+            </div>
+            <div class="equip-slot" id="shoesSlot" style="display:none;" data-i18n-title="playerLblShoes" title="Schuhe">
+              <div class="equip-shape square"><svg width="42" height="42" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-linejoin="round" stroke-linecap="round"><path d="M13 6H27V28Q27 31 31 32.5L42 36Q45 38 41 41H13z" fill="#5a4630" stroke="#2f2416" stroke-width="1.5"/>
+  <rect x="12" y="6" width="16" height="4" fill="#8a7142" stroke="#2f2416" stroke-width="1"/>
+  <path d="M13 16h14M13 22h14" stroke="#d9c393" stroke-width="1.2"/>
+  <rect x="21" y="14.5" width="4" height="3" fill="#d9c393" stroke="#2f2416" stroke-width=".8"/>
+  <rect x="12" y="41" width="31" height="3" rx="1" fill="#2f2416"/></svg></div>
+            </div>
           </div>
         </div>
-      </div>
-
-      <div class="footer-row">
-        <div class="brand" data-i18n="playerBrand">Heldentafel</div>
       </div>
     </div>
   </div>
@@ -1242,6 +1260,7 @@
       if(on) anyEquip = true;
     });
     document.getElementById('equipTrack').style.display = anyEquip ? '' : 'none';
+    document.getElementById('footerRow').style.display = anyEquip ? '' : 'none';
 
     const capacity = document.getElementById('storageCapacity').value;
     buildSlots(document.getElementById('pouchSlots'), capacity);
