@@ -1107,11 +1107,20 @@ function generateFieldTessellation(outposts, desiredFields){
       }));
     }
     if(c.terrain === 'desert'){
-      if(!c.isBuilding) dy = 2.6;
-      fieldsLayer.appendChild(el('path', {
-        d:`M ${ux-5} ${uy-6+dy} Q ${ux-2} ${uy-9.5+dy} ${ux} ${uy-6+dy} Q ${ux+2} ${uy-9.5+dy} ${ux+5} ${uy-6+dy}`,
-        fill:'none', stroke:'#a8813f', 'stroke-width':1, opacity:0.7
-      }));
+      // saguaro cactus, same height as the forest tree so the icon + number
+      // pair is centred the same way (spans uy-12 .. uy-3.5 before the shift)
+      if(!c.isBuilding) dy = 4.75;
+      const trunk = `M ${ux} ${uy-10.8+dy} L ${ux} ${uy-4.7+dy}`;
+      const armL = `M ${ux-1} ${uy-6.8+dy} H ${ux-3.4} V ${uy-9.6+dy}`;
+      const armR = `M ${ux+1} ${uy-8.2+dy} H ${ux+3.4} V ${uy-10.6+dy}`;
+      [[ '#2f3d18', 1.0 ], [ '#5f7f32', 0 ]].forEach(([col, extra]) => {
+        fieldsLayer.appendChild(el('path', {
+          d: trunk, fill:'none', stroke:col, 'stroke-width':2.4 + extra, 'stroke-linecap':'round', opacity:0.9
+        }));
+        fieldsLayer.appendChild(el('path', {
+          d: armL + ' ' + armR, fill:'none', stroke:col, 'stroke-width':1.5 + extra, 'stroke-linecap':'round', 'stroke-linejoin':'round', opacity:0.9
+        }));
+      });
     }
 
     const labelY = c.isBuilding ? uy + (c.big ? 20 : 14) : uy + dy;
