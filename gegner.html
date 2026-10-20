@@ -328,23 +328,21 @@
   const rnd = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
   const NAME_A = ['Gor','Vel','Mor','Kra','Zul','Brak','Nar','Skar','Thu','Grim','Ur','Dras'];
   const NAME_B = ['gash','dun','thrax','mok','gul','rax','nir','zar','bok','vul','dor','ruk'];
-  const EPITHETS = ['Schrecken der Sumpfpfade','Hüter der verlassenen Gruft','Plage der Handelswege','Geißel des Hochlands','Schatten der Ruinen','Schlächter der Bergpässe','Herr der Nebelmoore','Fluch der alten Brücke','Wächter der letzten Pforte','Räuber der Nachtwälder'];
-  const ABILITIES = [
-    'Wirft einmal pro Kampf einen Felsbrocken auf ein Ziel in bis zu 3 Feldern Entfernung.',
-    'Ein Treffer lässt das Ziel eine Runde lang aussetzen.',
-    'Ruft bei weniger als der Hälfte der Lebenspunkte einen Verbündeten herbei.',
-    'Greift alle Felder rund um sich gleichzeitig an.',
-    'Heilt sich nach jedem Treffer um 1 Lebenspunkt.',
-    'Ignoriert die Hälfte der Rüstungspunkte seines Ziels.',
-    'Bewegt sich über Hindernisse und Flüsse hinweg.',
-    'Verursacht doppelten Schaden, wenn er zuerst angreift.'
-  ];
+  const EPI_KEYS = Array.from({length: 10}, (_, i) => 'enemyEpithet_' + (i + 1));
+  const ABI_KEYS = Array.from({length: 8}, (_, i) => 'enemyAbility_' + (i + 1));
+  const R_KEY = keys => t(R(keys)) || t(keys[0]) || '';
+  // Standardtexte der Vorschau folgen der Sprache, solange sie unverändert (in irgendeiner Sprache) im Feld stehen
+  function isDefaultText(val, key){ return Object.keys(L).some(c => L[c][key] === val); }
+  function refreshDefaults(){
+    if(isDefaultText($('eEpi').value, 'enemyEpithet_1')) $('eEpi').value = t('enemyEpithet_1') || $('eEpi').value;
+    if(isDefaultText($('eAbility').value, 'enemyAbility_1')) $('eAbility').value = t('enemyAbility_1') || $('eAbility').value;
+  }
   $('randomBtn').addEventListener('click', () => {
     const ty = R(TYPES), thr = rnd(1, 30);
     $('eName').value = R(NAME_A) + R(NAME_B).replace(/^./, m => m);
-    $('eEpi').value = R(EPITHETS);
+    $('eEpi').value = R_KEY(EPI_KEYS);
     $('eThreat').value = thr; $('eIcon').value = ty.icon; $('eType').value = ty.id;
-    $('eAbility').value = R(ABILITIES);
+    $('eAbility').value = R_KEY(ABI_KEYS);
     $('eHp').value = Math.min(100, 4 + Math.round(thr * 0.8) + rnd(0, 3));
     $('eArmor').value = Math.min(100, Math.floor(thr / 4) + rnd(0, 1));
     $('eDmg').value = Math.max(1, Math.round(thr / 2) + rnd(0, 2));
@@ -425,6 +423,7 @@
     document.querySelectorAll('.swatch').forEach(el => { const v = get(PALETTE[+el.dataset.idx].key); if(v !== undefined) el.title = v; });
     const h = get('enemyHeading'); if(h) document.title = h;
     $('languageSelect').value = currentLang;
+    refreshDefaults();
     render();
   }
   Object.keys(L).forEach(code => {
