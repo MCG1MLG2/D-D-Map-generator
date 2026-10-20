@@ -576,8 +576,23 @@
           <input type="checkbox" id="showActionFields" checked>
         </div>
         <div class="field-row">
+          <span class="f-label" data-i18n="lblCustomActions">Aktionsfelder selbst wählen</span>
+          <input type="checkbox" id="customActionFields">
+        </div>
+        <div class="castle-placer" id="actionPicker" hidden>
+          <div class="placer-hint" data-i18n="actionPickHint">Feld auf der Karte anklicken – pro 500er-Block gilt das zuletzt gewählte Feld</div>
+          <button type="button" class="castle-reset" id="actionResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
+        </div>
+        <div class="field-row">
           <span class="f-label" data-i18n="lblMerchant">Händlerfeld Nr.</span>
           <input type="number" id="merchantFieldNumber" min="1" placeholder="—">
+        </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblPickMerchant">Händlerfeld selbst wählen</span>
+          <input type="checkbox" id="pickMerchant">
+        </div>
+        <div class="castle-placer" id="merchantPicker" hidden>
+          <div class="placer-hint" data-i18n="merchantPickHint">Feld auf der Karte anklicken</div>
         </div>
         <div class="field-row">
           <span class="f-label" data-i18n="lblFlowArrows">Richtungspfeile anzeigen</span>
@@ -1024,6 +1039,7 @@ function generateFieldTessellation(outposts, desiredFields){
   // is exactly the plain 1..n numbering. Castles are never blocked terrain.
   const total = numerable.length;
   lastFieldTotal = total;
+  lastCells = cells;
   castleNumberStatus = {};
   const taken = new Set();
   const reserved = new Map();
@@ -1060,7 +1076,14 @@ function generateFieldTessellation(outposts, desiredFields){
     const inBlock = ordered.filter(c => c.number >= start && c.number <= end);
     const candidates = inBlock.filter(c => !c.isBuilding);
     const pool = candidates.length ? candidates : inBlock;
-    if(pool.length) actionFieldNumbers.add(pool[randInt(0, pool.length-1)].number);
+    // the random draw always happens, so a manual choice never shifts the rest of the seed
+    let chosen = pool.length ? pool[randInt(0, pool.length-1)] : null;
+    if(document.getElementById('customActionFields').checked){
+      const want = customActionPicks[(start - 1) / 500];
+      const hit = want ? inBlock.find(c => c.number === want) : null;
+      if(hit) chosen = hit;
+    }
+    if(chosen) actionFieldNumbers.add(chosen.number);
   }
 
   const fieldsLayer = el('g', {});
@@ -1446,6 +1469,8 @@ function positionForChoice(choice){
 // index 0 = main castle, 1..9 = outposts; values are {u, v} in permille (0..1000)
 // of the map width/height, so they survive a change of the field count
 let customCastlePos = {};
+let customActionPicks = {};    // 500er block index -> chosen field number
+let lastCells = [];            // cells of the last build, used to find the field under a click
 let castleNumberMap = {};      // castle index -> wanted field number
 let castleNumberStatus = {};   // castle index -> 'ok' | 'dup' | 'range' (after the last build)
 let lastFieldTotal = 0;
@@ -1513,8 +1538,7 @@ function updateCastlePlacer(){
   const on = customCastlesOn();
   const box = document.getElementById('castlePlacer');
   box.hidden = !on;
-  svg.classList.toggle('placing-castle', on && placingCastle !== null);
-  if(!on){ placingCastle = null; return; }
+  if(!on){ placingCastle = null; updatePickUI(); return; }
 
   const outpostsOff = document.getElementById('disableOutposts').checked;
   let n = outpostsOff ? 0 : parseInt(document.getElementById('outpostCount').value, 10);
@@ -1531,23 +1555,75 @@ function updateCastlePlacer(){
     b.title = i === 0 ? (t('lblMainCastle') || 'Hauptburg') : ((t('lblOutposts') || 'Außenposten') + ' ' + i);
     b.addEventListener('click', () => {
       placingCastle = (placingCastle === i) ? null : i;
+      if(placingCastle !== null) document.getElementById('pickMerchant').checked = false;
       updateCastlePlacer();
     });
     wrap.appendChild(b);
   }
-  svg.classList.toggle('placing-castle', placingCastle !== null);
+  updatePickUI();
 }
 
+// the field under a point of the map (nearest site = Voronoi cell); null for blocked terrain
+function cellAtMapPoint(x, y){
+  let best = null, bestD = Infinity;
+  for(const c of lastCells){
+    const d = (c.px - x) * (c.px - x) + (c.py - y) * (c.py - y);
+    if(d < bestD){ bestD = d; best = c; }
+  }
+  return (best && !best.blocked && best.number) ? best : null;
+}
+
+function pickMerchantOn(){ return document.getElementById('pickMerchant').checked; }
+function customActionsOn(){ return document.getElementById('customActionFields').checked; }
+
+// shows/hides the hints and the crosshair for whichever click mode is active
+function updatePickUI(){
+  document.getElementById('merchantPicker').hidden = !pickMerchantOn();
+  document.getElementById('actionPicker').hidden = !customActionsOn();
+  const active = (customCastlesOn() && placingCastle !== null) || pickMerchantOn() || customActionsOn();
+  svg.classList.toggle('placing-castle', active);
+}
+
+// click on the map: castle placement > merchant pick > action field pick
 svg.addEventListener('click', function(e){
-  if(placingCastle === null || !customCastlesOn()) return;
   const r = svg.getBoundingClientRect();
   if(!r.width || !r.height) return;
-  const u = Math.round(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * 1000);
-  const v = Math.round(Math.max(0, Math.min(1, (e.clientY - r.top) / r.height)) * 1000);
-  customCastlePos[placingCastle] = { u, v };
-  placingCastle = null;
-  generateMap(currentSeed);
+  const fx = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+  const fy = Math.max(0, Math.min(1, (e.clientY - r.top) / r.height));
+
+  if(placingCastle !== null && customCastlesOn()){
+    customCastlePos[placingCastle] = { u: Math.round(fx * 1000), v: Math.round(fy * 1000) };
+    placingCastle = null;
+    generateMap(currentSeed);
+    return;
+  }
+
+  if(pickMerchantOn()){
+    const c = cellAtMapPoint(fx * W, fy * H);
+    if(!c) return;
+    const input = document.getElementById('merchantFieldNumber');
+    input.value = c.number;
+    document.getElementById('pickMerchant').checked = false;
+    updatePickUI();
+    input.dispatchEvent(new Event('input'));
+    return;
+  }
+
+  if(customActionsOn()){
+    const c = cellAtMapPoint(fx * W, fy * H);
+    if(!c) return;
+    customActionPicks[Math.floor((c.number - 1) / 500)] = c.number;
+    generateMap(currentSeed);
+  }
 });
+
+document.getElementById('pickMerchant').addEventListener('change', () => {
+  if(pickMerchantOn()) placingCastle = null;
+  updateCastlePlacer();
+  updatePickUI();
+});
+document.getElementById('customActionFields').addEventListener('change', () => generateMap(currentSeed));
+document.getElementById('actionResetBtn').addEventListener('click', () => { customActionPicks = {}; generateMap(currentSeed); });
 
 document.getElementById('customCastles').addEventListener('change', () => { placingCastle = null; generateMap(currentSeed); });
 document.getElementById('castleResetBtn').addEventListener('click', () => { customCastlePos = {}; placingCastle = null; generateMap(currentSeed); });
@@ -1636,6 +1712,7 @@ function generateMap(explicitSeed){
 
   updateCastlePlacer();
   updateCastleNumbers();
+  updatePickUI();
 }
 
 // ---------- PNG export ----------
@@ -1712,7 +1789,9 @@ function collectSettings(){
     customCastles: document.getElementById('customCastles').checked,
     castlePositions: Object.keys(customCastlePos).map(k => [Number(k), customCastlePos[k].u, customCastlePos[k].v]),
     customCastleNumbers: document.getElementById('customCastleNumbers').checked,
-    castleNumbers: Object.keys(castleNumberMap).map(k => [Number(k), castleNumberMap[k]])
+    castleNumbers: Object.keys(castleNumberMap).map(k => [Number(k), castleNumberMap[k]]),
+    customActionFields: document.getElementById('customActionFields').checked,
+    actionPicks: Object.keys(customActionPicks).map(k => [Number(k), customActionPicks[k]])
   };
 }
 
@@ -1762,10 +1841,14 @@ function encodeCompactSettings(s){
   const parts = ['2', s.seed.toString(36), s.lang, fieldCount.toString(36), positions,
           outposts.toString(36) + bridges.toString(36), flags.toString(36), merchant.toString(36)];
 
-  // optional 9th part: manually placed castles, 5 characters each
-  // (index, then x and y in permille, base 36 with 2 digits each)
+  // optional parts 9-11; a later part forces the earlier ones to exist (placeholder '0')
+  //  9: manually placed castles, 5 characters each (index, x and y in permille, base 36, 2 digits each)
+  // 10: field numbers of castles, 4 characters each (castle index, number base 36, 3 digits)
+  // 11: manually chosen action fields, 4 characters each (500er block, number base 36, 3 digits)
+  const hasCastlePos = !!s.customCastles || (Array.isArray(s.castlePositions) && s.castlePositions.length > 0);
   const hasNumbers = !!s.customCastleNumbers || (Array.isArray(s.castleNumbers) && s.castleNumbers.length > 0);
-  if(s.customCastles || (Array.isArray(s.castlePositions) && s.castlePositions.length) || hasNumbers){
+  const hasActions = !!s.customActionFields || (Array.isArray(s.actionPicks) && s.actionPicks.length > 0);
+  if(hasCastlePos || hasNumbers || hasActions){
     if(typeof s.customCastles !== 'boolean' || !Array.isArray(s.castlePositions)) return null;
     let cp = s.customCastles ? '1' : '0';
     for(const e of s.castlePositions){
@@ -1776,18 +1859,31 @@ function encodeCompactSettings(s){
     }
     parts.push(cp);
 
-    // optional 10th part: field numbers given to castles, 4 characters each
-    // (castle index, then the number in base 36 with 3 digits)
-    if(hasNumbers){
-      if(typeof s.customCastleNumbers !== 'boolean' || !Array.isArray(s.castleNumbers)) return null;
-      let np = s.customCastleNumbers ? '1' : '0';
-      for(const e of s.castleNumbers){
-        if(!Array.isArray(e) || e.length !== 2) return null;
-        const [i, n] = e;
-        if(![i, n].every(Number.isInteger) || i < 0 || i > 9 || n < 1 || n > 46655) return null;
-        np += i.toString(36) + n.toString(36).padStart(3, '0');
+    if(hasNumbers || hasActions){
+      let np = '0';
+      if(hasNumbers){
+        if(typeof s.customCastleNumbers !== 'boolean' || !Array.isArray(s.castleNumbers)) return null;
+        np = s.customCastleNumbers ? '1' : '0';
+        for(const e of s.castleNumbers){
+          if(!Array.isArray(e) || e.length !== 2) return null;
+          const [i, n] = e;
+          if(![i, n].every(Number.isInteger) || i < 0 || i > 9 || n < 1 || n > 46655) return null;
+          np += i.toString(36) + n.toString(36).padStart(3, '0');
+        }
       }
       parts.push(np);
+
+      if(hasActions){
+        if(typeof s.customActionFields !== 'boolean' || !Array.isArray(s.actionPicks)) return null;
+        let ap = s.customActionFields ? '1' : '0';
+        for(const e of s.actionPicks){
+          if(!Array.isArray(e) || e.length !== 2) return null;
+          const [b, n] = e;
+          if(![b, n].every(Number.isInteger) || b < 0 || b > 35 || n < 1 || n > 46655) return null;
+          ap += b.toString(36) + n.toString(36).padStart(3, '0');
+        }
+        parts.push(ap);
+      }
     }
   }
   return parts.join('.');
@@ -1796,7 +1892,7 @@ function encodeCompactSettings(s){
 function decodeCompactSettings(raw){
   const bad = () => new Error('invalid share code');
   const p = raw.split('.');
-  if(p.length < 8 || p.length > 10 || p[0] !== '2') throw bad();
+  if(p.length < 8 || p.length > 11 || p[0] !== '2') throw bad();
   const b36 = str => {
     if(!/^-?[0-9a-z]+$/.test(str)) throw bad();
     const n = parseInt(str, 36);
@@ -1833,7 +1929,19 @@ function decodeCompactSettings(raw){
   s.castlePositions = [];
   s.customCastleNumbers = false;
   s.castleNumbers = [];
-  if(p.length === 10){
+  s.customActionFields = false;
+  s.actionPicks = [];
+  if(p.length === 11){
+    if(!/^[01]([0-9a-z]{4})*$/.test(p[10])) throw bad();
+    s.customActionFields = p[10][0] === '1';
+    for(let k = 1; k < p[10].length; k += 4){
+      const b = parseInt(p[10][k], 36);
+      const n = parseInt(p[10].slice(k + 1, k + 4), 36);
+      if(n < 1) throw bad();
+      s.actionPicks.push([b, n]);
+    }
+  }
+  if(p.length >= 10){
     if(!/^[01]([0-9a-z]{4})*$/.test(p[9])) throw bad();
     s.customCastleNumbers = p[9][0] === '1';
     for(let k = 1; k < p[9].length; k += 4){
@@ -1913,6 +2021,15 @@ function applySettings(s){
     });
   }
   setChecked('customCastleNumbers', !!s.customCastleNumbers);
+
+  customActionPicks = {};
+  if(Array.isArray(s.actionPicks)){
+    s.actionPicks.forEach(e => {
+      if(Array.isArray(e) && e.length === 2 && e.every(Number.isFinite)) customActionPicks[e[0]] = e[1];
+    });
+  }
+  setChecked('customActionFields', !!s.customActionFields);
+  setChecked('pickMerchant', false);
   placingCastle = null;
 
   document.getElementById('outpostCount').disabled = document.getElementById('disableOutposts').checked;
