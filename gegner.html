@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title data-i18n="enemyHeading">Gegnertafel-Generator</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👹</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -133,7 +134,8 @@
         <button class="btn" id="removeImgBtn" type="button" style="margin:0;display:none" data-i18n="playerRemoveImageBtn">Bild entfernen</button>
       </div>
     </div>
-    <div class="field"><label for="eType" data-i18n="enemyLblType">Typ</label><select id="eType"></select></div>
+    <div class="field"><label for="eType" data-i18n="enemyLblType">Spezies</label><select id="eType"></select></div>
+    <div class="field"><label for="ePassive" data-i18n="enemyLblPassive">Passive Fähigkeit</label><select id="ePassive"></select></div>
     <div class="field"><label for="eAbility" data-i18n="enemyLblAbility">Spezialangriff</label><textarea id="eAbility" rows="3">Wirft einmal pro Kampf einen Felsbrocken auf ein Ziel in bis zu 3 Feldern Entfernung.</textarea></div>
     <div class="field row2">
       <div><label for="eHp" data-i18n="enemyLblHp">Lebenspunkte</label><input type="number" id="eHp" value="12" min="1" max="100"></div>
@@ -177,6 +179,10 @@
         <div class="type-icon" id="typeIcon"></div>
         <div><div class="type-name" id="typeName"></div><div class="type-perk" id="typePerk"></div></div>
       </div>
+      <div class="type-row" id="passiveRow" style="display:none">
+        <div class="type-icon" id="passiveIcon"></div>
+        <div><div class="type-name" id="passiveName"></div><div class="type-perk" id="passivePerk"></div></div>
+      </div>
       <div class="stats" id="stats">
         <div class="stat" id="dmgBox"><b id="dmgOut">0</b><span data-i18n="enemyLblDamage">Schaden</span></div>
         <div class="stat" id="moveBox"><b id="moveOut">0</b><span data-i18n="enemyStatMove">Bewegung</span></div>
@@ -214,6 +220,25 @@
     const o = document.createElement('option');
     o.value = ty.id; o.textContent = ty.name; o.setAttribute('data-i18n', 'enemyType_' + ty.id);
     typeSel.appendChild(o);
+  });
+
+  // passive Fähigkeiten – nur ans ENDE anhängen (Position steckt im Teilen-Link)
+  const PASSIVES = [
+    { id:'regen',    icon:'💚', name:'Regeneration',     perk:'Heilt zu Beginn seines Zuges 1 Lebenspunkt.' },
+    { id:'thick',    icon:'🛡️', name:'Dicke Haut',       perk:'Jeder erlittene Schaden wird um 1 verringert.' },
+    { id:'fear',     icon:'😱', name:'Furchteinflößend', perk:'Gegner direkt neben ihm haben -1 auf ihre Angriffe.' },
+    { id:'fly',      icon:'🪽', name:'Flug',             perk:'Ignoriert Hindernisse und Gelände bei der Bewegung.' },
+    { id:'thorns',   icon:'☠️', name:'Giftige Haut',     perk:'Wer ihn im Nahkampf trifft, erleidet 1 Schaden.' },
+    { id:'pack',     icon:'🐾', name:'Rudeltaktik',      perk:'+1 Schaden, wenn ein Verbündeter neben dem Ziel steht.' },
+    { id:'magicres', icon:'✨', name:'Magieresistenz',   perk:'Erleidet nur den halben Schaden durch Zauber.' },
+    { id:'berserk',  icon:'💢', name:'Berserker',        perk:'+2 Schaden, solange er weniger als die Hälfte seiner Lebenspunkte hat.' }
+  ];
+  const passiveSel = $('ePassive');
+  passiveSel.innerHTML = '<option value="" data-i18n="enemyPassiveNone">— Keine —</option>';
+  PASSIVES.forEach(pa => {
+    const o = document.createElement('option');
+    o.value = pa.id; o.textContent = pa.name; o.setAttribute('data-i18n', 'enemyPassive_' + pa.id);
+    passiveSel.appendChild(o);
   });
 
   // Reihenfolge = Position im Teilen-Link, nur ans Ende anhängen
@@ -272,6 +297,14 @@
       $('typeIcon').textContent = ty.icon;
       $('typeName').textContent = tt('enemyType_' + ty.id, ty.name);
       $('typePerk').textContent = tt('enemyPerk_' + ty.id, ty.perk);
+    }
+
+    const pa = PASSIVES.find(x => x.id === $('ePassive').value);
+    $('passiveRow').style.display = pa ? 'flex' : 'none';
+    if(pa){
+      $('passiveIcon').textContent = pa.icon;
+      $('passiveName').textContent = tt('enemyPassive_' + pa.id, pa.name);
+      $('passivePerk').textContent = tt('enemyPassivePerk_' + pa.id, pa.perk);
     }
 
     const dmg = Math.max(0, parseInt($('eDmg').value, 10) || 0), mv = Math.max(0, parseInt($('eMove').value, 10) || 0);
@@ -341,7 +374,7 @@
     const ty = R(TYPES), thr = rnd(1, 30);
     $('eName').value = R(NAME_A) + R(NAME_B).replace(/^./, m => m);
     $('eEpi').value = R_KEY(EPI_KEYS);
-    $('eThreat').value = thr; $('eIcon').value = ty.icon; $('eType').value = ty.id;
+    $('eThreat').value = thr; $('eIcon').value = ty.icon; $('eType').value = ty.id; $('ePassive').value = Math.random() < 0.75 ? R(PASSIVES).id : '';
     $('eAbility').value = R_KEY(ABI_KEYS);
     $('eHp').value = Math.min(100, 4 + Math.round(thr * 0.8) + rnd(0, 3));
     $('eArmor').value = Math.min(100, Math.floor(thr / 4) + rnd(0, 1));
@@ -368,7 +401,7 @@
   // ---------- Teilen per Link (#g=<base64 JSON>) ----------
   function collect(){
     return { v:1, l:currentLang, n:$('eName').value, e:$('eEpi').value, r:$('eThreat').value, i:$('eIcon').value,
-      t:TYPES.findIndex(x => x.id === $('eType').value), a:$('eAbility').value, hp:$('eHp').value, ar:$('eArmor').value,
+      t:TYPES.findIndex(x => x.id === $('eType').value), p:PASSIVES.findIndex(x => x.id === $('ePassive').value), a:$('eAbility').value, hp:$('eHp').value, ar:$('eArmor').value,
       d:$('eDmg').value, sd:$('eDmgMode').value, m:$('eMove').value, ac:PALETTE.indexOf(sel) };
   }
   function shareURL(){
@@ -381,6 +414,7 @@
     if(s.v !== 1) throw new Error('invalid');
     $('eName').value = s.n; $('eEpi').value = s.e; $('eThreat').value = s.r; $('eIcon').value = s.i;
     $('eType').value = s.t >= 0 && TYPES[s.t] ? TYPES[s.t].id : '';
+    $('ePassive').value = s.p >= 0 && PASSIVES[s.p] ? PASSIVES[s.p].id : '';
     $('eAbility').value = s.a; $('eHp').value = s.hp; $('eArmor').value = s.ar; $('eDmg').value = s.d; $('eDmgMode').value = s.sd === false ? 'off' : (s.sd === 'badge' || s.sd === 'off' ? s.sd : 'pips'); $('eMove').value = s.m;
     selectColor(s.ac);
     portrait = null; $('eImage').value = '';
