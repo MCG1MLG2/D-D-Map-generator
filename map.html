@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>D&D Generator</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Ccircle%20cx='32'%20cy='32'%20r='30'%20fill='%23ead9b4'%20stroke='%23a9782f'%20stroke-width='4'/%3E%3Ccircle%20cx='32'%20cy='32'%20r='24'%20fill='none'%20stroke='%23c9a14a'%20stroke-width='1.2'/%3E%3Cpath%20d='M8%2032h7M49%2032h7M32%208v0'%20stroke='%233b2a1a'%20stroke-width='2.5'%20stroke-linecap='round'/%3E%3Cpath%20d='M32%209L39%2032H25Z'%20fill='%238b2a1f'/%3E%3Cpath%20d='M32%2055L39%2032H25Z'%20fill='%233b2a1a'/%3E%3Ccircle%20cx='32'%20cy='32'%20r='3.2'%20fill='%23c9a14a'%20stroke='%233b2a1a'%20stroke-width='1'/%3E%3C/svg%3E">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=IM+Fell+English:ital@0;1&display=swap');
 
@@ -992,19 +993,22 @@ function generateFieldTessellation(outposts, desiredFields){
   const voronoi = delaunay.voronoi([0, 0, W, H]);
 
   const info = new Array(points.length);
+  function terrainAt(px, py){
+    if(inSea(px, py)) return 'sea';
+    if(inMountains(px, py)) return nearTrail(px, py) ? 'path' : 'mountain';
+    if(riverEnabled && riverDistAt(px, py) < riverWidth) return 'river';
+    if(inForest(px, py)) return 'forest';
+    if(inDesert(px, py)) return 'desert';
+    return 'normal';
+  }
+
   const cells = [];
   for(let i=0;i<points.length;i++){
     const [px, py] = points[i];
     const isBuilding = i < buildingPoints.length;
 
     let terrain = 'normal';
-    if(!isBuilding){
-      if(inSea(px, py)) terrain = 'sea';
-      else if(inMountains(px, py)) terrain = nearTrail(px, py) ? 'path' : 'mountain';
-      else if(riverEnabled && riverDistAt(px, py) < riverWidth) terrain = 'river';
-      else if(inForest(px, py)) terrain = 'forest';
-      else if(inDesert(px, py)) terrain = 'desert';
-    }
+    if(!isBuilding) terrain = terrainAt(px, py);
     // river fields are always blocked/unwalkable — crossing only ever
     // happens visually via a bridge deck, never through a numbered field
     const blocked = terrain === 'sea' || terrain === 'mountain' || terrain === 'river';
@@ -1019,6 +1023,37 @@ function generateFieldTessellation(outposts, desiredFields){
       big: isBuilding && buildingPoints[i].big
     });
   }
+
+  // Castle fields: the whole map (terrain, river, field layout, numbering) is
+  // always built around the automatic castle spots, so it never changes when a
+  // castle is moved. Moving a castle only hands the castle role to another
+  // walkable field: the clicked field becomes the castle and the old castle
+  // field turns into an ordinary field (it stays numbered, so numbers do not shift).
+  const castleCells = buildingPoints.map((b, i) => cells.find(c => c.idx === i));
+  for(let i = 0; i < castleCells.length; i++){
+    const want = customCastlePoint(i, currentScale);
+    if(!want) continue;
+    let target = null, bestD = Infinity;
+    for(const c of cells){
+      const d = (c.px - want.x) * (c.px - want.x) + (c.py - want.y) * (c.py - want.y);
+      if(d < bestD){ bestD = d; target = c; }
+    }
+    const old = castleCells[i];
+    if(!target || target === old || target.blocked || target.isBuilding) continue;
+    old.isBuilding = false;
+    old.big = false;
+    old.terrain = terrainAt(old.px, old.py);
+    if(old.terrain === 'sea' || old.terrain === 'mountain' || old.terrain === 'river') old.terrain = 'normal';
+    target.isBuilding = true;
+    target.big = i === 0;
+    target.terrain = 'normal';
+    info[old.idx].isBuilding = false;
+    info[old.idx].terrain = old.terrain;
+    info[target.idx].isBuilding = true;
+    info[target.idx].terrain = 'normal';
+    castleCells[i] = target;
+  }
+  lastCastleCells = castleCells;
 
   // number top-left to bottom-right (sea/mountain/river stay unlabelled):
   // bucket into horizontal bands, then sort left-to-right within each band
@@ -1045,7 +1080,7 @@ function generateFieldTessellation(outposts, desiredFields){
     for(let i = 0; i < buildingPoints.length; i++){
       const want = castleNumberMap[i];
       if(!want) continue;
-      const cell = cells.find(c => c.idx === i);
+      const cell = castleCells[i];
       if(!cell || cell.blocked) continue;
       if(want < 1 || want > total){ castleNumberStatus[i] = 'range'; continue; }
       if(taken.has(want)){ castleNumberStatus[i] = 'dup'; continue; }
@@ -1220,8 +1255,10 @@ function generateFieldTessellation(outposts, desiredFields){
   // the arrows simply stopping at the mountain wall.
   const arrowLayer = el('g', { id: 'flowArrowLayer' });
   arrowLayer.style.display = document.getElementById('showFlowArrows').checked ? '' : 'none';
-  const ringRadius = outposts.length
-    ? outposts.reduce((s, o) => s + Math.hypot(o.x-CX, o.y-CY), 0) / outposts.length
+  const mainPt = { x: castleCells[0].px, y: castleCells[0].py };
+  const outpostPts = castleCells.slice(1).map(c => ({ x: c.px, y: c.py }));
+  const ringRadius = outpostPts.length
+    ? outpostPts.reduce((s, o) => s + Math.hypot(o.x-mainPt.x, o.y-mainPt.y), 0) / outpostPts.length
     : 0;
 
   function bfsHopDistances(sourceIdx){
@@ -1243,19 +1280,19 @@ function generateFieldTessellation(outposts, desiredFields){
 
   // building points are indices 0 (main castle) .. outposts.length (outposts),
   // see buildingPoints above — reuse that indexing to seed the path search
-  const castleHops = bfsHopDistances(0);
-  const outpostHops = outposts.map((o, i) => bfsHopDistances(i + 1));
+  const castleHops = bfsHopDistances(castleCells[0].idx);
+  const outpostHops = outpostPts.map((o, i) => bfsHopDistances(castleCells[i + 1].idx));
 
   cells.forEach(c => {
     if(c.isBuilding || c.blocked) return;
 
-    const dCenter = Math.hypot(CX-c.px, CY-c.py);
-    let target = {x:CX, y:CY};
+    const dCenter = Math.hypot(mainPt.x-c.px, mainPt.y-c.py);
+    let target = mainPt;
     let hopDist = castleHops;
 
-    if(outposts.length && dCenter > ringRadius){
+    if(outpostPts.length && dCenter > ringRadius){
       let bestD = Infinity, bestI = -1;
-      outposts.forEach((o, i) => {
+      outpostPts.forEach((o, i) => {
         const d = Math.hypot(o.x-c.px, o.y-c.py);
         if(d < bestD){ bestD = d; bestI = i; target = o; }
       });
@@ -1304,7 +1341,7 @@ function generateFieldTessellation(outposts, desiredFields){
     }
 
     if(bestNeighbor){
-      const color = target.x === CX && target.y === CY ? '#6e1f1f' : '#3c2c1e';
+      const color = target === mainPt ? '#6e1f1f' : '#3c2c1e';
       arrowLayer.appendChild(drawBorderArrow(c.px, c.py, bestNeighbor.px, bestNeighbor.py, color, 1, 0.6, 11));
     }
   });
@@ -1485,6 +1522,7 @@ let customMerchantList = [];   // merchant field numbers chosen by hand (no limi
 let placingMerchant = null;    // null | 'new' (sticky) | index into customMerchantList
 let placingAction = null;      // null | 'new' (sticky, adds fields) | index into customActionList
 let lastCells = [];            // cells of the last build, used to find the field under a click
+let lastCastleCells = [];      // the field of each castle after manual placement (0 = main castle)
 let castleNumberMap = {};      // castle index -> wanted field number
 let castleNumberStatus = {};   // castle index -> 'ok' | 'dup' | 'range' (after the last build)
 let lastFieldTotal = 0;
@@ -1798,8 +1836,6 @@ function generateMap(explicitSeed){
   const pos = positionForChoice(posChoice);
   CX = pos.x;
   CY = pos.y;
-  const customMain = customCastlePoint(0, scale);
-  if(customMain){ CX = customMain.x; CY = customMain.y; }
 
   const disableOutposts = document.getElementById('disableOutposts').checked;
   const countInput = document.getElementById('outpostCount');
@@ -1825,20 +1861,14 @@ function generateMap(explicitSeed){
     });
   }
 
-  // manually placed outposts override their automatic spot (the random draws
-  // above still happen, so every other part of the map keeps its seed)
-  outposts.forEach((o, i) => {
-    const c = customCastlePoint(i + 1, scale);
-    if(c){ o.x = c.x; o.y = c.y; }
-  });
-
   const castleLayer = el('g', {class:'castles-layer'});
   svg.appendChild(castleLayer);
 
   const fieldCount = generateFieldTessellation(outposts, desiredFields);
 
-  outposts.forEach(o => castleLayer.appendChild(drawCastle(o.x, o.y, false)));
-  castleLayer.appendChild(drawCastle(CX, CY, true));
+  // castles stand on their (possibly moved) fields
+  lastCastleCells.slice(1).forEach(c => castleLayer.appendChild(drawCastle(c.px, c.py, false)));
+  castleLayer.appendChild(drawCastle(lastCastleCells[0].px, lastCastleCells[0].py, true));
 
   drawCompass();
   renderMarkers();
