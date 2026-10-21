@@ -365,8 +365,6 @@
     accent-color: #a97e2b;
   }
 
-  .castle-numbers[hidden] { display: none; }
-  .castle-numbers { margin: 4px 0 10px; }
   .field-row input.invalid { border-color: #a33; background: rgba(170,50,50,.14); }
   .castle-placer { margin-top: 10px; }
   .castle-placer[hidden], .castle-reset[hidden] { display: none; }
@@ -453,34 +451,25 @@
 
     <div class="settings-body" id="settingsBody">
       <div class="control-group">
-        <h3 data-i18n="grpCastles">Burgen</h3>
-        <div class="field-row">
-          <span class="f-label" data-i18n="lblMainCastle">Hauptburg</span>
-          <select id="castlePosition">
-            <option value="mitte" selected>Mitte</option>
-            <option value="oben">Oben</option>
-            <option value="unten">Unten</option>
-            <option value="links">Links</option>
-            <option value="rechts">Rechts</option>
-            <option value="oben-links">Oben links</option>
-            <option value="oben-rechts">Oben rechts</option>
-            <option value="unten-links">Unten links</option>
-            <option value="unten-rechts">Unten rechts</option>
-          </select>
-        </div>
-        <div class="field-row">
-          <span class="f-label" data-i18n="lblOutposts">Außenposten</span>
-          <input type="number" id="outpostCount" min="0" max="9" value="5">
-        </div>
-        <div class="field-row">
-          <span class="f-label" data-i18n="lblNoOutposts">keine Außenposten</span>
-          <input type="checkbox" id="disableOutposts">
-        </div>
-        <div class="field-row">
-          <span class="f-label" data-i18n="lblCustomCastleNumbers">Feldnummern der Burgen festlegen</span>
-          <input type="checkbox" id="customCastleNumbers">
-        </div>
-        <div class="castle-numbers" id="castleNumberRows" hidden></div>
+        <h3 data-i18n="grpBuildings">Gebäude</h3>
+        <!-- Hauptburg-Position ist fest (Mitte); Auswahl entfernt. Das versteckte Select bleibt,
+             damit Generator und Teilen-Code (Index in SHARE_SELECT_IDS) unverändert funktionieren. -->
+        <select id="castlePosition" hidden style="display:none" aria-hidden="true" tabindex="-1">
+          <option value="mitte" selected>Mitte</option>
+          <option value="oben">Oben</option>
+          <option value="unten">Unten</option>
+          <option value="links">Links</option>
+          <option value="rechts">Rechts</option>
+          <option value="oben-links">Oben links</option>
+          <option value="oben-rechts">Oben rechts</option>
+          <option value="unten-links">Unten links</option>
+          <option value="unten-rechts">Unten rechts</option>
+        </select>
+        <!-- Außenposten-Anzahl (5) und "keine Außenposten" sind aus der Oberfläche entfernt. Die versteckten
+             Felder bleiben, damit Generator und Teilen-Code unverändert funktionieren. Einzelne Burgen
+             löscht man über "Burgen selbst platzieren" -> Entfernen. -->
+        <input type="number" id="outpostCount" min="0" max="9" value="5" hidden style="display:none">
+        <input type="checkbox" id="disableOutposts" hidden style="display:none">
         <div class="field-row">
           <span class="f-label" data-i18n="lblCustomCastles">Burgen selbst platzieren</span>
           <input type="checkbox" id="customCastles">
@@ -488,7 +477,38 @@
         <div class="castle-placer" id="castlePlacer" hidden>
           <div class="placer-hint" id="castlePlacerHint" data-i18n="castlePlaceHint">Burg wählen, dann auf die Karte klicken</div>
           <div class="castle-buttons" id="castleButtons"></div>
+          <button type="button" class="castle-reset" id="castleRemoveBtn" data-i18n="actionRemoveBtn" hidden>Entfernen</button>
           <button type="button" class="castle-reset" id="castleResetBtn" data-i18n="castleResetBtn">Alle zurücksetzen</button>
+        </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblCustomActions">Aktionsfelder selbst wählen</span>
+          <input type="checkbox" id="customActionFields">
+        </div>
+        <div class="castle-placer" id="actionPicker" hidden>
+          <div class="placer-hint" data-i18n="actionPickHint">Aktionsfeld wählen (oder +), dann auf die Karte klicken</div>
+          <div class="castle-buttons" id="actionButtons"></div>
+          <button type="button" class="castle-reset" id="actionRemoveBtn" data-i18n="actionRemoveBtn" hidden>Entfernen</button>
+          <button type="button" class="castle-reset" id="actionResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
+        </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblPickMerchant">Händlerfeld selbst wählen</span>
+          <input type="checkbox" id="customMerchantFields">
+        </div>
+        <div class="castle-placer" id="merchantPicker" hidden>
+          <div class="placer-hint" data-i18n="merchantPickHint">Händlerfeld wählen (oder +), dann auf die Karte klicken</div>
+          <div class="castle-buttons" id="merchantButtons"></div>
+          <button type="button" class="castle-reset" id="merchantRemoveBtn" data-i18n="actionRemoveBtn" hidden>Entfernen</button>
+          <button type="button" class="castle-reset" id="merchantResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
+        </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblCustomVillages">Dörfer selbst platzieren</span>
+          <input type="checkbox" id="customVillageFields">
+        </div>
+        <div class="castle-placer" id="villagePicker" hidden>
+          <div class="placer-hint" data-i18n="villagePickHint">Dorf wählen (oder +), dann auf die Karte klicken</div>
+          <div class="castle-buttons" id="villageButtons"></div>
+          <button type="button" class="castle-reset" id="villageRemoveBtn" data-i18n="actionRemoveBtn" hidden>Entfernen</button>
+          <button type="button" class="castle-reset" id="villageResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
         </div>
       </div>
 
@@ -573,26 +593,6 @@
 
       <div class="control-group">
         <h3 data-i18n="grpMarkers">Marker</h3>
-        <div class="field-row">
-          <span class="f-label" data-i18n="lblCustomActions">Aktionsfelder selbst wählen</span>
-          <input type="checkbox" id="customActionFields">
-        </div>
-        <div class="castle-placer" id="actionPicker" hidden>
-          <div class="placer-hint" data-i18n="actionPickHint">Aktionsfeld wählen (oder +), dann auf die Karte klicken</div>
-          <div class="castle-buttons" id="actionButtons"></div>
-          <button type="button" class="castle-reset" id="actionRemoveBtn" data-i18n="actionRemoveBtn" hidden>Entfernen</button>
-          <button type="button" class="castle-reset" id="actionResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
-        </div>
-        <div class="field-row">
-          <span class="f-label" data-i18n="lblPickMerchant">Händlerfeld selbst wählen</span>
-          <input type="checkbox" id="customMerchantFields">
-        </div>
-        <div class="castle-placer" id="merchantPicker" hidden>
-          <div class="placer-hint" data-i18n="merchantPickHint">Händlerfeld wählen (oder +), dann auf die Karte klicken</div>
-          <div class="castle-buttons" id="merchantButtons"></div>
-          <button type="button" class="castle-reset" id="merchantRemoveBtn" data-i18n="actionRemoveBtn" hidden>Entfernen</button>
-          <button type="button" class="castle-reset" id="merchantResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
-        </div>
         <div class="field-row">
           <span class="f-label" data-i18n="lblFlowArrows">Richtungspfeile anzeigen</span>
           <input type="checkbox" id="showFlowArrows" checked>
@@ -1031,6 +1031,7 @@ function generateFieldTessellation(outposts, desiredFields){
   // field turns into an ordinary field (it stays numbered, so numbers do not shift).
   const castleCells = buildingPoints.map((b, i) => cells.find(c => c.idx === i));
   for(let i = 0; i < castleCells.length; i++){
+    if(i > 0 && customCastlesOn() && removedCastles.has(i)) continue;   // handled below
     const want = customCastlePoint(i, currentScale);
     if(!want) continue;
     let target = null, bestD = Infinity;
@@ -1053,6 +1054,46 @@ function generateFieldTessellation(outposts, desiredFields){
     info[target.idx].terrain = 'normal';
     castleCells[i] = target;
   }
+
+  // outposts deleted by hand: the castle role goes away, the field stays (numbered, normal terrain)
+  removedAutoCount = 0;
+  if(customCastlesOn()){
+    for(let i = castleCells.length - 1; i >= 1; i--){
+      if(!removedCastles.has(i)) continue;
+      const old = castleCells[i];
+      old.isBuilding = false;
+      old.big = false;
+      old.terrain = terrainAt(old.px, old.py);
+      if(old.terrain === 'sea' || old.terrain === 'mountain' || old.terrain === 'river') old.terrain = 'normal';
+      info[old.idx].isBuilding = false;
+      info[old.idx].terrain = old.terrain;
+      castleCells.splice(i, 1);
+      removedAutoCount++;
+    }
+  }
+
+  // extra castles added by hand (keys 10, 11, ... of customCastlePos): each one
+  // turns the nearest free walkable field into one more small castle. The map
+  // itself is not touched, so the seed stays stable. Spots on blocked terrain or
+  // on another castle are skipped and shown as invalid.
+  extraCastleStatus = {};
+  for(const k of extraCastleKeys()){
+    const want = customCastlePoint(k, currentScale);
+    if(!want) continue;
+    let target = null, bestD = Infinity;
+    for(const c of cells){
+      const d = (c.px - want.x) * (c.px - want.x) + (c.py - want.y) * (c.py - want.y);
+      if(d < bestD){ bestD = d; target = c; }
+    }
+    if(!target || target.blocked || target.isBuilding){ extraCastleStatus[k] = 'bad'; continue; }
+    target.isBuilding = true;
+    target.big = false;
+    target.terrain = 'normal';
+    info[target.idx].isBuilding = true;
+    info[target.idx].terrain = 'normal';
+    castleCells.push(target);
+    extraCastleStatus[k] = 'ok';
+  }
   lastCastleCells = castleCells;
 
   // number top-left to bottom-right (sea/mountain/river stay unlabelled):
@@ -1067,34 +1108,10 @@ function generateFieldTessellation(outposts, desiredFields){
     return a.px - b.px;
   });
 
-  // castles may be given a field number of their own; the other fields then
-  // fill the remaining numbers in reading order. Without custom numbers this
-  // is exactly the plain 1..n numbering. Castles are never blocked terrain.
   const total = numerable.length;
   lastFieldTotal = total;
   lastCells = cells;
-  castleNumberStatus = {};
-  const taken = new Set();
-  const reserved = new Map();
-  if(document.getElementById('customCastleNumbers').checked){
-    for(let i = 0; i < buildingPoints.length; i++){
-      const want = castleNumberMap[i];
-      if(!want) continue;
-      const cell = castleCells[i];
-      if(!cell || cell.blocked) continue;
-      if(want < 1 || want > total){ castleNumberStatus[i] = 'range'; continue; }
-      if(taken.has(want)){ castleNumberStatus[i] = 'dup'; continue; }
-      taken.add(want);
-      reserved.set(cell, want);
-      castleNumberStatus[i] = 'ok';
-    }
-  }
-  let nextNumber = 1;
-  readingOrder.forEach(c => {
-    if(reserved.has(c)){ c.number = reserved.get(c); return; }
-    while(taken.has(nextNumber)) nextNumber++;
-    c.number = nextNumber++;
-  });
+  readingOrder.forEach((c, i) => { c.number = i + 1; });
   const ordered = [...numerable].sort((a, b) => a.number - b.number);
 
   // lookup for markers (action fields, merchant field) that can be
@@ -1257,8 +1274,9 @@ function generateFieldTessellation(outposts, desiredFields){
   arrowLayer.style.display = document.getElementById('showFlowArrows').checked ? '' : 'none';
   const mainPt = { x: castleCells[0].px, y: castleCells[0].py };
   const outpostPts = castleCells.slice(1).map(c => ({ x: c.px, y: c.py }));
-  const ringRadius = outpostPts.length
-    ? outpostPts.reduce((s, o) => s + Math.hypot(o.x-mainPt.x, o.y-mainPt.y), 0) / outpostPts.length
+  const ringPts = outpostPts.slice(0, buildingPoints.length - 1 - removedAutoCount);   // automatic outposts only
+  const ringRadius = ringPts.length
+    ? ringPts.reduce((s, o) => s + Math.hypot(o.x-mainPt.x, o.y-mainPt.y), 0) / ringPts.length
     : 0;
 
   function bfsHopDistances(sourceIdx){
@@ -1489,6 +1507,26 @@ function renderMarkers(){
     }
   });
 
+  villageNumberList().forEach(num => {
+    const f = fieldLookup.get(num);
+    if(!f) return;
+    // village: parchment medallion with two small houses (language-neutral symbol)
+    const x = f.px, y = f.py;
+    layer.appendChild(el('circle', {
+      cx:x, cy:y, r:11.5, fill:'#e6d3a3', stroke:'#5a3e12', 'stroke-width':1.6, opacity:0.97
+    }));
+    const house = (hx, hy, w, h, roofCol, wallCol) => {
+      layer.appendChild(el('rect', { x:hx - w/2, y:hy, width:w, height:h, fill:wallCol, stroke:'#2f2008', 'stroke-width':0.6 }));
+      layer.appendChild(el('path', {
+        d:`M ${hx - w/2 - 1.1} ${hy} L ${hx} ${hy - h*0.85} L ${hx + w/2 + 1.1} ${hy} Z`,
+        fill:roofCol, stroke:'#2f2008', 'stroke-width':0.6, 'stroke-linejoin':'round'
+      }));
+    };
+    house(x + 3.6, y - 0.4, 5, 4.6, '#7a3b24', '#c9a76a');
+    house(x - 2.6, y + 1.6, 7, 5.4, '#a2472b', '#e9dcb9');
+    layer.appendChild(el('rect', { x:x - 3.2, y:y + 4.2, width:1.4, height:2.8, fill:'#4a3210' }));
+  });
+
   svg.appendChild(layer);
   markersLayerRef = layer;
 }
@@ -1519,14 +1557,18 @@ let pendingActionSeed = false;  // set by older share links, see generateFieldTe
 let customActionList = [];     // field numbers chosen by hand (no limit), in button order
 let autoActionNumbers = new Set();   // the random action fields of the last build
 let customMerchantList = [];   // merchant field numbers chosen by hand (no limit)
+let customVillageList = [];    // village field numbers chosen by hand (no limit)
+let placingVillage = null;     // null | 'new' (sticky) | index into customVillageList
 let placingMerchant = null;    // null | 'new' (sticky) | index into customMerchantList
 let placingAction = null;      // null | 'new' (sticky, adds fields) | index into customActionList
 let lastCells = [];            // cells of the last build, used to find the field under a click
 let lastCastleCells = [];      // the field of each castle after manual placement (0 = main castle)
-let castleNumberMap = {};      // castle index -> wanted field number
-let castleNumberStatus = {};   // castle index -> 'ok' | 'dup' | 'range' (after the last build)
+let removedCastles = new Set();  // automatic outposts (1..9) deleted by hand: the field becomes a normal field
+let removedAutoCount = 0;
+let extraCastleStatus = {};    // extra castle key (10, 11, ...) -> 'ok' | 'bad' (after the last build)
+const EXTRA_CASTLE_MAX = 26;   // keys 10..35 fit one base-36 character in the share code
 let lastFieldTotal = 0;
-let placingCastle = null;
+let placingCastle = null;      // null | 'new' (sticky, adds castles) | 0..9 (main/outposts) | 10.. (extra castles)
 
 function customCastlesOn(){
   return document.getElementById('customCastles').checked;
@@ -1547,44 +1589,16 @@ function outpostTotal(){
   return Math.max(0, Math.min(9, n));
 }
 
-function updateCastleNumbers(){
-  const on = document.getElementById('customCastleNumbers').checked;
-  const box = document.getElementById('castleNumberRows');
-  box.hidden = !on;
-  if(!on) return;
-  box.innerHTML = '';
-  const n = outpostTotal();
-  for(let i = 0; i <= n; i++){
-    const row = document.createElement('div');
-    row.className = 'field-row';
-    const label = document.createElement('span');
-    label.className = 'f-label';
-    label.textContent = i === 0 ? ('🏰 ' + (t('lblMainCastle') || 'Hauptburg')) : ((t('lblOutposts') || 'Außenposten') + ' ' + i);
-    const input = document.createElement('input');
-    input.type = 'number';
-    input.min = 1;
-    if(lastFieldTotal) input.max = lastFieldTotal;
-    input.placeholder = t('castleNumberAuto') || 'auto';
-    if(castleNumberMap[i]) input.value = castleNumberMap[i];
-    const st = castleNumberStatus[i];
-    if(st === 'dup' || st === 'range'){
-      input.classList.add('invalid');
-      input.title = st === 'dup'
-        ? (t('castleNumberDup') || 'Diese Nummer ist schon an eine andere Burg vergeben')
-        : (t('castleNumberRange') || 'Nummer außerhalb der vorhandenen Felder') + ' (1–' + lastFieldTotal + ')';
-    }
-    input.addEventListener('change', () => {
-      const v = parseInt(input.value, 10);
-      if(Number.isFinite(v) && v >= 1) castleNumberMap[i] = v; else delete castleNumberMap[i];
-      generateMap(currentSeed);
-    });
-    row.appendChild(label);
-    row.appendChild(input);
-    box.appendChild(row);
-  }
+// extra castles live in customCastlePos under the keys 10, 11, ... (no gaps)
+function extraCastleKeys(){
+  return Object.keys(customCastlePos).map(Number).filter(k => k >= 10).sort((a, b) => a - b);
 }
-
-document.getElementById('customCastleNumbers').addEventListener('change', () => generateMap(currentSeed));
+function normalizeExtraCastles(){
+  const keys = extraCastleKeys().slice(0, EXTRA_CASTLE_MAX);
+  const list = keys.map(k => customCastlePos[k]);
+  extraCastleKeys().forEach(k => { delete customCastlePos[k]; });
+  list.forEach((p, i) => { customCastlePos[10 + i] = p; });
+}
 
 function updateCastlePlacer(){
   const on = customCastlesOn();
@@ -1599,19 +1613,43 @@ function updateCastlePlacer(){
 
   const wrap = document.getElementById('castleButtons');
   wrap.innerHTML = '';
-  for(let i = 0; i <= n; i++){
+  let shown = 0;   // outposts and extra castles are numbered one after another (deleted ones skipped)
+  const addBtn = (key, label, title, cls) => {
     const b = document.createElement('button');
     b.type = 'button';
-    b.className = 'castle-btn' + (customCastlePos[i] ? ' set' : '') + (placingCastle === i ? ' active' : '');
-    b.textContent = i === 0 ? '🏰' : String(i);
-    b.title = i === 0 ? (t('lblMainCastle') || 'Hauptburg') : ((t('lblOutposts') || 'Außenposten') + ' ' + i);
+    b.className = 'castle-btn' + cls + (placingCastle === key ? ' active' : '');
+    b.textContent = label;
+    b.title = title;
     b.addEventListener('click', () => {
-      placingCastle = (placingCastle === i) ? null : i;
-      if(placingCastle !== null){ placingMerchant = null; placingAction = null; updateMerchantPicker(); updateActionPicker(); }
+      placingCastle = (placingCastle === key) ? null : key;
+      if(placingCastle !== null){ placingMerchant = null; placingAction = null; placingVillage = null; updateMerchantPicker(); updateActionPicker(); updateVillagePicker(); }
       updateCastlePlacer();
     });
     wrap.appendChild(b);
+  };
+  for(let i = 0; i <= n; i++){
+    if(i > 0 && removedCastles.has(i)) continue;
+    if(i === 0){ addBtn(0, '🏰', t('lblMainCastle') || 'Hauptburg', customCastlePos[0] ? ' set' : ''); continue; }
+    shown++;
+    addBtn(i, String(shown), (t('lblOutposts') || 'Außenposten') + ' ' + shown, customCastlePos[i] ? ' set' : '');
   }
+  extraCastleKeys().forEach(k => {
+    shown++;
+    addBtn(k, String(shown), (t('lblOutposts') || 'Außenposten') + ' ' + shown, ' set' + (extraCastleStatus[k] === 'bad' ? ' invalid' : ''));
+  });
+  if(extraCastleKeys().length < EXTRA_CASTLE_MAX){
+    const add = document.createElement('button');
+    add.type = 'button';
+    add.className = 'castle-btn' + (placingCastle === 'new' ? ' active' : '');
+    add.textContent = '+';
+    add.addEventListener('click', () => {
+      placingCastle = (placingCastle === 'new') ? null : 'new';
+      if(placingCastle !== null){ placingMerchant = null; placingAction = null; placingVillage = null; updateMerchantPicker(); updateActionPicker(); updateVillagePicker(); }
+      updateCastlePlacer();
+    });
+    wrap.appendChild(add);
+  }
+  document.getElementById('castleRemoveBtn').hidden = !(typeof placingCastle === 'number' && placingCastle >= 1);
   updatePickUI();
 }
 
@@ -1626,11 +1664,12 @@ function cellAtMapPoint(x, y){
 }
 
 function customMerchantsOn(){ return document.getElementById('customMerchantFields').checked; }
+function customVillagesOn(){ return document.getElementById('customVillageFields').checked; }
 function customActionsOn(){ return document.getElementById('customActionFields').checked; }
 
 // shows/hides the hints and the crosshair for whichever click mode is active
 function updatePickUI(){
-  const active = (customCastlesOn() && placingCastle !== null) || (customMerchantsOn() && placingMerchant !== null) || (customActionsOn() && placingAction !== null);
+  const active = (customCastlesOn() && placingCastle !== null) || (customMerchantsOn() && placingMerchant !== null) || (customActionsOn() && placingAction !== null) || (customVillagesOn() && placingVillage !== null);
   svg.classList.toggle('placing-castle', active);
 }
 
@@ -1642,7 +1681,23 @@ svg.addEventListener('click', function(e){
   const fy = Math.max(0, Math.min(1, (e.clientY - r.top) / r.height));
 
   if(placingCastle !== null && customCastlesOn()){
-    customCastlePos[placingCastle] = { u: Math.round(fx * 1000), v: Math.round(fy * 1000) };
+    const pos = { u: Math.round(fx * 1000), v: Math.round(fy * 1000) };
+    if(placingCastle === 'new' || placingCastle >= 10){
+      // extra castle: needs a free walkable field under the click
+      const c = cellAtMapPoint(fx * W, fy * H);
+      if(!c || c.isBuilding) return;
+      if(placingCastle === 'new'){
+        const count = extraCastleKeys().length;
+        if(count >= EXTRA_CASTLE_MAX) return;
+        customCastlePos[10 + count] = pos;     // stays selected, so several can be added in a row
+      } else {
+        customCastlePos[placingCastle] = pos;
+        placingCastle = null;
+      }
+      generateMap(currentSeed);
+      return;
+    }
+    customCastlePos[placingCastle] = pos;
     placingCastle = null;
     generateMap(currentSeed);
     return;
@@ -1663,6 +1718,21 @@ svg.addEventListener('click', function(e){
     return;
   }
 
+  if(customVillagesOn() && placingVillage !== null){
+    const c = cellAtMapPoint(fx * W, fy * H);
+    if(!c) return;
+    if(placingVillage === 'new'){
+      if(!customVillageList.includes(c.number)) customVillageList.push(c.number);
+    } else if(!customVillageList.includes(c.number) || customVillageList[placingVillage] === c.number){
+      customVillageList[placingVillage] = c.number;
+      placingVillage = null;
+    } else {
+      return;   // that field is already a village
+    }
+    applyVillageList();
+    return;
+  }
+
   if(customActionsOn() && placingAction !== null){
     const c = cellAtMapPoint(fx * W, fy * H);
     if(!c) return;
@@ -1676,6 +1746,68 @@ svg.addEventListener('click', function(e){
     }
     applyActionList();
   }
+});
+
+// villages: same picker as the merchants (buttons, +, remove, reset)
+function villageNumberList(){
+  return customVillagesOn() ? customVillageList.slice() : [];
+}
+function applyVillageList(){
+  renderMarkers();
+  updateVillagePicker();
+}
+function updateVillagePicker(){
+  const on = customVillagesOn();
+  document.getElementById('villagePicker').hidden = !on;
+  if(!on){ placingVillage = null; updatePickUI(); return; }
+  const wrap = document.getElementById('villageButtons');
+  wrap.innerHTML = '';
+  customVillageList.forEach((num, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    const invalid = lastFieldTotal && num > lastFieldTotal;
+    b.className = 'castle-btn set' + (placingVillage === i ? ' active' : '') + (invalid ? ' invalid' : '');
+    b.textContent = String(num);
+    if(invalid) b.title = (t('castleNumberRange') || 'Nummer außerhalb der vorhandenen Felder') + ' (1–' + lastFieldTotal + ')';
+    b.addEventListener('click', () => {
+      placingVillage = (placingVillage === i) ? null : i;
+      placingCastle = null; placingMerchant = null; placingAction = null;
+      updateCastlePlacer(); updateMerchantPicker(); updateActionPicker();
+      updateVillagePicker();
+    });
+    wrap.appendChild(b);
+  });
+  const add = document.createElement('button');
+  add.type = 'button';
+  add.className = 'castle-btn' + (placingVillage === 'new' ? ' active' : '');
+  add.textContent = '+';
+  add.addEventListener('click', () => {
+    placingVillage = (placingVillage === 'new') ? null : 'new';
+    placingCastle = null; placingMerchant = null; placingAction = null;
+    updateCastlePlacer(); updateMerchantPicker(); updateActionPicker();
+    updateVillagePicker();
+  });
+  wrap.appendChild(add);
+  document.getElementById('villageRemoveBtn').hidden = !(typeof placingVillage === 'number');
+  updatePickUI();
+}
+document.getElementById('customVillageFields').addEventListener('change', () => {
+  placingVillage = null;
+  if(customVillagesOn()){
+    placingCastle = null; placingMerchant = null; placingAction = null;
+    updateCastlePlacer(); updateMerchantPicker(); updateActionPicker();
+  }
+  applyVillageList();
+});
+document.getElementById('villageRemoveBtn').addEventListener('click', () => {
+  if(typeof placingVillage === 'number') customVillageList.splice(placingVillage, 1);
+  placingVillage = null;
+  applyVillageList();
+});
+document.getElementById('villageResetBtn').addEventListener('click', () => {
+  customVillageList = [];
+  placingVillage = null;
+  applyVillageList();
 });
 
 // merchants: same picker as the action fields (buttons, +, remove, reset)
@@ -1699,7 +1831,7 @@ function updateMerchantPicker(){
     if(invalid) b.title = (t('castleNumberRange') || 'Nummer außerhalb der vorhandenen Felder') + ' (1–' + lastFieldTotal + ')';
     b.addEventListener('click', () => {
       placingMerchant = (placingMerchant === i) ? null : i;
-      placingCastle = null; placingAction = null;
+      placingCastle = null; placingAction = null; placingVillage = null; updateVillagePicker();
       updateCastlePlacer(); updateActionPicker();
       updateMerchantPicker();
     });
@@ -1711,7 +1843,7 @@ function updateMerchantPicker(){
   add.textContent = '+';
   add.addEventListener('click', () => {
     placingMerchant = (placingMerchant === 'new') ? null : 'new';
-    placingCastle = null; placingAction = null;
+    placingCastle = null; placingAction = null; placingVillage = null; updateVillagePicker();
     updateCastlePlacer(); updateActionPicker();
     updateMerchantPicker();
   });
@@ -1723,7 +1855,7 @@ function updateMerchantPicker(){
 document.getElementById('customMerchantFields').addEventListener('change', () => {
   placingMerchant = null;
   if(customMerchantsOn()){
-    placingCastle = null; placingAction = null;
+    placingCastle = null; placingAction = null; placingVillage = null; updateVillagePicker();
     updateCastlePlacer(); updateActionPicker();
   }
   applyMerchantList();
@@ -1763,7 +1895,7 @@ function updateActionPicker(){
     if(invalid) b.title = (t('castleNumberRange') || 'Nummer außerhalb der vorhandenen Felder') + ' (1–' + lastFieldTotal + ')';
     b.addEventListener('click', () => {
       placingAction = (placingAction === i) ? null : i;
-      placingMerchant = null; updateMerchantPicker();
+      placingMerchant = null; placingVillage = null; updateMerchantPicker(); updateVillagePicker();
       updateActionPicker();
     });
     wrap.appendChild(b);
@@ -1774,7 +1906,7 @@ function updateActionPicker(){
   add.textContent = '+';
   add.addEventListener('click', () => {
     placingAction = (placingAction === 'new') ? null : 'new';
-    placingMerchant = null; updateMerchantPicker();
+    placingMerchant = null; placingVillage = null; updateMerchantPicker(); updateVillagePicker();
     updateActionPicker();
   });
   wrap.appendChild(add);
@@ -1784,7 +1916,7 @@ function updateActionPicker(){
 
 document.getElementById('customActionFields').addEventListener('change', () => {
   placingAction = null;
-  if(customActionsOn()){ placingMerchant = null; updateMerchantPicker(); }
+  if(customActionsOn()){ placingMerchant = null; placingVillage = null; updateMerchantPicker(); updateVillagePicker(); }
   // start from the action fields of the current map, so nothing vanishes
   if(customActionsOn() && !customActionList.length) customActionList = [...autoActionNumbers].sort((a, b) => a - b);
   generateMap(currentSeed);
@@ -1801,7 +1933,18 @@ document.getElementById('actionResetBtn').addEventListener('click', () => {
 });
 
 document.getElementById('customCastles').addEventListener('change', () => { placingCastle = null; generateMap(currentSeed); });
-document.getElementById('castleResetBtn').addEventListener('click', () => { customCastlePos = {}; placingCastle = null; generateMap(currentSeed); });
+document.getElementById('castleRemoveBtn').addEventListener('click', () => {
+  if(typeof placingCastle === 'number' && placingCastle >= 10){
+    delete customCastlePos[placingCastle];
+    normalizeExtraCastles();
+  } else if(typeof placingCastle === 'number' && placingCastle >= 1){
+    removedCastles.add(placingCastle);     // automatic outpost: castle role removed, map unchanged
+    delete customCastlePos[placingCastle];
+  }
+  placingCastle = null;
+  generateMap(currentSeed);
+});
+document.getElementById('castleResetBtn').addEventListener('click', () => { customCastlePos = {}; removedCastles = new Set(); placingCastle = null; generateMap(currentSeed); });
 
 function generateMap(explicitSeed){
   clear();
@@ -1878,9 +2021,9 @@ function generateMap(explicitSeed){
     ' · ' + fieldCount + ' ' + LANGUAGES[currentLang].fieldsWord;
 
   updateCastlePlacer();
-  updateCastleNumbers();
   updateActionPicker();
   updateMerchantPicker();
+  updateVillagePicker();
   updatePickUI();
 }
 
@@ -1956,13 +2099,14 @@ function collectSettings(){
     merchantFieldNumber: '',   // legacy field (the single merchant), kept so the share format stays valid
     showFlowArrows: document.getElementById('showFlowArrows').checked,
     customCastles: document.getElementById('customCastles').checked,
-    castlePositions: Object.keys(customCastlePos).map(k => [Number(k), customCastlePos[k].u, customCastlePos[k].v]),
-    customCastleNumbers: document.getElementById('customCastleNumbers').checked,
-    castleNumbers: Object.keys(castleNumberMap).map(k => [Number(k), castleNumberMap[k]]),
+    castlePositions: Object.keys(customCastlePos).map(k => [Number(k), customCastlePos[k].u, customCastlePos[k].v])
+      .concat([...removedCastles].sort((a, b) => a - b).map(i => [i, -1, -1])),   // deleted outposts
     customActionFields: document.getElementById('customActionFields').checked,
     actionList: customActionList.slice(),
     customMerchantFields: document.getElementById('customMerchantFields').checked,
-    merchantList: customMerchantList.slice()
+    merchantList: customMerchantList.slice(),
+    customVillageFields: document.getElementById('customVillageFields').checked,
+    villageList: customVillageList.slice()
   };
 }
 
@@ -2021,18 +2165,25 @@ function encodeCompactSettings(s){
   const hasNumbers = !!s.customCastleNumbers || (Array.isArray(s.castleNumbers) && s.castleNumbers.length > 0);
   const hasActions = !!s.customActionFields || (Array.isArray(s.actionList) && s.actionList.length > 0);
   const hasMerchants = !!s.customMerchantFields || (Array.isArray(s.merchantList) && s.merchantList.length > 0);
-  if(hasCastlePos || hasNumbers || hasActions || hasMerchants){
+  const hasVillages = !!s.customVillageFields || (Array.isArray(s.villageList) && s.villageList.length > 0);
+  if(hasCastlePos || hasNumbers || hasActions || hasMerchants || hasVillages){
     if(typeof s.customCastles !== 'boolean' || !Array.isArray(s.castlePositions)) return null;
     let cp = s.customCastles ? '1' : '0';
     for(const e of s.castlePositions){
       if(!Array.isArray(e) || e.length !== 3) return null;
       const [i, u, v] = e;
-      if(![i, u, v].every(Number.isInteger) || i < 0 || i > 9 || u < 0 || u > 1000 || v < 0 || v > 1000) return null;
+      if(![i, u, v].every(Number.isInteger) || i < 0 || i > 35) return null;
+      if(u === -1 && v === -1){
+        if(i < 1 || i > 9) return null;
+        cp += i.toString(36) + 'zzzz';       // marker: this outpost was deleted
+        continue;
+      }
+      if(u < 0 || u > 1000 || v < 0 || v > 1000) return null;
       cp += i.toString(36) + u.toString(36).padStart(2, '0') + v.toString(36).padStart(2, '0');
     }
     parts.push(cp);
 
-    if(hasNumbers || hasActions || hasMerchants){
+    if(hasNumbers || hasActions || hasMerchants || hasVillages){
       let np = '0';
       if(hasNumbers){
         if(typeof s.customCastleNumbers !== 'boolean' || !Array.isArray(s.castleNumbers)) return null;
@@ -2046,7 +2197,7 @@ function encodeCompactSettings(s){
       }
       parts.push(np);
 
-      if(hasActions || hasMerchants){
+      if(hasActions || hasMerchants || hasVillages){
         let ap = '0';
         if(hasActions){
         if(typeof s.customActionFields !== 'boolean' || !Array.isArray(s.actionList)) return null;
@@ -2058,14 +2209,28 @@ function encodeCompactSettings(s){
         }
         parts.push(ap);
 
-        if(hasMerchants){
-          if(typeof s.customMerchantFields !== 'boolean' || !Array.isArray(s.merchantList)) return null;
-          let mp = s.customMerchantFields ? '1' : '0';
-          for(const n of s.merchantList){
-            if(!Number.isInteger(n) || n < 1 || n > 46655) return null;
-            mp += n.toString(36).padStart(3, '0');
+        if(hasMerchants || hasVillages){
+          let mp = '0';
+          if(hasMerchants){
+            if(typeof s.customMerchantFields !== 'boolean' || !Array.isArray(s.merchantList)) return null;
+            mp = s.customMerchantFields ? '1' : '0';
+            for(const n of s.merchantList){
+              if(!Number.isInteger(n) || n < 1 || n > 46655) return null;
+              mp += n.toString(36).padStart(3, '0');
+            }
           }
           parts.push(mp);
+
+          // part 13: manually placed villages, same layout as 11 and 12
+          if(hasVillages){
+            if(typeof s.customVillageFields !== 'boolean' || !Array.isArray(s.villageList)) return null;
+            let vp = s.customVillageFields ? '1' : '0';
+            for(const n of s.villageList){
+              if(!Number.isInteger(n) || n < 1 || n > 46655) return null;
+              vp += n.toString(36).padStart(3, '0');
+            }
+            parts.push(vp);
+          }
         }
       }
     }
@@ -2076,7 +2241,7 @@ function encodeCompactSettings(s){
 function decodeCompactSettings(raw){
   const bad = () => new Error('invalid share code');
   const p = raw.split('.');
-  if(p.length < 8 || p.length > 12 || p[0] !== '2') throw bad();
+  if(p.length < 8 || p.length > 13 || p[0] !== '2') throw bad();
   const b36 = str => {
     if(!/^-?[0-9a-z]+$/.test(str)) throw bad();
     const n = parseInt(str, 36);
@@ -2117,7 +2282,18 @@ function decodeCompactSettings(raw){
   s.actionList = [];
   s.customMerchantFields = false;
   s.merchantList = [];
-  if(p.length === 12){
+  s.customVillageFields = false;
+  s.villageList = [];
+  if(p.length === 13){
+    if(!/^[01]([0-9a-z]{3})*$/.test(p[12])) throw bad();
+    s.customVillageFields = p[12][0] === '1';
+    for(let k = 1; k < p[12].length; k += 3){
+      const n = parseInt(p[12].slice(k, k + 3), 36);
+      if(n < 1) throw bad();
+      s.villageList.push(n);
+    }
+  }
+  if(p.length >= 12){
     if(!/^[01]([0-9a-z]{3})*$/.test(p[11])) throw bad();
     s.customMerchantFields = p[11][0] === '1';
     for(let k = 1; k < p[11].length; k += 3){
@@ -2152,7 +2328,13 @@ function decodeCompactSettings(raw){
       const i = parseInt(p[8][k], 36);
       const u = parseInt(p[8].slice(k + 1, k + 3), 36);
       const v = parseInt(p[8].slice(k + 3, k + 5), 36);
-      if(i > 9 || u > 1000 || v > 1000) throw bad();
+      if(i > 35) throw bad();
+      if(u === 1295 && v === 1295){
+        if(i < 1 || i > 9) throw bad();
+        s.castlePositions.push([i, -1, -1]);
+        continue;
+      }
+      if(u > 1000 || v > 1000) throw bad();
       s.castlePositions.push([i, u, v]);
     }
   }
@@ -2187,7 +2369,7 @@ function applySettings(s){
   const setChecked = (id, v) => { if(v !== undefined){ document.getElementById(id).checked = v; } };
 
   setVal('fieldCountInput', s.fieldCount);
-  setVal('castlePosition', s.castlePosition);
+  // castlePosition ist fest auf 'mitte' (Auswahl entfernt), alte Links ändern sie nicht
   setChecked('disableOutposts', s.disableOutposts);
   setVal('outpostCount', s.outpostCount);
   setVal('mountainPosition', s.mountainPosition);
@@ -2199,20 +2381,18 @@ function applySettings(s){
   setChecked('showFlowArrows', s.showFlowArrows);
 
   customCastlePos = {};
+  removedCastles = new Set();
   if(Array.isArray(s.castlePositions)){
     s.castlePositions.forEach(e => {
-      if(Array.isArray(e) && e.length === 3 && e.every(Number.isFinite)) customCastlePos[e[0]] = { u: e[1], v: e[2] };
+      if(!(Array.isArray(e) && e.length === 3 && e.every(Number.isFinite))) return;
+      if(e[1] < 0 && e[2] < 0){ if(e[0] >= 1 && e[0] <= 9) removedCastles.add(e[0]); }
+      else customCastlePos[e[0]] = { u: e[1], v: e[2] };
     });
   }
   setChecked('customCastles', !!s.customCastles);
 
-  castleNumberMap = {};
-  if(Array.isArray(s.castleNumbers)){
-    s.castleNumbers.forEach(e => {
-      if(Array.isArray(e) && e.length === 2 && e.every(Number.isFinite)) castleNumberMap[e[0]] = e[1];
-    });
-  }
-  setChecked('customCastleNumbers', !!s.customCastleNumbers);
+  normalizeExtraCastles();
+  // (older links may carry field numbers for castles: that option was removed, they are ignored)
 
   customActionList = [];
   if(Array.isArray(s.actionList)){
@@ -2238,6 +2418,12 @@ function applySettings(s){
     legacyUsed = true;
   }
   setChecked('customMerchantFields', !!s.customMerchantFields || legacyUsed);
+  customVillageList = [];
+  if(Array.isArray(s.villageList)){
+    s.villageList.forEach(n => { if(Number.isFinite(n) && !customVillageList.includes(n)) customVillageList.push(n); });
+  }
+  setChecked('customVillageFields', !!s.customVillageFields);
+  placingVillage = null;
   placingMerchant = null;
   placingCastle = null;
 
