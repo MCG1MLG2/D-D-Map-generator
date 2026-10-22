@@ -410,11 +410,16 @@
     font-size: 14px;
     text-align: center;
   }
+  .brush-row { display: flex; align-items: center; gap: 8px; margin: 6px 0; font-size: 13px; }
+  .brush-row input[type=range] { flex: 1; min-width: 80px; }
+  #brushCursor { position: fixed; pointer-events: none; border: 2px dashed rgba(60,40,10,.85);
+    background: rgba(255,255,255,.14); border-radius: 50%; z-index: 9999; display: none; transform: translate(-50%, -50%); }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 <script src="languages.js"></script>
 </head>
 <body>
+<div id="brushCursor"></div>
 
   <a href="index.html" class="back-btn"><span aria-hidden="true">←</span> <span data-i18n="backToHome">Start</span></a>
 
@@ -465,10 +470,10 @@
           <option value="unten-links">Unten links</option>
           <option value="unten-rechts">Unten rechts</option>
         </select>
-        <!-- Außenposten-Anzahl (5) und "keine Außenposten" sind aus der Oberfläche entfernt. Die versteckten
+        <!-- Außenposten-Anzahl (Standard 0, nur die Hauptburg) und "keine Außenposten" sind aus der Oberfläche entfernt. Die versteckten
              Felder bleiben, damit Generator und Teilen-Code unverändert funktionieren. Einzelne Burgen
              löscht man über "Burgen selbst platzieren" -> Entfernen. -->
-        <input type="number" id="outpostCount" min="0" max="9" value="5" hidden style="display:none">
+        <input type="number" id="outpostCount" min="0" max="9" value="0" hidden style="display:none">
         <input type="checkbox" id="disableOutposts" hidden style="display:none">
         <div class="field-row">
           <span class="f-label" data-i18n="lblCustomCastles">Burgen selbst platzieren</span>
@@ -598,6 +603,20 @@
           <div class="castle-buttons" id="desertButtons"></div>
           <button type="button" class="castle-reset" id="desertRemoveBtn" data-i18n="actionRemoveBtn" hidden>Entfernen</button>
           <button type="button" class="castle-reset" id="desertResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
+        </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblCustomCellTerrain">Einzelne Geländefelder setzen</span>
+          <input type="checkbox" id="customCellTerrain">
+        </div>
+        <div class="castle-placer" id="cellPicker" hidden>
+          <div class="placer-hint" data-i18n="cellTerrainHint">Geländeart wählen, dann Felder auf der Karte anklicken</div>
+          <div class="castle-buttons" id="cellButtons"></div>
+          <div class="brush-row">
+            <span data-i18n="cellBrushLabel">Pinselgröße</span>
+            <input type="range" id="cellBrushSize" min="1" max="8" value="1">
+            <span id="cellBrushVal">1</span>
+          </div>
+          <button type="button" class="castle-reset" id="cellResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
         </div>
       </div>
 
@@ -1171,13 +1190,26 @@ function generateFieldTessellation(outposts, desiredFields){
     return 'normal';
   }
 
+  // single terrain fields set by hand: the nearest ordinary field takes the chosen terrain. The field
+  // layout does not depend on this, so painting never moves a field; blocked terrain shifts the numbers.
+  const cellOverrides = new Map();
+  if(TERRAIN.cell.on()){
+    for(const e of TERRAIN.cell.list){
+      const best = delaunay.find(e.u/1000*W, e.v/1000*H);       // nearest field; castle fields keep their role
+      if(best >= buildingPoints.length) cellOverrides.set(best, e.t);
+    }
+  }
+
   const cells = [];
   for(let i=0;i<points.length;i++){
     const [px, py] = points[i];
     const isBuilding = i < buildingPoints.length;
 
     let terrain = 'normal';
-    if(!isBuilding) terrain = terrainAt(px, py);
+    if(!isBuilding){
+      terrain = terrainAt(px, py);
+      if(cellOverrides.has(i)) terrain = cellOverrides.get(i);
+    }
     // river fields are always blocked/unwalkable — crossing only ever
     // happens visually via a bridge deck, never through a numbered field
     const blocked = terrain === 'sea' || terrain === 'mountain' || terrain === 'river';
@@ -1761,14 +1793,14 @@ function customCastlePoint(idx, sc){
   if(!customCastlesOn()) return null;
   const c = customCastlePos[idx];
   if(!c) return null;
-  const m = 45 * sc;
+  const m = idx >= 10 ? 0 : 45 * sc;      // extra castles sit exactly where they were clicked
   return { x: clamp(c.u / 1000 * W, m, W - m), y: clamp(c.v / 1000 * H, m, H - m) };
 }
 
 function outpostTotal(){
   const off = document.getElementById('disableOutposts').checked;
   let n = off ? 0 : parseInt(document.getElementById('outpostCount').value, 10);
-  if(!Number.isFinite(n)) n = 5;
+  if(!Number.isFinite(n)) n = 0;
   return Math.max(0, Math.min(9, n));
 }
 
@@ -2052,6 +2084,161 @@ function positionTerrainCfg(key, max, titleKey, titleDef){
 TERRAIN.desert = makeTerrainPicker('desert', positionTerrainCfg('desert', 12, 'lblDesert', 'Wüste'));
 TERRAIN.forest = makeTerrainPicker('forest', positionTerrainCfg('forest', 12, 'lblForest', 'Wald'));
 TERRAIN.mountain = makeTerrainPicker('mountain', positionTerrainCfg('mountain', 8, 'lblMountains', 'Gebirge'));
+// single terrain fields: pick a terrain, then click fields; each click paints the field under the pointer
+const CELL_TYPES = ['normal', 'forest', 'desert', 'mountain', 'sea', 'river'];
+const CELL_LABELS = { normal: '🌿', forest: '🌲', desert: '🌵', mountain: '⛰️', sea: '🌊', river: '〰️' };
+const CELL_TITLES = { normal: ['lblMeadow', 'Wiese'], forest: ['lblForest', 'Wald'], desert: ['lblDesert', 'Wüste'],
+  mountain: ['lblMountains', 'Gebirge'], sea: ['lblSea', 'Meer'], river: ['lblRiver', 'Fluss'] };
+const CELL_MAX = 3000;
+TERRAIN.cell = (() => {
+  const $ = id => document.getElementById(id);
+  const P = {
+    key: 'cell', list: [], placing: null,          // placing: null | a terrain type | 'erase'
+    on(){ return $('customCellTerrain').checked; },
+    active(){ return P.on() && P.placing !== null; },
+    clearMode(){ if(P.placing !== null){ P.placing = null; P.update(); } },
+    pick(k){
+      P.placing = (P.placing === k) ? null : k;
+      if(P.placing !== null){
+        placingCastle = null; placingMerchant = null; placingAction = null; placingVillage = null;
+        updateCastlePlacer(); updateMerchantPicker(); updateActionPicker(); updateVillagePicker();
+        clearTerrainPickers(P);
+      }
+      P.update();
+    },
+    update(){
+      const on = P.on();
+      $('cellPicker').hidden = !on;
+      svg.style.touchAction = P.active() ? 'none' : '';
+      if(!P.active()) $('brushCursor').style.display = 'none';
+      if(!on){ P.placing = null; updatePickUI(); return; }
+      const wrap = $('cellButtons');
+      wrap.innerHTML = '';
+      const add = (k, label, title) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'castle-btn' + (P.placing === k ? ' active' : '');
+        b.textContent = label;
+        b.title = title;
+        b.addEventListener('click', () => P.pick(k));
+        wrap.appendChild(b);
+      };
+      CELL_TYPES.forEach(k => add(k, CELL_LABELS[k], t(CELL_TITLES[k][0]) || CELL_TITLES[k][1]));
+      add('erase', '✕', t('actionRemoveBtn') || 'Entfernen');
+      svg.style.touchAction = P.active() ? 'none' : '';
+      updatePickUI();
+    },
+    // painting happens on pointer down / move (see below); the click that follows only keeps other modes out
+    handleClick(){ return P.active(); },
+    brushSize(){ return Math.max(1, Math.min(8, parseInt($('cellBrushSize').value, 10) || 1)); },
+    spacing(){ return Math.sqrt(W * H / Math.max(1, lastCells.length)); },
+    brushRadius(){ const n = P.brushSize(); return n <= 1 ? P.spacing() * 0.5 : n * 0.6 * P.spacing(); },
+    // paints the fields under the brush; returns true if anything changed
+    paint(fx, fy){
+      const x = fx * W, y = fy * H, n = P.brushSize();
+      let cells;
+      if(n <= 1){
+        let c = null, bestD = Infinity;
+        for(const cell of lastCells){
+          const d = (cell.px - x) * (cell.px - x) + (cell.py - y) * (cell.py - y);
+          if(d < bestD){ bestD = d; c = cell; }
+        }
+        cells = c ? [c] : [];
+      } else {
+        const r = P.brushRadius();
+        cells = lastCells.filter(c => Math.hypot(c.px - x, c.py - y) <= r);
+      }
+      cells = cells.filter(c => !c.isBuilding);        // castle fields keep their role
+      if(!cells.length) return false;
+      const key = (u, v) => u * 2048 + v;
+      const map = new Map(P.list.map(e => [key(e.u, e.v), e]));
+      let changed = false;
+      for(const c of cells){
+        const u = Math.round(c.px / W * 1000), v = Math.round(c.py / H * 1000), k = key(u, v);
+        if(P.placing === 'erase'){ if(map.delete(k)) changed = true; continue; }
+        const ex = map.get(k);
+        if(ex){ if(ex.t !== P.placing){ ex.t = P.placing; changed = true; } }
+        else if(c.terrain !== P.placing && map.size < CELL_MAX){ map.set(k, { u, v, t: P.placing }); changed = true; }
+      }
+      if(changed) P.list = [...map.values()];
+      return changed;
+    },
+    pending: false,
+    requestRegen(){
+      if(P.pending) return;
+      P.pending = true;
+      requestAnimationFrame(() => { P.pending = false; generateMap(currentSeed); });
+    },
+    toSettings(){ return { flag: $('customCellTerrain').checked, list: P.list.map(e => [e.u, e.v, CELL_TYPES.indexOf(e.t)]) }; },
+    applyState(s){
+      const list = [];
+      (Array.isArray(s.cellTerrainList) ? s.cellTerrainList : []).forEach(e => {
+        if(Array.isArray(e) && e.length === 3 && e.every(Number.isFinite) && CELL_TYPES[e[2]] && list.length < CELL_MAX){
+          list.push({ u: e[0], v: e[1], t: CELL_TYPES[e[2]] });
+        }
+      });
+      P.list = list;
+      $('customCellTerrain').checked = !!s.customCellTerrain;
+      P.placing = null;
+    }
+  };
+  $('customCellTerrain').addEventListener('change', () => {
+    P.placing = null;
+    if(P.on()){
+      placingCastle = null; placingMerchant = null; placingAction = null; placingVillage = null;
+      updateCastlePlacer(); updateMerchantPicker(); updateActionPicker(); updateVillagePicker();
+      clearTerrainPickers(P);
+    }
+    generateMap(currentSeed);
+  });
+  $('cellResetBtn').addEventListener('click', () => {
+    P.list = [];
+    P.placing = null;
+    generateMap(currentSeed);
+  });
+  // brush: press and drag over the map to paint; a dashed circle shows the brush
+  let down = false;
+  const relPos = e => {
+    const r = svg.getBoundingClientRect();
+    if(!r.width || !r.height) return null;
+    return { fx: Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)), fy: Math.max(0, Math.min(1, (e.clientY - r.top) / r.height)), scale: r.width / W };
+  };
+  const moveCursor = e => {
+    const cur = $('brushCursor');
+    if(!P.active()){ cur.style.display = 'none'; return; }
+    const pos = relPos(e);
+    if(!pos){ return; }
+    const d = Math.max(10, 2 * P.brushRadius() * pos.scale);
+    cur.style.width = cur.style.height = d + 'px';
+    cur.style.left = e.clientX + 'px';
+    cur.style.top = e.clientY + 'px';
+    cur.style.display = 'block';
+  };
+  svg.addEventListener('pointerdown', e => {
+    if(!P.active() || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    const pos = relPos(e);
+    if(!pos) return;
+    down = true;
+    try{ svg.setPointerCapture(e.pointerId); }catch(err){}
+    moveCursor(e);
+    if(P.paint(pos.fx, pos.fy)) P.requestRegen();
+    e.preventDefault();
+  });
+  svg.addEventListener('pointermove', e => {
+    moveCursor(e);
+    if(!down || !P.active()) return;
+    const pos = relPos(e);
+    if(pos && P.paint(pos.fx, pos.fy)) P.requestRegen();
+  });
+  const stop = () => { down = false; };
+  svg.addEventListener('pointerup', stop);
+  svg.addEventListener('pointercancel', stop);
+  svg.addEventListener('pointerleave', () => { $('brushCursor').style.display = 'none'; });
+  $('cellBrushSize').addEventListener('input', () => { $('cellBrushVal').textContent = String(P.brushSize()); });
+  TERRAIN_PICKERS.push(P);
+  return P;
+})();
+
 // the sea is a band along a map edge: a click chooses the nearest edge (at most 3, so one edge stays dry for the rivers)
 TERRAIN.sea = makeTerrainPicker('sea', {
   max: 3, unique: true,
@@ -2305,7 +2492,7 @@ function generateMap(explicitSeed){
   let outpostCount = 0;
   if(!disableOutposts){
     outpostCount = parseInt(countInput.value, 10);
-    if(!Number.isFinite(outpostCount)) outpostCount = 5;
+    if(!Number.isFinite(outpostCount)) outpostCount = 0;
     outpostCount = Math.max(0, Math.min(9, outpostCount));
     countInput.value = outpostCount;
   }
@@ -2433,7 +2620,9 @@ function collectSettings(){
     customMountain: TERRAIN.mountain.toSettings().flag,
     mountainList: TERRAIN.mountain.toSettings().list,
     customSea: TERRAIN.sea.toSettings().flag,
-    seaList: TERRAIN.sea.toSettings().list
+    seaList: TERRAIN.sea.toSettings().list,
+    customCellTerrain: TERRAIN.cell.toSettings().flag,
+    cellTerrainList: TERRAIN.cell.toSettings().list
   };
 }
 
@@ -2555,13 +2744,25 @@ function encodeCompactSettings(s){
     }
     return np;
   };
+  // 18: single terrain fields: flag + 5 characters each (x, y in permille base 36 with 2 digits each, terrain index)
+  const encCells = () => {
+    if(!present('customCellTerrain', 'cellTerrainList')) return null;
+    let out = flagOf('customCellTerrain', 'cellTerrainList');
+    for(const e of s.cellTerrainList){
+      if(!Array.isArray(e) || e.length !== 3 || !e.every(Number.isInteger)) throw new Error('x');
+      const [u, v, k] = e;
+      if(u < 0 || u > 1000 || v < 0 || v > 1000 || k < 0 || k > 5) throw new Error('x');
+      out += u.toString(36).padStart(2, '0') + v.toString(36).padStart(2, '0') + k;
+    }
+    return out;
+  };
   let tail;
   try{
     tail = [encCastles(), encCastleNumbers(),
       encNums('customActionFields', 'actionList'), encNums('customMerchantFields', 'merchantList'),
       encNums('customVillageFields', 'villageList'),
       encPos('customDesert', 'desertList'), encPos('customForest', 'forestList'), encPos('customMountain', 'mountainList'),
-      encEdges('customSea', 'seaList')];
+      encEdges('customSea', 'seaList'), encCells()];
   } catch(e){ return null; }
   let last = tail.length - 1;
   while(last >= 0 && tail[last] === null) last--;
@@ -2572,7 +2773,7 @@ function encodeCompactSettings(s){
 function decodeCompactSettings(raw){
   const bad = () => new Error('invalid share code');
   const p = raw.split('.');
-  if(p.length < 8 || p.length > 17 || p[0] !== '2') throw bad();
+  if(p.length < 8 || p.length > 18 || p[0] !== '2') throw bad();
   const b36 = str => {
     if(!/^-?[0-9a-z]+$/.test(str)) throw bad();
     const n = parseInt(str, 36);
@@ -2619,6 +2820,7 @@ function decodeCompactSettings(raw){
   s.customForest = false; s.forestList = [];
   s.customMountain = false; s.mountainList = [];
   s.customSea = false; s.seaList = [];
+  s.customCellTerrain = false; s.cellTerrainList = [];
   const posPart = (idx, flagKey, listKey) => {
     if(p.length <= idx) return;
     const str = p[idx];
@@ -2633,6 +2835,15 @@ function decodeCompactSettings(raw){
   posPart(13, 'customDesert', 'desertList');
   posPart(14, 'customForest', 'forestList');
   posPart(15, 'customMountain', 'mountainList');
+  if(p.length >= 18){
+    if(!/^[01]([0-9a-z]{4}[0-5])*$/.test(p[17])) throw bad();
+    s.customCellTerrain = p[17][0] === '1';
+    for(let k = 1; k < p[17].length; k += 5){
+      const u = parseInt(p[17].slice(k, k + 2), 36), v = parseInt(p[17].slice(k + 2, k + 4), 36);
+      if(u > 1000 || v > 1000) throw bad();
+      s.cellTerrainList.push([u, v, parseInt(p[17][k + 4], 10)]);
+    }
+  }
   if(p.length >= 17){
     if(!/^[01][0-3]*$/.test(p[16])) throw bad();
     s.customSea = p[16][0] === '1';
