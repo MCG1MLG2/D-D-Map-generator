@@ -244,7 +244,10 @@ const LANGUAGES = {
     "castleNumberAuto": "تلقائي",
     "castleNumberDup": "هذا الرقم مخصص بالفعل لقلعة أخرى",
     "castleNumberRange": "الرقم خارج الحقول الموجودة",
-    "enemyButtonText": "إلى الأعداء"
+    "enemyButtonText": "إلى الأعداء",
+    "grpBuildings": "المباني",
+    "lblCustomVillages": "وضع القرى بنفسك",
+    "villagePickHint": "اختر قرية (أو +) ثم انقر على الخريطة"
   },
   "bg": {
     "nativeName": "Български",
@@ -467,7 +470,10 @@ const LANGUAGES = {
     "castleNumberAuto": "авто",
     "castleNumberDup": "Този номер вече е зает от друга крепост",
     "castleNumberRange": "Номер извън съществуващите полета",
-    "enemyButtonText": "Към враговете"
+    "enemyButtonText": "Към враговете",
+    "grpBuildings": "Сгради",
+    "lblCustomVillages": "Ръчно поставяне на села",
+    "villagePickHint": "Избери село (или +), после щракни върху картата"
   },
   "bn": {
     "nativeName": "বাংলা",
@@ -690,7 +696,10 @@ const LANGUAGES = {
     "castleNumberAuto": "স্বয়ংক্রিয়",
     "castleNumberDup": "এই নম্বরটি ইতিমধ্যে অন্য দুর্গকে দেওয়া হয়েছে",
     "castleNumberRange": "নম্বরটি বিদ্যমান ক্ষেত্রের বাইরে",
-    "enemyButtonText": "শত্রুদের কাছে যান"
+    "enemyButtonText": "শত্রুদের কাছে যান",
+    "grpBuildings": "ভবন",
+    "lblCustomVillages": "গ্রাম নিজে স্থাপন করুন",
+    "villagePickHint": "একটি গ্রাম (বা +) বেছে নিন, তারপর মানচিত্রে ক্লিক করুন"
   },
   "ca": {
     "nativeName": "Català",
@@ -913,7 +922,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "Aquest número ja està assignat a un altre castell",
     "castleNumberRange": "Número fora de les caselles existents",
-    "enemyButtonText": "Als Enemics"
+    "enemyButtonText": "Als Enemics",
+    "grpBuildings": "Edificis",
+    "lblCustomVillages": "Col·loca els pobles tu mateix",
+    "villagePickHint": "Tria un poble (o +) i després fes clic al mapa"
   },
   "cs": {
     "nativeName": "Čeština",
@@ -1136,7 +1148,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "Toto číslo je již přiřazeno jinému hradu",
     "castleNumberRange": "Číslo mimo existující pole",
-    "enemyButtonText": "K nepřátelům"
+    "enemyButtonText": "K nepřátelům",
+    "grpBuildings": "Budovy",
+    "lblCustomVillages": "Vesnice umístit ručně",
+    "villagePickHint": "Vyber vesnici (nebo +) a klikni na mapu"
   },
   "da": {
     "nativeName": "Dansk",
@@ -1359,7 +1374,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "Dette nummer er allerede tildelt et andet slot",
     "castleNumberRange": "Nummer uden for de eksisterende felter",
-    "enemyButtonText": "Til Fjenderne"
+    "enemyButtonText": "Til Fjenderne",
+    "grpBuildings": "Bygninger",
+    "lblCustomVillages": "Placér landsbyer selv",
+    "villagePickHint": "Vælg en landsby (eller +), og klik derefter på kortet"
   },
   "de": {
     "nativeName": "Deutsch",
@@ -1582,7 +1600,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "Diese Nummer ist schon an eine andere Burg vergeben",
     "castleNumberRange": "Nummer außerhalb der vorhandenen Felder",
-    "enemyButtonText": "Zu den Gegnern"
+    "enemyButtonText": "Zu den Gegnern",
+    "grpBuildings": "Gebäude",
+    "lblCustomVillages": "Dörfer selbst platzieren",
+    "villagePickHint": "Dorf wählen (oder +), dann auf die Karte klicken"
   },
   "el": {
     "nativeName": "Ελληνικά",
@@ -1805,7 +1826,10 @@ const LANGUAGES = {
     "castleNumberAuto": "αυτόμ.",
     "castleNumberDup": "Αυτός ο αριθμός έχει ήδη δοθεί σε άλλο κάστρο",
     "castleNumberRange": "Αριθμός εκτός των υπαρχόντων πεδίων",
-    "enemyButtonText": "Στους Εχθρούς"
+    "enemyButtonText": "Στους Εχθρούς",
+    "grpBuildings": "Κτίρια",
+    "lblCustomVillages": "Τοποθέτηση χωριών με το χέρι",
+    "villagePickHint": "Επίλεξε ένα χωριό (ή +) και κάνε κλικ στον χάρτη"
   },
   "en": {
     "nativeName": "English",
@@ -2028,7 +2052,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "This number is already assigned to another castle",
     "castleNumberRange": "Number outside the existing fields",
-    "enemyButtonText": "To the Enemies"
+    "enemyButtonText": "To the Enemies",
+    "grpBuildings": "Buildings",
+    "lblCustomVillages": "Place villages yourself",
+    "villagePickHint": "Select a village (or +), then click on the map"
   },
   "es": {
     "nativeName": "Español",
@@ -2251,7 +2278,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "Este número ya está asignado a otro castillo",
     "castleNumberRange": "Número fuera de las casillas existentes",
-    "enemyButtonText": "A los Enemigos"
+    "enemyButtonText": "A los Enemigos",
+    "grpBuildings": "Edificios",
+    "lblCustomVillages": "Colocar las aldeas tú mismo",
+    "villagePickHint": "Elige una aldea (o +) y haz clic en el mapa"
   },
   "et": {
     "nativeName": "Eesti",
@@ -2474,7 +2504,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "See number on juba teisele lossile määratud",
     "castleNumberRange": "Number väljaspool olemasolevaid välju",
-    "enemyButtonText": "Vaenlaste juurde"
+    "enemyButtonText": "Vaenlaste juurde",
+    "grpBuildings": "Hooned",
+    "lblCustomVillages": "Aseta külad ise",
+    "villagePickHint": "Vali küla (või +) ja klõpsa seejärel kaardil"
   },
   "eu": {
     "nativeName": "Euskara",
@@ -2697,7 +2730,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "Zenbaki hau beste gazteluari esleituta dago jada",
     "castleNumberRange": "Zenbakia lauki existenteetatik kanpo dago",
-    "enemyButtonText": "Etsaietara"
+    "enemyButtonText": "Etsaietara",
+    "grpBuildings": "Eraikinak",
+    "lblCustomVillages": "Herriak zuk jarri",
+    "villagePickHint": "Aukeratu herri bat (edo +) eta egin klik mapan"
   },
   "fa": {
     "nativeName": "فارسی",
@@ -2920,7 +2956,10 @@ const LANGUAGES = {
     "castleNumberAuto": "خودکار",
     "castleNumberDup": "این شماره قبلاً به قلعه دیگری اختصاص داده شده است",
     "castleNumberRange": "شماره خارج از خانه‌های موجود است",
-    "enemyButtonText": "به دشمنان"
+    "enemyButtonText": "به دشمنان",
+    "grpBuildings": "ساختمان‌ها",
+    "lblCustomVillages": "قرار دادن روستاها به‌صورت دستی",
+    "villagePickHint": "یک روستا (یا +) انتخاب کن، سپس روی نقشه کلیک کن"
   },
   "fi": {
     "nativeName": "Suomi",
@@ -3143,7 +3182,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "Tämä numero on jo annettu toiselle linnalle",
     "castleNumberRange": "Numero on olemassa olevien ruutujen ulkopuolella",
-    "enemyButtonText": "Vihollisiin"
+    "enemyButtonText": "Vihollisiin",
+    "grpBuildings": "Rakennukset",
+    "lblCustomVillages": "Sijoita kylät itse",
+    "villagePickHint": "Valitse kylä (tai +) ja napsauta sitten karttaa"
   },
   "fr": {
     "nativeName": "Français",
@@ -3366,7 +3408,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "Ce numéro est déjà attribué à un autre château",
     "castleNumberRange": "Numéro en dehors des cases existantes",
-    "enemyButtonText": "Vers les Ennemis"
+    "enemyButtonText": "Vers les Ennemis",
+    "grpBuildings": "Bâtiments",
+    "lblCustomVillages": "Placer les villages soi-même",
+    "villagePickHint": "Choisis un village (ou +), puis clique sur la carte"
   },
   "ga": {
     "nativeName": "Gaeilge",
@@ -3589,7 +3634,10 @@ const LANGUAGES = {
     "castleNumberAuto": "uath",
     "castleNumberDup": "Tá an uimhir seo sannta do chaisleán eile cheana",
     "castleNumberRange": "Uimhir lasmuigh de na páirceanna atá ann",
-    "enemyButtonText": "Chuig na Naimhde"
+    "enemyButtonText": "Chuig na Naimhde",
+    "grpBuildings": "Foirgnimh",
+    "lblCustomVillages": "Cuir na sráidbhailte i bhfeidhm tú féin",
+    "villagePickHint": "Roghnaigh sráidbhaile (nó +), ansin cliceáil ar an léarscáil"
   },
   "hi": {
     "nativeName": "हिन्दी",
@@ -3812,7 +3860,10 @@ const LANGUAGES = {
     "castleNumberAuto": "स्वतः",
     "castleNumberDup": "यह संख्या पहले से किसी दूसरे किले को दी जा चुकी है",
     "castleNumberRange": "संख्या मौजूदा क्षेत्रों से बाहर है",
-    "enemyButtonText": "शत्रुओं पर जाएं"
+    "enemyButtonText": "शत्रुओं पर जाएं",
+    "grpBuildings": "इमारतें",
+    "lblCustomVillages": "गाँव खुद रखें",
+    "villagePickHint": "एक गाँव (या +) चुनें, फिर मानचित्र पर क्लिक करें"
   },
   "hr": {
     "nativeName": "Hrvatski",
@@ -4035,7 +4086,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "Ovaj je broj već dodijeljen drugom dvorcu",
     "castleNumberRange": "Broj izvan postojećih polja",
-    "enemyButtonText": "Na neprijatelje"
+    "enemyButtonText": "Na neprijatelje",
+    "grpBuildings": "Zgrade",
+    "lblCustomVillages": "Sela postavi sam",
+    "villagePickHint": "Odaberi selo (ili +), zatim klikni na kartu"
   },
   "hu": {
     "nativeName": "Magyar",
@@ -4258,7 +4312,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "Ez a szám már egy másik várhoz tartozik",
     "castleNumberRange": "A szám a meglévő mezőkön kívül esik",
-    "enemyButtonText": "Az ellenfelekhez"
+    "enemyButtonText": "Az ellenfelekhez",
+    "grpBuildings": "Épületek",
+    "lblCustomVillages": "Falvak kézi elhelyezése",
+    "villagePickHint": "Válassz falut (vagy +), majd kattints a térképre"
   },
   "id": {
     "nativeName": "Bahasa Indonesia",
@@ -4481,7 +4538,10 @@ const LANGUAGES = {
     "castleNumberAuto": "otomatis",
     "castleNumberDup": "Nomor ini sudah dipakai benteng lain",
     "castleNumberRange": "Nomor di luar petak yang ada",
-    "enemyButtonText": "Ke Musuh"
+    "enemyButtonText": "Ke Musuh",
+    "grpBuildings": "Bangunan",
+    "lblCustomVillages": "Tempatkan desa sendiri",
+    "villagePickHint": "Pilih desa (atau +), lalu klik pada peta"
   },
   "is": {
     "nativeName": "Íslenska",
@@ -4704,7 +4764,10 @@ const LANGUAGES = {
     "castleNumberAuto": "sjálfv.",
     "castleNumberDup": "Þetta númer er þegar frátekið fyrir annan kastala",
     "castleNumberRange": "Númer utan núverandi reita",
-    "enemyButtonText": "Til óvinanna"
+    "enemyButtonText": "Til óvinanna",
+    "grpBuildings": "Byggingar",
+    "lblCustomVillages": "Settu þorp sjálfur",
+    "villagePickHint": "Veldu þorp (eða +) og smelltu síðan á kortið"
   },
   "it": {
     "nativeName": "Italiano",
@@ -4927,7 +4990,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "Questo numero è già assegnato a un altro castello",
     "castleNumberRange": "Numero fuori dalle caselle esistenti",
-    "enemyButtonText": "Vai ai Nemici"
+    "enemyButtonText": "Vai ai Nemici",
+    "grpBuildings": "Edifici",
+    "lblCustomVillages": "Posiziona i villaggi manualmente",
+    "villagePickHint": "Scegli un villaggio (o +), poi clicca sulla mappa"
   },
   "ja": {
     "nativeName": "日本語",
@@ -5150,7 +5216,10 @@ const LANGUAGES = {
     "castleNumberAuto": "自動",
     "castleNumberDup": "この番号はすでに別の城に割り当てられています",
     "castleNumberRange": "既存のマスの範囲外の番号です",
-    "enemyButtonText": "敵カードへ"
+    "enemyButtonText": "敵カードへ",
+    "grpBuildings": "建物",
+    "lblCustomVillages": "村を自分で配置する",
+    "villagePickHint": "村（または＋）を選んでから、マップをクリックしてください"
   },
   "ko": {
     "nativeName": "한국어",
@@ -5373,7 +5442,10 @@ const LANGUAGES = {
     "castleNumberAuto": "자동",
     "castleNumberDup": "이 번호는 이미 다른 성에 지정되어 있습니다",
     "castleNumberRange": "기존 칸의 범위를 벗어난 번호입니다",
-    "enemyButtonText": "적 카드로 이동"
+    "enemyButtonText": "적 카드로 이동",
+    "grpBuildings": "건물",
+    "lblCustomVillages": "마을을 직접 배치",
+    "villagePickHint": "마을(또는 +)을 선택한 다음 지도를 클릭하세요"
   },
   "lt": {
     "nativeName": "Lietuvių",
@@ -5596,7 +5668,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "Šis numeris jau priskirtas kitai pilai",
     "castleNumberRange": "Numeris už esamų laukų ribų",
-    "enemyButtonText": "Į priešus"
+    "enemyButtonText": "Į priešus",
+    "grpBuildings": "Pastatai",
+    "lblCustomVillages": "Kaimus išdėstyti pačiam",
+    "villagePickHint": "Pasirink kaimą (arba +), tada spustelėk žemėlapį"
   },
   "lv": {
     "nativeName": "Latviešu",
@@ -5819,7 +5894,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "Šis numurs jau ir piešķirts citai pilij",
     "castleNumberRange": "Numurs ārpus esošajiem laukiem",
-    "enemyButtonText": "Uz pretiniekiem"
+    "enemyButtonText": "Uz pretiniekiem",
+    "grpBuildings": "Ēkas",
+    "lblCustomVillages": "Ciemus izvietot pašam",
+    "villagePickHint": "Izvēlies ciemu (vai +), tad noklikšķini uz kartes"
   },
   "mr": {
     "nativeName": "मराठी",
@@ -6042,7 +6120,10 @@ const LANGUAGES = {
     "castleNumberAuto": "स्वयं",
     "castleNumberDup": "हा क्रमांक आधीच दुसऱ्या किल्ल्याला दिला आहे",
     "castleNumberRange": "क्रमांक अस्तित्वातील क्षेत्रांच्या बाहेर आहे",
-    "enemyButtonText": "शत्रूंकडे जा"
+    "enemyButtonText": "शत्रूंकडे जा",
+    "grpBuildings": "इमारती",
+    "lblCustomVillages": "गावे स्वतः ठेवा",
+    "villagePickHint": "एक गाव (किंवा +) निवडा, मग नकाशावर क्लिक करा"
   },
   "mt": {
     "nativeName": "Malti",
@@ -6265,7 +6346,10 @@ const LANGUAGES = {
     "castleNumberAuto": "awto",
     "castleNumberDup": "Dan in-numru diġà ngħata lil kastell ieħor",
     "castleNumberRange": "Numru barra mill-oqsma eżistenti",
-    "enemyButtonText": "Lejn l-Għedewwa"
+    "enemyButtonText": "Lejn l-Għedewwa",
+    "grpBuildings": "Bini",
+    "lblCustomVillages": "Poġġi l-irħula int stess",
+    "villagePickHint": "Agħżel raħal (jew +), imbagħad ikklikkja fuq il-mappa"
   },
   "nl": {
     "nativeName": "Nederlands",
@@ -6488,7 +6572,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "Dit nummer is al aan een ander kasteel toegewezen",
     "castleNumberRange": "Nummer buiten de bestaande velden",
-    "enemyButtonText": "Naar de Vijanden"
+    "enemyButtonText": "Naar de Vijanden",
+    "grpBuildings": "Gebouwen",
+    "lblCustomVillages": "Dorpen zelf plaatsen",
+    "villagePickHint": "Kies een dorp (of +) en klik dan op de kaart"
   },
   "no": {
     "nativeName": "Norsk",
@@ -6711,7 +6798,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "Dette nummeret er allerede tildelt et annet slott",
     "castleNumberRange": "Nummer utenfor de eksisterende feltene",
-    "enemyButtonText": "Til Fiendene"
+    "enemyButtonText": "Til Fiendene",
+    "grpBuildings": "Bygninger",
+    "lblCustomVillages": "Plasser landsbyer selv",
+    "villagePickHint": "Velg en landsby (eller +), og klikk deretter på kartet"
   },
   "pl": {
     "nativeName": "Polski",
@@ -6934,7 +7024,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "Ten numer jest już przypisany do innego zamku",
     "castleNumberRange": "Numer poza istniejącymi polami",
-    "enemyButtonText": "Do Przeciwników"
+    "enemyButtonText": "Do Przeciwników",
+    "grpBuildings": "Budynki",
+    "lblCustomVillages": "Wioski rozmieść samodzielnie",
+    "villagePickHint": "Wybierz wioskę (lub +), a potem kliknij na mapie"
   },
   "pt": {
     "nativeName": "Português",
@@ -7157,7 +7250,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "Este número já está atribuído a outro castelo",
     "castleNumberRange": "Número fora dos campos existentes",
-    "enemyButtonText": "Para os Inimigos"
+    "enemyButtonText": "Para os Inimigos",
+    "grpBuildings": "Edifícios",
+    "lblCustomVillages": "Posicionar as aldeias manualmente",
+    "villagePickHint": "Escolha uma aldeia (ou +) e clique no mapa"
   },
   "ro": {
     "nativeName": "Română",
@@ -7380,7 +7476,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "Acest număr este deja atribuit altui castel",
     "castleNumberRange": "Număr în afara câmpurilor existente",
-    "enemyButtonText": "La Inamici"
+    "enemyButtonText": "La Inamici",
+    "grpBuildings": "Clădiri",
+    "lblCustomVillages": "Plasează satele manual",
+    "villagePickHint": "Alege un sat (sau +), apoi dă clic pe hartă"
   },
   "ru": {
     "nativeName": "Русский",
@@ -7603,7 +7702,10 @@ const LANGUAGES = {
     "castleNumberAuto": "авто",
     "castleNumberDup": "Этот номер уже назначен другому замку",
     "castleNumberRange": "Номер вне существующих клеток",
-    "enemyButtonText": "К врагам"
+    "enemyButtonText": "К врагам",
+    "grpBuildings": "Здания",
+    "lblCustomVillages": "Разместить деревни вручную",
+    "villagePickHint": "Выбери деревню (или +), затем нажми на карту"
   },
   "sk": {
     "nativeName": "Slovenčina",
@@ -7826,7 +7928,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "Toto číslo je už priradené inému hradu",
     "castleNumberRange": "Číslo mimo existujúcich polí",
-    "enemyButtonText": "K protivníkom"
+    "enemyButtonText": "K protivníkom",
+    "grpBuildings": "Budovy",
+    "lblCustomVillages": "Dediny umiestniť ručne",
+    "villagePickHint": "Vyber dedinu (alebo +) a klikni na mapu"
   },
   "sl": {
     "nativeName": "Slovenščina",
@@ -8049,7 +8154,10 @@ const LANGUAGES = {
     "castleNumberAuto": "samodejno",
     "castleNumberDup": "Ta številka je že dodeljena drugemu gradu",
     "castleNumberRange": "Številka zunaj obstoječih polj",
-    "enemyButtonText": "K nasprotnikom"
+    "enemyButtonText": "K nasprotnikom",
+    "grpBuildings": "Zgradbe",
+    "lblCustomVillages": "Vasi postavi sam",
+    "villagePickHint": "Izberi vas (ali +), nato klikni na zemljevid"
   },
   "sq": {
     "nativeName": "Shqip",
@@ -8272,7 +8380,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "Ky numër i është caktuar tashmë një kështjelle tjetër",
     "castleNumberRange": "Numër jashtë fushave ekzistuese",
-    "enemyButtonText": "Te Armiqtë"
+    "enemyButtonText": "Te Armiqtë",
+    "grpBuildings": "Ndërtesat",
+    "lblCustomVillages": "Vendosi fshatrat vetë",
+    "villagePickHint": "Zgjidh një fshat (ose +), pastaj kliko në hartë"
   },
   "sr": {
     "nativeName": "Српски",
@@ -8495,7 +8606,10 @@ const LANGUAGES = {
     "castleNumberAuto": "аутом.",
     "castleNumberDup": "Овај број је већ додељен другој тврђави",
     "castleNumberRange": "Број ван постојећих поља",
-    "enemyButtonText": "Ка противницима"
+    "enemyButtonText": "Ка противницима",
+    "grpBuildings": "Зграде",
+    "lblCustomVillages": "Села постави сам",
+    "villagePickHint": "Изабери село (или +), па кликни на мапу"
   },
   "sv": {
     "nativeName": "Svenska",
@@ -8718,7 +8832,10 @@ const LANGUAGES = {
     "castleNumberAuto": "auto",
     "castleNumberDup": "Det här numret är redan tilldelat ett annat slott",
     "castleNumberRange": "Nummer utanför de befintliga fälten",
-    "enemyButtonText": "Till Fienderna"
+    "enemyButtonText": "Till Fienderna",
+    "grpBuildings": "Byggnader",
+    "lblCustomVillages": "Placera byar själv",
+    "villagePickHint": "Välj en by (eller +) och klicka sedan på kartan"
   },
   "sw": {
     "nativeName": "Kiswahili",
@@ -8941,7 +9058,10 @@ const LANGUAGES = {
     "castleNumberAuto": "otomatiki",
     "castleNumberDup": "Nambari hii tayari imepewa ngome nyingine",
     "castleNumberRange": "Nambari iko nje ya miraba iliyopo",
-    "enemyButtonText": "Kwenda kwa Maadui"
+    "enemyButtonText": "Kwenda kwa Maadui",
+    "grpBuildings": "Majengo",
+    "lblCustomVillages": "Weka vijiji mwenyewe",
+    "villagePickHint": "Chagua kijiji (au +), kisha bofya kwenye ramani"
   },
   "ta": {
     "nativeName": "தமிழ்",
@@ -9164,7 +9284,10 @@ const LANGUAGES = {
     "castleNumberAuto": "தானி",
     "castleNumberDup": "இந்த எண் ஏற்கனவே மற்றொரு கோட்டைக்கு வழங்கப்பட்டுள்ளது",
     "castleNumberRange": "எண் தற்போதுள்ள கட்டங்களுக்கு வெளியே உள்ளது",
-    "enemyButtonText": "எதிரிகளிடம் செல்"
+    "enemyButtonText": "எதிரிகளிடம் செல்",
+    "grpBuildings": "கட்டடங்கள்",
+    "lblCustomVillages": "கிராமங்களை நீங்களே வைக்கவும்",
+    "villagePickHint": "ஒரு கிராமத்தை (அல்லது +) தேர்ந்தெடுத்து, பின்னர் வரைபடத்தில் கிளிக் செய்யவும்"
   },
   "te": {
     "nativeName": "తెలుగు",
@@ -9387,7 +9510,10 @@ const LANGUAGES = {
     "castleNumberAuto": "ఆటో",
     "castleNumberDup": "ఈ సంఖ్య ఇప్పటికే మరొక కోటకు కేటాయించబడింది",
     "castleNumberRange": "సంఖ్య ఉన్న గడుల పరిధికి వెలుపల ఉంది",
-    "enemyButtonText": "శత్రువుల వద్దకు వెళ్ళు"
+    "enemyButtonText": "శత్రువుల వద్దకు వెళ్ళు",
+    "grpBuildings": "భవనాలు",
+    "lblCustomVillages": "గ్రామాలను మీరే ఉంచండి",
+    "villagePickHint": "ఒక గ్రామాన్ని (లేదా +) ఎంచుకుని, ఆపై మ్యాప్‌పై క్లిక్ చేయండి"
   },
   "th": {
     "nativeName": "ไทย",
@@ -9610,7 +9736,10 @@ const LANGUAGES = {
     "castleNumberAuto": "อัตโนมัติ",
     "castleNumberDup": "หมายเลขนี้ถูกกำหนดให้ปราสาทอื่นแล้ว",
     "castleNumberRange": "หมายเลขอยู่นอกช่องที่มีอยู่",
-    "enemyButtonText": "ไปที่ศัตรู"
+    "enemyButtonText": "ไปที่ศัตรู",
+    "grpBuildings": "อาคาร",
+    "lblCustomVillages": "วางหมู่บ้านด้วยตัวเอง",
+    "villagePickHint": "เลือกหมู่บ้าน (หรือ +) แล้วคลิกบนแผนที่"
   },
   "tr": {
     "nativeName": "Türkçe",
@@ -9833,7 +9962,10 @@ const LANGUAGES = {
     "castleNumberAuto": "oto",
     "castleNumberDup": "Bu numara zaten başka bir kaleye atanmış",
     "castleNumberRange": "Numara mevcut alanların dışında",
-    "enemyButtonText": "Düşmanlara Git"
+    "enemyButtonText": "Düşmanlara Git",
+    "grpBuildings": "Yapılar",
+    "lblCustomVillages": "Köyleri kendin yerleştir",
+    "villagePickHint": "Bir köy (veya +) seç, sonra haritaya tıkla"
   },
   "uk": {
     "nativeName": "Українська",
@@ -10056,7 +10188,10 @@ const LANGUAGES = {
     "castleNumberAuto": "авто",
     "castleNumberDup": "Цей номер уже призначено іншому замку",
     "castleNumberRange": "Номер поза наявними клітинками",
-    "enemyButtonText": "До ворогів"
+    "enemyButtonText": "До ворогів",
+    "grpBuildings": "Будівлі",
+    "lblCustomVillages": "Розмістити села вручну",
+    "villagePickHint": "Вибери село (або +), потім натисни на карту"
   },
   "ur": {
     "nativeName": "اردو",
@@ -10279,7 +10414,10 @@ const LANGUAGES = {
     "castleNumberAuto": "خودکار",
     "castleNumberDup": "یہ نمبر پہلے ہی کسی اور قلعے کو دیا جا چکا ہے",
     "castleNumberRange": "نمبر موجودہ کھیتوں سے باہر ہے",
-    "enemyButtonText": "دشمنوں کی طرف"
+    "enemyButtonText": "دشمنوں کی طرف",
+    "grpBuildings": "عمارتیں",
+    "lblCustomVillages": "گاؤں خود رکھیں",
+    "villagePickHint": "ایک گاؤں (یا +) منتخب کریں، پھر نقشے پر کلک کریں"
   },
   "vi": {
     "nativeName": "Tiếng Việt",
@@ -10502,7 +10640,10 @@ const LANGUAGES = {
     "castleNumberAuto": "tự động",
     "castleNumberDup": "Số này đã được gán cho lâu đài khác",
     "castleNumberRange": "Số nằm ngoài các ô hiện có",
-    "enemyButtonText": "Đến Kẻ Địch"
+    "enemyButtonText": "Đến Kẻ Địch",
+    "grpBuildings": "Công trình",
+    "lblCustomVillages": "Tự đặt làng",
+    "villagePickHint": "Chọn một làng (hoặc +), rồi nhấp vào bản đồ"
   },
   "zh": {
     "nativeName": "中文",
@@ -10725,6 +10866,9 @@ const LANGUAGES = {
     "castleNumberAuto": "自动",
     "castleNumberDup": "该编号已分配给另一座城堡",
     "castleNumberRange": "编号超出现有地块范围",
-    "enemyButtonText": "前往敌人"
+    "enemyButtonText": "前往敌人",
+    "grpBuildings": "建筑",
+    "lblCustomVillages": "自行放置村庄",
+    "villagePickHint": "选择一个村庄（或＋），然后点击地图"
   }
 };
