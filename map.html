@@ -514,9 +514,7 @@
 
       <div class="control-group">
         <h3 data-i18n="grpTerrain">Gelände</h3>
-        <div class="field-row">
-          <span class="f-label" data-i18n="lblMountains">Gebirge</span>
-          <select id="mountainPosition">
+        <select hidden style="display:none" id="mountainPosition">
             <option value="aus">Aus</option>
             <option value="mitte">Mitte</option>
             <option value="oben">Oben</option>
@@ -528,20 +526,34 @@
             <option value="unten-links">Unten links</option>
             <option value="unten-rechts" selected>Unten rechts</option>
           </select>
-        </div>
         <div class="field-row">
-          <span class="f-label" data-i18n="lblSea">Meer</span>
-          <select id="seaPosition">
+          <span class="f-label" data-i18n="lblCustomMountain">Gebirge selbst platzieren</span>
+          <input type="checkbox" id="customMountain">
+        </div>
+        <div class="castle-placer" id="mountainPicker" hidden>
+          <div class="placer-hint" data-i18n="mountainPickHint">Gebirge wählen (oder +), dann auf die Karte klicken</div>
+          <div class="castle-buttons" id="mountainButtons"></div>
+          <button type="button" class="castle-reset" id="mountainRemoveBtn" data-i18n="actionRemoveBtn" hidden>Entfernen</button>
+          <button type="button" class="castle-reset" id="mountainResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
+        </div>
+        <select hidden style="display:none" id="seaPosition">
             <option value="aus">Aus</option>
             <option value="oben" selected>Oben</option>
             <option value="unten">Unten</option>
             <option value="links">Links</option>
             <option value="rechts">Rechts</option>
           </select>
-        </div>
         <div class="field-row">
-          <span class="f-label" data-i18n="lblForest">Wald</span>
-          <select id="forestPosition">
+          <span class="f-label" data-i18n="lblCustomSea">Meer selbst platzieren</span>
+          <input type="checkbox" id="customSea">
+        </div>
+        <div class="castle-placer" id="seaPicker" hidden>
+          <div class="placer-hint" data-i18n="seaPickHint">Meer wählen (oder +), dann an einen Kartenrand klicken</div>
+          <div class="castle-buttons" id="seaButtons"></div>
+          <button type="button" class="castle-reset" id="seaRemoveBtn" data-i18n="actionRemoveBtn" hidden>Entfernen</button>
+          <button type="button" class="castle-reset" id="seaResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
+        </div>
+        <select hidden style="display:none" id="forestPosition">
             <option value="aus">Aus</option>
             <option value="mitte">Mitte</option>
             <option value="oben">Oben</option>
@@ -553,21 +565,39 @@
             <option value="unten-links" selected>Unten links</option>
             <option value="unten-rechts">Unten rechts</option>
           </select>
-        </div>
         <div class="field-row">
-          <span class="f-label" data-i18n="lblDesert">Wüste</span>
-          <select id="desertPosition">
-            <option value="aus">Aus</option>
-            <option value="mitte">Mitte</option>
-            <option value="oben">Oben</option>
-            <option value="unten">Unten</option>
-            <option value="links">Links</option>
-            <option value="rechts">Rechts</option>
-            <option value="oben-links">Oben links</option>
-            <option value="oben-rechts" selected>Oben rechts</option>
-            <option value="unten-links">Unten links</option>
-            <option value="unten-rechts">Unten rechts</option>
-          </select>
+          <span class="f-label" data-i18n="lblCustomForest">Wald selbst platzieren</span>
+          <input type="checkbox" id="customForest">
+        </div>
+        <div class="castle-placer" id="forestPicker" hidden>
+          <div class="placer-hint" data-i18n="forestPickHint">Wald wählen (oder +), dann auf die Karte klicken</div>
+          <div class="castle-buttons" id="forestButtons"></div>
+          <button type="button" class="castle-reset" id="forestRemoveBtn" data-i18n="actionRemoveBtn" hidden>Entfernen</button>
+          <button type="button" class="castle-reset" id="forestResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
+        </div>
+        <!-- Die Positions-Auswahl der Wüste ist durch freies Platzieren ersetzt; das versteckte Select bleibt als
+             Standardposition (oben rechts) und für den Teilen-Code (SHARE_SELECT_IDS) erhalten. -->
+        <select id="desertPosition" hidden style="display:none">
+          <option value="aus">Aus</option>
+          <option value="mitte">Mitte</option>
+          <option value="oben">Oben</option>
+          <option value="unten">Unten</option>
+          <option value="links">Links</option>
+          <option value="rechts">Rechts</option>
+          <option value="oben-links">Oben links</option>
+          <option value="oben-rechts" selected>Oben rechts</option>
+          <option value="unten-links">Unten links</option>
+          <option value="unten-rechts">Unten rechts</option>
+        </select>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblCustomDesert">Wüste selbst platzieren</span>
+          <input type="checkbox" id="customDesert">
+        </div>
+        <div class="castle-placer" id="desertPicker" hidden>
+          <div class="placer-hint" data-i18n="desertPickHint">Wüste wählen (oder +), dann auf die Karte klicken</div>
+          <div class="castle-buttons" id="desertButtons"></div>
+          <button type="button" class="castle-reset" id="desertRemoveBtn" data-i18n="actionRemoveBtn" hidden>Entfernen</button>
+          <button type="button" class="castle-reset" id="desertResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
         </div>
       </div>
 
@@ -780,8 +810,28 @@ function generateFieldTessellation(outposts, desiredFields){
   const riverEnabled = document.getElementById('showRiver').checked;
 
   let blockedFraction = 0;
-  if(mountainChoice !== 'aus') blockedFraction += 0.097;
-  if(seaChoice !== 'aus') blockedFraction += (seaChoice === 'links' || seaChoice === 'rechts') ? 0.095 : 0.119;
+  // mountains and seas: by default one each at the chosen position, or whatever was placed by hand
+  const mountainCount = TERRAIN.mountain.on() ? TERRAIN.mountain.list.length : (mountainChoice === 'aus' ? 0 : 1);
+  const seaEdges = TERRAIN.sea.on() ? TERRAIN.sea.list.slice() : (seaChoice === 'aus' ? [] : [seaChoice]);
+  const terrainIsDefault = P => !P.on() || JSON.stringify(P.list) === JSON.stringify(P.auto());
+  if(terrainIsDefault(TERRAIN.mountain) && terrainIsDefault(TERRAIN.sea)){
+    blockedFraction += 0.097 * mountainCount;
+    seaEdges.forEach(e => { blockedFraction += (e === 'links' || e === 'rechts') ? 0.095 : 0.119; });
+  } else {
+    // hand-placed mountains and seas can overlap or reach over the map edge: estimate the area of the
+    // union by sampling (own small generator, the main rng is not touched)
+    const ms = Math.sqrt(desiredFields / DEFAULT_FIELDS);
+    const mcs = terrainCenters(TERRAIN.mountain, mountainChoice);
+    let st = 12345, hit = 0;
+    const SAMPLES = 2500;
+    for(let i = 0; i < SAMPLES; i++){
+      st = (st * 48271) % 2147483647; const x = st / 2147483647 * W;
+      st = (st * 48271) % 2147483647; const y = st / 2147483647 * H;
+      const inSeaBand = seaEdges.some(e => e === 'oben' ? y < 95*ms : e === 'unten' ? y > H - 95*ms : e === 'links' ? x < 95*ms : x > W - 95*ms);
+      if(inSeaBand || mcs.some(m => Math.hypot(x - m.x, y - m.y) < 170*ms*0.93)) hit++;
+    }
+    blockedFraction += hit / SAMPLES;
+  }
   // larger maps (>= 1000 fields) get winding rivers of varying width, several of them,
   // plus tributaries; smaller maps keep the single river exactly as before
   const bigRivers = riverEnabled && desiredFields >= 1000;
@@ -803,83 +853,106 @@ function generateFieldTessellation(outposts, desiredFields){
     points.push([x, y]);
   }
 
-  // impassable mountain region, position chosen like the main castle
+  // impassable mountain regions: by default one at the chosen position, or any number placed by hand
   const mapScale = Math.sqrt(desiredFields / DEFAULT_FIELDS);
   const mtnPos = positionForChoice(mountainChoice);
-  const mtnCx = mtnPos.x, mtnCy = mtnPos.y, mtnBaseR = 170*mapScale;
+  const mtnBaseR = 170*mapScale;
+  const mtnCenters = terrainCenters(TERRAIN.mountain, mountainChoice);
   const mtnWobbleSeed = rand(0, 1000);
   function inMountains(x, y){
-    if(mountainChoice === 'aus') return false;
-    const dx = x-mtnCx, dy = y-mtnCy;
-    const dist = Math.hypot(dx, dy);
-    const angle = Math.atan2(dy, dx);
-    const wobble = (32*Math.sin(angle*3 + mtnWobbleSeed) + 18*Math.sin(angle*5 + mtnWobbleSeed*1.9)) * mapScale;
-    return dist < mtnBaseR + wobble;
-  }
-
-  // a narrow trail of walkable "path" fields threading through the mountains
-  const trail = [];
-  {
-    const distToMtn = Math.hypot(mtnCx-CX, mtnCy-CY);
-    let angle = Math.atan2(mtnCy-CY, mtnCx-CX);
-    let x = CX + Math.cos(angle)*(distToMtn - mtnBaseR*0.9);
-    let y = CY + Math.sin(angle)*(distToMtn - mtnBaseR*0.9);
-    trail.push({x, y});
-    const steps = randInt(15, 19);
-    for(let i=0;i<steps;i++){
-      angle += rand(-0.32, 0.32);
-      x += Math.cos(angle)*24*mapScale;
-      y += Math.sin(angle)*24*mapScale;
-      trail.push({x, y});
-    }
-  }
-  function nearTrail(x, y){
-    for(let i=0;i<trail.length-1;i++){
-      if(pointSegDist(x, y, trail[i].x, trail[i].y, trail[i+1].x, trail[i+1].y) < 23*mapScale) return true;
+    for(let k = 0; k < mtnCenters.length; k++){
+      const dx = x-mtnCenters[k].x, dy = y-mtnCenters[k].y;
+      const dist = Math.hypot(dx, dy);
+      const angle = Math.atan2(dy, dx);
+      const ws = mtnWobbleSeed + k*53.3;
+      const wobble = (32*Math.sin(angle*3 + ws) + 18*Math.sin(angle*5 + ws*1.9)) * mapScale;
+      if(dist < mtnBaseR + wobble) return true;
     }
     return false;
   }
 
-  // walkable forest region, position chosen the same way
+  // a narrow trail of walkable "path" fields threading through each mountain region; the first
+  // trail draws from the main rng exactly as before, further ones use a small local generator
+  const trails = [];
+  for(let k = 0; k < Math.max(1, mtnCenters.length); k++){
+    let lr = null;
+    if(k > 0){
+      let st = (Math.floor(mtnWobbleSeed * 1000) + k * 7919) % 2147483647 || 1;
+      lr = (lo, hi) => { st = (st * 48271) % 2147483647; return lo + (st / 2147483647) * (hi - lo); };
+    }
+    const mc = mtnCenters[k] || mtnPos;
+    const distToMtn = Math.hypot(mc.x-CX, mc.y-CY);
+    let angle = Math.atan2(mc.y-CY, mc.x-CX);
+    let x = CX + Math.cos(angle)*(distToMtn - mtnBaseR*0.9);
+    let y = CY + Math.sin(angle)*(distToMtn - mtnBaseR*0.9);
+    const trail = [{x, y}];
+    const steps = k === 0 ? randInt(15, 19) : Math.floor(lr(15, 20));
+    for(let i=0;i<steps;i++){
+      angle += k === 0 ? rand(-0.32, 0.32) : lr(-0.32, 0.32);
+      x += Math.cos(angle)*24*mapScale;
+      y += Math.sin(angle)*24*mapScale;
+      trail.push({x, y});
+    }
+    trails.push(trail);
+  }
+  function nearTrail(x, y){
+    for(const trail of trails){
+      for(let i=0;i<trail.length-1;i++){
+        if(pointSegDist(x, y, trail[i].x, trail[i].y, trail[i+1].x, trail[i+1].y) < 23*mapScale) return true;
+      }
+    }
+    return false;
+  }
+
+  // walkable forest regions: by default one at the chosen position, or any number placed by hand
   const forestChoice = document.getElementById('forestPosition').value;
-  const forestPos = positionForChoice(forestChoice);
-  const forestCx = forestPos.x, forestCy = forestPos.y, forestBaseR = 150*mapScale;
+  const forestBaseR = 150*mapScale;
   const forestWobbleSeed = rand(0, 1000);
+  const forestCenters = terrainCenters(TERRAIN.forest, forestChoice);
   function inForest(x, y){
-    if(forestChoice === 'aus') return false;
-    const dx = x-forestCx, dy = y-forestCy;
-    const dist = Math.hypot(dx, dy);
-    const angle = Math.atan2(dy, dx);
-    const wobble = (28*Math.sin(angle*3 + forestWobbleSeed) + 16*Math.sin(angle*5 + forestWobbleSeed*1.9)) * mapScale;
-    return dist < forestBaseR + wobble;
+    for(let k = 0; k < forestCenters.length; k++){
+      const dx = x-forestCenters[k].x, dy = y-forestCenters[k].y;
+      const dist = Math.hypot(dx, dy);
+      const angle = Math.atan2(dy, dx);
+      const ws = forestWobbleSeed + k*47.9;
+      const wobble = (28*Math.sin(angle*3 + ws) + 16*Math.sin(angle*5 + ws*1.9)) * mapScale;
+      if(dist < forestBaseR + wobble) return true;
+    }
+    return false;
   }
 
-  // walkable desert region, position chosen the same way
+  // walkable desert regions: by default one at the chosen position, or any number placed by hand
   const desertChoice = document.getElementById('desertPosition').value;
-  const desertPos = positionForChoice(desertChoice);
-  const desertCx = desertPos.x, desertCy = desertPos.y, desertBaseR = 140*mapScale;
+  const desertBaseR = 140*mapScale;
   const desertWobbleSeed = rand(0, 1000);
+  const desertCenters = terrainCenters(TERRAIN.desert, desertChoice);
   function inDesert(x, y){
-    if(desertChoice === 'aus') return false;
-    const dx = x-desertCx, dy = y-desertCy;
-    const dist = Math.hypot(dx, dy);
-    const angle = Math.atan2(dy, dx);
-    const wobble = (26*Math.sin(angle*3 + desertWobbleSeed) + 15*Math.sin(angle*5 + desertWobbleSeed*1.9)) * mapScale;
-    return dist < desertBaseR + wobble;
+    for(let k = 0; k < desertCenters.length; k++){
+      const dx = x-desertCenters[k].x, dy = y-desertCenters[k].y;
+      const dist = Math.hypot(dx, dy);
+      const angle = Math.atan2(dy, dx);
+      const ws = desertWobbleSeed + k*41.7;
+      const wobble = (26*Math.sin(angle*3 + ws) + 15*Math.sin(angle*5 + ws*1.9)) * mapScale;
+      if(dist < desertBaseR + wobble) return true;
+    }
+    return false;
   }
 
-  // sea band, position chosen like the main castle (edges only, or off)
-  const seaAxis = (seaChoice === 'links' || seaChoice === 'rechts') ? 'y' : 'x';
+  // sea bands along the map edges: by default one at the chosen edge, or up to three placed by hand
   const seaSeed = rand(0, 1000);
   function inSea(x, y){
-    if(seaChoice === 'aus') return false;
-    const t = seaAxis === 'x' ? x : y;
-    const wave = (26*Math.sin(t*0.012 + seaSeed) + 14*Math.sin(t*0.026 + seaSeed*1.4)) * mapScale;
-    const depth = 95*mapScale;
-    if(seaChoice === 'unten') return y > H - depth - wave;
-    if(seaChoice === 'links') return x < depth + wave;
-    if(seaChoice === 'rechts') return x > W - depth - wave;
-    return y < depth + wave; // 'oben' (default)
+    for(let k = 0; k < seaEdges.length; k++){
+      const e = seaEdges[k];
+      const tt = (e === 'links' || e === 'rechts') ? y : x;
+      const sd = seaSeed + k*77.7;
+      const wave = (26*Math.sin(tt*0.012 + sd) + 14*Math.sin(tt*0.026 + sd*1.4)) * mapScale;
+      const depth = 95*mapScale;
+      if(e === 'unten' ? y > H - depth - wave
+        : e === 'links' ? x < depth + wave
+        : e === 'rechts' ? x > W - depth - wave
+        : y < depth + wave) return true;      // 'oben' (default)
+    }
+    return false;
   }
 
   // optional river(s): each main river starts at a non-sea edge and winds its way into the sea
@@ -900,17 +973,19 @@ function generateFieldTessellation(outposts, desiredFields){
   if(riverEnabled){
     const seaEdgeMap = {oben:'top', unten:'bottom', links:'left', rechts:'right'};
     const mtnAvoidR = mtnBaseR + 70*mapScale;
+    const seaSet = new Set(seaEdges.map(e => seaEdgeMap[e]));
     const buildingAvoidBuffer = 60 * mapScale;
     const angDiff = (a, b) => Math.abs(((a - b + Math.PI*3) % (Math.PI*2)) - Math.PI);
 
     // mouth: in the sea (sea on) or on a map edge (sea off); the rng order of the first river is unchanged
     const pickMouth = () => {
       let mouthEdge, mouth, reached;
-      if(seaChoice !== 'aus'){
-        mouthEdge = seaEdgeMap[seaChoice];
-        if(seaChoice === 'unten') mouth = {x: rand(W*0.25, W*0.75), y: H - 25*mapScale};
-        else if(seaChoice === 'links') mouth = {x: 25*mapScale, y: rand(H*0.25, H*0.75)};
-        else if(seaChoice === 'rechts') mouth = {x: W - 25*mapScale, y: rand(H*0.25, H*0.75)};
+      if(seaEdges.length){
+        const se = seaEdges.length > 1 ? choice(seaEdges) : seaEdges[0];
+        mouthEdge = seaEdgeMap[se];
+        if(se === 'unten') mouth = {x: rand(W*0.25, W*0.75), y: H - 25*mapScale};
+        else if(se === 'links') mouth = {x: 25*mapScale, y: rand(H*0.25, H*0.75)};
+        else if(se === 'rechts') mouth = {x: W - 25*mapScale, y: rand(H*0.25, H*0.75)};
         else mouth = {x: rand(W*0.25, W*0.75), y: 25*mapScale};
         reached = (x, y) => inSea(x, y);
       } else {
@@ -951,10 +1026,10 @@ function generateFieldTessellation(outposts, desiredFields){
         angle = angle*0.72 + desired*0.28 + rand(-0.18, 0.18);
 
         let obstacle = null, obstacleAvoidR = 0, obstacleDist = Infinity;
-        if(mountainChoice !== 'aus'){
-          const d = Math.hypot(x-mtnCx, y-mtnCy);
-          if(d < mtnAvoidR && d < obstacleDist){ obstacle = {x:mtnCx, y:mtnCy}; obstacleAvoidR = mtnAvoidR; obstacleDist = d; }
-        }
+        mtnCenters.forEach(m => {
+          const d = Math.hypot(x-m.x, y-m.y);
+          if(d < mtnAvoidR && d < obstacleDist){ obstacle = m; obstacleAvoidR = mtnAvoidR; obstacleDist = d; }
+        });
         buildingPoints.forEach(b => {
           const avoidR = (b.big ? 95 : 72) + buildingAvoidBuffer;
           const d = Math.hypot(x-b.x, y-b.y);
@@ -998,7 +1073,7 @@ function generateFieldTessellation(outposts, desiredFields){
       for(let attempt = 0; attempt < (k === 0 ? 1 : 6) && !river; attempt++){
         const m = pickMouth();
         if(k > 0 && mouths.some(o => Math.hypot(o.x - m.mouth.x, o.y - m.mouth.y) < Math.min(W, H)*0.28)) continue;
-        const startEdges = ['left', 'right', 'top', 'bottom'].filter(e => e !== m.edge);
+        const startEdges = ['left', 'right', 'top', 'bottom'].filter(e => e !== m.edge && !seaSet.has(e));
         let pool = startEdges.filter(e => !usedStarts.includes(e));
         if(!pool.length || k === 0) pool = startEdges;
         const edge = choice(pool);
@@ -1025,7 +1100,7 @@ function generateFieldTessellation(outposts, desiredFields){
           const d = Math.hypot(sx-target.x, sy-target.y);
           if(d < Math.min(W, H)*0.22 || d > Math.min(W, H)*0.6) continue;
           if(inSea(sx, sy)) continue;
-          if(mountainChoice !== 'aus' && Math.hypot(sx-mtnCx, sy-mtnCy) < mtnBaseR + 40*mapScale) continue;
+          if(mtnCenters.some(m => Math.hypot(sx-m.x, sy-m.y) < mtnBaseR + 40*mapScale)) continue;
           if(buildingPoints.some(b => Math.hypot(sx-b.x, sy-b.y) < (b.big ? 95 : 72) + buildingAvoidBuffer + 20)) continue;
           if(rivers.some(r => dist2pts(sx, sy, r.pts) < riverWidth*2.5)) continue;
           src = {x: sx, y: sy};
@@ -1657,6 +1732,15 @@ let customActionList = [];     // field numbers chosen by hand (no limit), in bu
 let autoActionNumbers = new Set();   // the random action fields of the last build
 let customMerchantList = [];   // merchant field numbers chosen by hand (no limit)
 let customVillageList = [];    // village field numbers chosen by hand (no limit)
+const SEA_EDGES = ['oben', 'unten', 'links', 'rechts'];
+const TERRAIN = {};            // desert, forest, mountain, sea: pickers for freely placed terrain
+const TERRAIN_PICKERS = [];
+function clearTerrainPickers(except){ TERRAIN_PICKERS.forEach(P => { if(P !== except) P.clearMode(); }); }
+// centres of a placeable terrain: the hand-placed ones, or the one at the default position
+function terrainCenters(P, choice){
+  if(P.on()) return P.list.map(p => ({ x: Math.max(0, Math.min(W, p.u/1000*W)), y: Math.max(0, Math.min(H, p.v/1000*H)) }));
+  return choice === 'aus' ? [] : [positionForChoice(choice)];
+}
 let placingVillage = null;     // null | 'new' (sticky) | index into customVillageList
 let placingMerchant = null;    // null | 'new' (sticky) | index into customMerchantList
 let placingAction = null;      // null | 'new' (sticky, adds fields) | index into customActionList
@@ -1721,7 +1805,7 @@ function updateCastlePlacer(){
     b.title = title;
     b.addEventListener('click', () => {
       placingCastle = (placingCastle === key) ? null : key;
-      if(placingCastle !== null){ placingMerchant = null; placingAction = null; placingVillage = null; updateMerchantPicker(); updateActionPicker(); updateVillagePicker(); }
+      if(placingCastle !== null){ placingMerchant = null; placingAction = null; placingVillage = null; updateMerchantPicker(); updateActionPicker(); updateVillagePicker(); clearTerrainPickers(); }
       updateCastlePlacer();
     });
     wrap.appendChild(b);
@@ -1743,7 +1827,7 @@ function updateCastlePlacer(){
     add.textContent = '+';
     add.addEventListener('click', () => {
       placingCastle = (placingCastle === 'new') ? null : 'new';
-      if(placingCastle !== null){ placingMerchant = null; placingAction = null; placingVillage = null; updateMerchantPicker(); updateActionPicker(); updateVillagePicker(); }
+      if(placingCastle !== null){ placingMerchant = null; placingAction = null; placingVillage = null; updateMerchantPicker(); updateActionPicker(); updateVillagePicker(); clearTerrainPickers(); }
       updateCastlePlacer();
     });
     wrap.appendChild(add);
@@ -1768,7 +1852,7 @@ function customActionsOn(){ return document.getElementById('customActionFields')
 
 // shows/hides the hints and the crosshair for whichever click mode is active
 function updatePickUI(){
-  const active = (customCastlesOn() && placingCastle !== null) || (customMerchantsOn() && placingMerchant !== null) || (customActionsOn() && placingAction !== null) || (customVillagesOn() && placingVillage !== null);
+  const active = (customCastlesOn() && placingCastle !== null) || (customMerchantsOn() && placingMerchant !== null) || (customActionsOn() && placingAction !== null) || (customVillagesOn() && placingVillage !== null) || TERRAIN_PICKERS.some(P => P.active());
   svg.classList.toggle('placing-castle', active);
 }
 
@@ -1817,6 +1901,8 @@ svg.addEventListener('click', function(e){
     return;
   }
 
+  if(TERRAIN_PICKERS.some(P => P.handleClick(fx, fy))) return;
+
   if(customVillagesOn() && placingVillage !== null){
     const c = cellAtMapPoint(fx * W, fy * H);
     if(!c) return;
@@ -1847,6 +1933,139 @@ svg.addEventListener('click', function(e){
   }
 });
 
+// placeable terrain (desert, forest, mountains, sea): a checkbox, numbered buttons, "+", remove and reset.
+// Without the checkbox the terrain sits at its default position (hidden select), as before.
+function makeTerrainPicker(key, cfg){
+  const cap = key[0].toUpperCase() + key.slice(1);
+  const $ = id => document.getElementById(id);
+  const P = {
+    key, list: [], seeded: false, placing: null,
+    on(){ return $('custom' + cap).checked; },
+    auto(){ return cfg.auto(); },
+    active(){ return P.on() && P.placing !== null; },
+    clearMode(){ if(P.placing !== null){ P.placing = null; P.update(); } },
+    pick(k){
+      P.placing = (P.placing === k) ? null : k;
+      if(P.placing !== null){
+        placingCastle = null; placingMerchant = null; placingAction = null; placingVillage = null;
+        updateCastlePlacer(); updateMerchantPicker(); updateActionPicker(); updateVillagePicker();
+        clearTerrainPickers(P);
+      }
+      P.update();
+    },
+    update(){
+      const on = P.on();
+      $(key + 'Picker').hidden = !on;
+      if(!on){ P.placing = null; updatePickUI(); return; }
+      const wrap = $(key + 'Buttons');
+      wrap.innerHTML = '';
+      P.list.forEach((e, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'castle-btn set' + (P.placing === i ? ' active' : '');
+        b.textContent = cfg.label(e, i);
+        b.title = cfg.title(e, i);
+        b.addEventListener('click', () => P.pick(i));
+        wrap.appendChild(b);
+      });
+      if(P.list.length < cfg.max){
+        const add = document.createElement('button');
+        add.type = 'button';
+        add.className = 'castle-btn' + (P.placing === 'new' ? ' active' : '');
+        add.textContent = '+';
+        add.addEventListener('click', () => P.pick('new'));
+        wrap.appendChild(add);
+      }
+      $(key + 'RemoveBtn').hidden = !(typeof P.placing === 'number');
+      updatePickUI();
+    },
+    // a click on the map while this picker is active; returns true if it was used
+    handleClick(fx, fy){
+      if(!P.active()) return false;
+      const e = cfg.fromClick(fx, fy);
+      if(e === null) return true;
+      if(P.placing === 'new'){
+        if(P.list.length >= cfg.max || (cfg.unique && P.list.includes(e))) return true;
+        P.list.push(e);                          // stays selected, so several can be added in a row
+      } else {
+        if(cfg.unique && P.list.some((o, i) => i !== P.placing && o === e)) return true;
+        P.list[P.placing] = e;
+        P.placing = null;
+      }
+      generateMap(currentSeed);
+      return true;
+    },
+    toSettings(){ return { flag: $('custom' + cap).checked, list: P.list.map(cfg.toSetting) }; },
+    applyState(s){
+      const flag = !!s['custom' + cap];
+      const list = [];
+      (Array.isArray(s[key + 'List']) ? s[key + 'List'] : []).forEach(x => {
+        const e = cfg.fromSetting(x);
+        if(e !== null && list.length < cfg.max && !(cfg.unique && list.includes(e))) list.push(e);
+      });
+      P.list = list;
+      P.seeded = flag || list.length > 0;
+      $('custom' + cap).checked = flag;
+      P.placing = null;
+    }
+  };
+  $('custom' + cap).addEventListener('change', () => {
+    P.placing = null;
+    if(P.on()){
+      if(!P.seeded){ P.seeded = true; P.list = cfg.auto(); }     // starts with what was there anyway
+      placingCastle = null; placingMerchant = null; placingAction = null; placingVillage = null;
+      updateCastlePlacer(); updateMerchantPicker(); updateActionPicker(); updateVillagePicker();
+      clearTerrainPickers(P);
+    }
+    generateMap(currentSeed);
+  });
+  $(key + 'RemoveBtn').addEventListener('click', () => {
+    if(typeof P.placing === 'number') P.list.splice(P.placing, 1);
+    P.placing = null;
+    generateMap(currentSeed);
+  });
+  $(key + 'ResetBtn').addEventListener('click', () => {
+    P.list = cfg.auto();
+    P.seeded = true;
+    P.placing = null;
+    generateMap(currentSeed);
+  });
+  TERRAIN_PICKERS.push(P);
+  return P;
+}
+function positionTerrainCfg(key, max, titleKey, titleDef){
+  return {
+    max, unique: false,
+    auto: () => {
+      const ch = document.getElementById(key + 'Position').value;
+      if(ch === 'aus') return [];
+      const pt = positionForChoice(ch);
+      return [{ u: Math.round(pt.x / W * 1000), v: Math.round(pt.y / H * 1000) }];
+    },
+    fromClick: (fx, fy) => ({ u: Math.round(fx * 1000), v: Math.round(fy * 1000) }),
+    label: (e, i) => String(i + 1),
+    title: (e, i) => (t(titleKey) || titleDef) + ' ' + (i + 1),
+    toSetting: e => [e.u, e.v],
+    fromSetting: e => (Array.isArray(e) && e.length === 2 && e.every(Number.isFinite)) ? { u: e[0], v: e[1] } : null
+  };
+}
+TERRAIN.desert = makeTerrainPicker('desert', positionTerrainCfg('desert', 12, 'lblDesert', 'Wüste'));
+TERRAIN.forest = makeTerrainPicker('forest', positionTerrainCfg('forest', 12, 'lblForest', 'Wald'));
+TERRAIN.mountain = makeTerrainPicker('mountain', positionTerrainCfg('mountain', 8, 'lblMountains', 'Gebirge'));
+// the sea is a band along a map edge: a click chooses the nearest edge (at most 3, so one edge stays dry for the rivers)
+TERRAIN.sea = makeTerrainPicker('sea', {
+  max: 3, unique: true,
+  auto: () => { const ch = document.getElementById('seaPosition').value; return ch === 'aus' ? [] : [ch]; },
+  fromClick: (fx, fy) => {
+    const d = [fy, 1 - fy, fx, 1 - fx];          // distance to top, bottom, left, right (relative)
+    return SEA_EDGES[d.indexOf(Math.min(...d))];
+  },
+  label: e => ({ oben: '↑', unten: '↓', links: '←', rechts: '→' })[e],
+  title: (e, i) => (t('lblSea') || 'Meer') + ' ' + (i + 1),
+  toSetting: e => SEA_EDGES.indexOf(e),
+  fromSetting: i => SEA_EDGES[i] || null
+});
+
 // villages: same picker as the merchants (buttons, +, remove, reset)
 function villageNumberList(){
   return customVillagesOn() ? customVillageList.slice() : [];
@@ -1870,7 +2089,7 @@ function updateVillagePicker(){
     if(invalid) b.title = (t('castleNumberRange') || 'Nummer außerhalb der vorhandenen Felder') + ' (1–' + lastFieldTotal + ')';
     b.addEventListener('click', () => {
       placingVillage = (placingVillage === i) ? null : i;
-      placingCastle = null; placingMerchant = null; placingAction = null;
+      placingCastle = null; placingMerchant = null; placingAction = null; clearTerrainPickers();
       updateCastlePlacer(); updateMerchantPicker(); updateActionPicker();
       updateVillagePicker();
     });
@@ -1882,7 +2101,7 @@ function updateVillagePicker(){
   add.textContent = '+';
   add.addEventListener('click', () => {
     placingVillage = (placingVillage === 'new') ? null : 'new';
-    placingCastle = null; placingMerchant = null; placingAction = null;
+    placingCastle = null; placingMerchant = null; placingAction = null; clearTerrainPickers();
     updateCastlePlacer(); updateMerchantPicker(); updateActionPicker();
     updateVillagePicker();
   });
@@ -1893,7 +2112,7 @@ function updateVillagePicker(){
 document.getElementById('customVillageFields').addEventListener('change', () => {
   placingVillage = null;
   if(customVillagesOn()){
-    placingCastle = null; placingMerchant = null; placingAction = null;
+    placingCastle = null; placingMerchant = null; placingAction = null; clearTerrainPickers();
     updateCastlePlacer(); updateMerchantPicker(); updateActionPicker();
   }
   applyVillageList();
@@ -1930,7 +2149,7 @@ function updateMerchantPicker(){
     if(invalid) b.title = (t('castleNumberRange') || 'Nummer außerhalb der vorhandenen Felder') + ' (1–' + lastFieldTotal + ')';
     b.addEventListener('click', () => {
       placingMerchant = (placingMerchant === i) ? null : i;
-      placingCastle = null; placingAction = null; placingVillage = null; updateVillagePicker();
+      placingCastle = null; placingAction = null; placingVillage = null; updateVillagePicker(); clearTerrainPickers();
       updateCastlePlacer(); updateActionPicker();
       updateMerchantPicker();
     });
@@ -1942,7 +2161,7 @@ function updateMerchantPicker(){
   add.textContent = '+';
   add.addEventListener('click', () => {
     placingMerchant = (placingMerchant === 'new') ? null : 'new';
-    placingCastle = null; placingAction = null; placingVillage = null; updateVillagePicker();
+    placingCastle = null; placingAction = null; placingVillage = null; updateVillagePicker(); clearTerrainPickers();
     updateCastlePlacer(); updateActionPicker();
     updateMerchantPicker();
   });
@@ -1954,7 +2173,7 @@ function updateMerchantPicker(){
 document.getElementById('customMerchantFields').addEventListener('change', () => {
   placingMerchant = null;
   if(customMerchantsOn()){
-    placingCastle = null; placingAction = null; placingVillage = null; updateVillagePicker();
+    placingCastle = null; placingAction = null; placingVillage = null; updateVillagePicker(); clearTerrainPickers();
     updateCastlePlacer(); updateActionPicker();
   }
   applyMerchantList();
@@ -1994,7 +2213,7 @@ function updateActionPicker(){
     if(invalid) b.title = (t('castleNumberRange') || 'Nummer außerhalb der vorhandenen Felder') + ' (1–' + lastFieldTotal + ')';
     b.addEventListener('click', () => {
       placingAction = (placingAction === i) ? null : i;
-      placingMerchant = null; placingVillage = null; updateMerchantPicker(); updateVillagePicker();
+      placingMerchant = null; placingVillage = null; updateMerchantPicker(); updateVillagePicker(); clearTerrainPickers();
       updateActionPicker();
     });
     wrap.appendChild(b);
@@ -2005,7 +2224,7 @@ function updateActionPicker(){
   add.textContent = '+';
   add.addEventListener('click', () => {
     placingAction = (placingAction === 'new') ? null : 'new';
-    placingMerchant = null; placingVillage = null; updateMerchantPicker(); updateVillagePicker();
+    placingMerchant = null; placingVillage = null; updateMerchantPicker(); updateVillagePicker(); clearTerrainPickers();
     updateActionPicker();
   });
   wrap.appendChild(add);
@@ -2015,7 +2234,7 @@ function updateActionPicker(){
 
 document.getElementById('customActionFields').addEventListener('change', () => {
   placingAction = null;
-  if(customActionsOn()){ placingMerchant = null; placingVillage = null; updateMerchantPicker(); updateVillagePicker(); }
+  if(customActionsOn()){ placingMerchant = null; placingVillage = null; updateMerchantPicker(); updateVillagePicker(); clearTerrainPickers(); }
   // start from the action fields of the current map, so nothing vanishes
   if(customActionsOn() && !customActionList.length) customActionList = [...autoActionNumbers].sort((a, b) => a - b);
   generateMap(currentSeed);
@@ -2123,6 +2342,7 @@ function generateMap(explicitSeed){
   updateActionPicker();
   updateMerchantPicker();
   updateVillagePicker();
+  TERRAIN_PICKERS.forEach(P => P.update());
   updatePickUI();
 }
 
@@ -2205,7 +2425,15 @@ function collectSettings(){
     customMerchantFields: document.getElementById('customMerchantFields').checked,
     merchantList: customMerchantList.slice(),
     customVillageFields: document.getElementById('customVillageFields').checked,
-    villageList: customVillageList.slice()
+    villageList: customVillageList.slice(),
+    customDesert: TERRAIN.desert.toSettings().flag,
+    desertList: TERRAIN.desert.toSettings().list,
+    customForest: TERRAIN.forest.toSettings().flag,
+    forestList: TERRAIN.forest.toSettings().list,
+    customMountain: TERRAIN.mountain.toSettings().flag,
+    mountainList: TERRAIN.mountain.toSettings().list,
+    customSea: TERRAIN.sea.toSettings().flag,
+    seaList: TERRAIN.sea.toSettings().list
   };
 }
 
@@ -2255,92 +2483,96 @@ function encodeCompactSettings(s){
   const parts = ['2', s.seed.toString(36), s.lang, fieldCount.toString(36), positions,
           outposts.toString(36) + bridges.toString(36), flags.toString(36), merchant.toString(36)];
 
-  // optional parts 9-11; a later part forces the earlier ones to exist (placeholder '0')
+  // optional parts 9-17; a later part forces the earlier ones to exist (placeholder '0')
   //  9: manually placed castles, 5 characters each (index, x and y in permille, base 36, 2 digits each)
-  // 10: field numbers of castles, 4 characters each (castle index, number base 36, 3 digits)
+  // 10: field numbers of castles (removed option, still read), 4 characters each
   // 11: manually chosen action fields, 3 characters each (field number, base 36, 3 digits)
   // 12: manually chosen merchant fields, same layout as 11
-  const hasCastlePos = !!s.customCastles || (Array.isArray(s.castlePositions) && s.castlePositions.length > 0);
-  const hasNumbers = !!s.customCastleNumbers || (Array.isArray(s.castleNumbers) && s.castleNumbers.length > 0);
-  const hasActions = !!s.customActionFields || (Array.isArray(s.actionList) && s.actionList.length > 0);
-  const hasMerchants = !!s.customMerchantFields || (Array.isArray(s.merchantList) && s.merchantList.length > 0);
-  const hasVillages = !!s.customVillageFields || (Array.isArray(s.villageList) && s.villageList.length > 0);
-  if(hasCastlePos || hasNumbers || hasActions || hasMerchants || hasVillages){
-    if(typeof s.customCastles !== 'boolean' || !Array.isArray(s.castlePositions)) return null;
+  // 13: manually placed villages, same layout as 11
+  // 14-16: manually placed deserts, forests, mountains: flag + 4 characters each (x and y in permille, base 36)
+  // 17: manually placed seas: flag + 1 character each (0 top, 1 bottom, 2 left, 3 right)
+  const present = (flagKey, listKey) => !!s[flagKey] || (Array.isArray(s[listKey]) && s[listKey].length > 0);
+  const flagOf = (flagKey, listKey) => {
+    if(typeof s[flagKey] !== 'boolean' || !Array.isArray(s[listKey])) throw new Error('x');
+    return s[flagKey] ? '1' : '0';
+  };
+  const encNums = (flagKey, listKey) => {
+    if(!present(flagKey, listKey)) return null;
+    let out = flagOf(flagKey, listKey);
+    for(const n of s[listKey]){
+      if(!Number.isInteger(n) || n < 1 || n > 46655) throw new Error('x');
+      out += n.toString(36).padStart(3, '0');
+    }
+    return out;
+  };
+  const encPos = (flagKey, listKey) => {
+    if(!present(flagKey, listKey)) return null;
+    let out = flagOf(flagKey, listKey);
+    for(const e of s[listKey]){
+      if(!Array.isArray(e) || e.length !== 2) throw new Error('x');
+      const [u, v] = e;
+      if(!Number.isInteger(u) || !Number.isInteger(v) || u < 0 || u > 1000 || v < 0 || v > 1000) throw new Error('x');
+      out += u.toString(36).padStart(2, '0') + v.toString(36).padStart(2, '0');
+    }
+    return out;
+  };
+  const encEdges = (flagKey, listKey) => {
+    if(!present(flagKey, listKey)) return null;
+    let out = flagOf(flagKey, listKey);
+    for(const i of s[listKey]){
+      if(!Number.isInteger(i) || i < 0 || i > 3) throw new Error('x');
+      out += i;
+    }
+    return out;
+  };
+  const encCastles = () => {
+    const hasCastlePos = !!s.customCastles || (Array.isArray(s.castlePositions) && s.castlePositions.length > 0);
+    if(!hasCastlePos) return null;
+    if(typeof s.customCastles !== 'boolean' || !Array.isArray(s.castlePositions)) throw new Error('x');
     let cp = s.customCastles ? '1' : '0';
     for(const e of s.castlePositions){
-      if(!Array.isArray(e) || e.length !== 3) return null;
+      if(!Array.isArray(e) || e.length !== 3) throw new Error('x');
       const [i, u, v] = e;
-      if(![i, u, v].every(Number.isInteger) || i < 0 || i > 35) return null;
+      if(![i, u, v].every(Number.isInteger) || i < 0 || i > 35) throw new Error('x');
       if(u === -1 && v === -1){
-        if(i < 1 || i > 9) return null;
+        if(i < 1 || i > 9) throw new Error('x');
         cp += i.toString(36) + 'zzzz';       // marker: this outpost was deleted
         continue;
       }
-      if(u < 0 || u > 1000 || v < 0 || v > 1000) return null;
+      if(u < 0 || u > 1000 || v < 0 || v > 1000) throw new Error('x');
       cp += i.toString(36) + u.toString(36).padStart(2, '0') + v.toString(36).padStart(2, '0');
     }
-    parts.push(cp);
-
-    if(hasNumbers || hasActions || hasMerchants || hasVillages){
-      let np = '0';
-      if(hasNumbers){
-        if(typeof s.customCastleNumbers !== 'boolean' || !Array.isArray(s.castleNumbers)) return null;
-        np = s.customCastleNumbers ? '1' : '0';
-        for(const e of s.castleNumbers){
-          if(!Array.isArray(e) || e.length !== 2) return null;
-          const [i, n] = e;
-          if(![i, n].every(Number.isInteger) || i < 0 || i > 9 || n < 1 || n > 46655) return null;
-          np += i.toString(36) + n.toString(36).padStart(3, '0');
-        }
-      }
-      parts.push(np);
-
-      if(hasActions || hasMerchants || hasVillages){
-        let ap = '0';
-        if(hasActions){
-        if(typeof s.customActionFields !== 'boolean' || !Array.isArray(s.actionList)) return null;
-        ap = s.customActionFields ? '1' : '0';
-        for(const n of s.actionList){
-          if(!Number.isInteger(n) || n < 1 || n > 46655) return null;
-          ap += n.toString(36).padStart(3, '0');
-        }
-        }
-        parts.push(ap);
-
-        if(hasMerchants || hasVillages){
-          let mp = '0';
-          if(hasMerchants){
-            if(typeof s.customMerchantFields !== 'boolean' || !Array.isArray(s.merchantList)) return null;
-            mp = s.customMerchantFields ? '1' : '0';
-            for(const n of s.merchantList){
-              if(!Number.isInteger(n) || n < 1 || n > 46655) return null;
-              mp += n.toString(36).padStart(3, '0');
-            }
-          }
-          parts.push(mp);
-
-          // part 13: manually placed villages, same layout as 11 and 12
-          if(hasVillages){
-            if(typeof s.customVillageFields !== 'boolean' || !Array.isArray(s.villageList)) return null;
-            let vp = s.customVillageFields ? '1' : '0';
-            for(const n of s.villageList){
-              if(!Number.isInteger(n) || n < 1 || n > 46655) return null;
-              vp += n.toString(36).padStart(3, '0');
-            }
-            parts.push(vp);
-          }
-        }
-      }
+    return cp;
+  };
+  const encCastleNumbers = () => {
+    if(!present('customCastleNumbers', 'castleNumbers')) return null;
+    let np = flagOf('customCastleNumbers', 'castleNumbers');
+    for(const e of s.castleNumbers){
+      if(!Array.isArray(e) || e.length !== 2) throw new Error('x');
+      const [i, n] = e;
+      if(![i, n].every(Number.isInteger) || i < 0 || i > 9 || n < 1 || n > 46655) throw new Error('x');
+      np += i.toString(36) + n.toString(36).padStart(3, '0');
     }
-  }
+    return np;
+  };
+  let tail;
+  try{
+    tail = [encCastles(), encCastleNumbers(),
+      encNums('customActionFields', 'actionList'), encNums('customMerchantFields', 'merchantList'),
+      encNums('customVillageFields', 'villageList'),
+      encPos('customDesert', 'desertList'), encPos('customForest', 'forestList'), encPos('customMountain', 'mountainList'),
+      encEdges('customSea', 'seaList')];
+  } catch(e){ return null; }
+  let last = tail.length - 1;
+  while(last >= 0 && tail[last] === null) last--;
+  for(let i = 0; i <= last; i++) parts.push(tail[i] === null ? '0' : tail[i]);
   return parts.join('.');
 }
 
 function decodeCompactSettings(raw){
   const bad = () => new Error('invalid share code');
   const p = raw.split('.');
-  if(p.length < 8 || p.length > 13 || p[0] !== '2') throw bad();
+  if(p.length < 8 || p.length > 17 || p[0] !== '2') throw bad();
   const b36 = str => {
     if(!/^-?[0-9a-z]+$/.test(str)) throw bad();
     const n = parseInt(str, 36);
@@ -2383,7 +2615,30 @@ function decodeCompactSettings(raw){
   s.merchantList = [];
   s.customVillageFields = false;
   s.villageList = [];
-  if(p.length === 13){
+  s.customDesert = false; s.desertList = [];
+  s.customForest = false; s.forestList = [];
+  s.customMountain = false; s.mountainList = [];
+  s.customSea = false; s.seaList = [];
+  const posPart = (idx, flagKey, listKey) => {
+    if(p.length <= idx) return;
+    const str = p[idx];
+    if(!/^[01]([0-9a-z]{4})*$/.test(str)) throw bad();
+    s[flagKey] = str[0] === '1';
+    for(let k = 1; k < str.length; k += 4){
+      const u = parseInt(str.slice(k, k + 2), 36), v = parseInt(str.slice(k + 2, k + 4), 36);
+      if(u > 1000 || v > 1000) throw bad();
+      s[listKey].push([u, v]);
+    }
+  };
+  posPart(13, 'customDesert', 'desertList');
+  posPart(14, 'customForest', 'forestList');
+  posPart(15, 'customMountain', 'mountainList');
+  if(p.length >= 17){
+    if(!/^[01][0-3]*$/.test(p[16])) throw bad();
+    s.customSea = p[16][0] === '1';
+    for(let k = 1; k < p[16].length; k++) s.seaList.push(parseInt(p[16][k], 10));
+  }
+  if(p.length >= 13){
     if(!/^[01]([0-9a-z]{3})*$/.test(p[12])) throw bad();
     s.customVillageFields = p[12][0] === '1';
     for(let k = 1; k < p[12].length; k += 3){
@@ -2517,6 +2772,7 @@ function applySettings(s){
     legacyUsed = true;
   }
   setChecked('customMerchantFields', !!s.customMerchantFields || legacyUsed);
+  TERRAIN_PICKERS.forEach(P => P.applyState(s));
   customVillageList = [];
   if(Array.isArray(s.villageList)){
     s.villageList.forEach(n => { if(Number.isFinite(n) && !customVillageList.includes(n)) customVillageList.push(n); });
