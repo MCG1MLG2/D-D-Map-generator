@@ -790,7 +790,7 @@ function generateFieldTessellation(outposts, desiredFields){
         tribs: desiredFields >= 3000 ? 2 : 1 }
     : { rivers: 1, tribs: 0 };
   // share of the fields taken by water (measured): one plain river 6%, larger maps more
-  if(riverEnabled) blockedFraction += !bigRivers ? 0.06 : desiredFields < 1400 ? 0.10 : desiredFields < 3000 ? 0.115 : 0.14;
+  if(riverEnabled) blockedFraction += !bigRivers ? 0.055 : desiredFields < 1400 ? 0.075 : desiredFields < 3000 ? 0.087 : 0.105;
   blockedFraction = Math.min(blockedFraction, 0.75);
 
   const BLOCKED_COMPENSATION = 1 / (1 - blockedFraction);
@@ -888,7 +888,7 @@ function generateFieldTessellation(outposts, desiredFields){
   // tributaries from an inner spring flow into them.
   const rivers = [];          // { pts: [{x, y, w}], kind: 'main' | 'trib' }
   let bridgePts = [];
-  const riverWidth = 40 * mapScale;
+  const riverWidth = 30 * mapScale;      // half width of the water band (rivers are fairly slim)
   const dist2pts = (x, y, pts) => {
     let best = Infinity;
     for(let i=0;i<pts.length-1;i++){
