@@ -782,7 +782,15 @@ function generateFieldTessellation(outposts, desiredFields){
   let blockedFraction = 0;
   if(mountainChoice !== 'aus') blockedFraction += 0.097;
   if(seaChoice !== 'aus') blockedFraction += (seaChoice === 'links' || seaChoice === 'rechts') ? 0.095 : 0.119;
-  if(riverEnabled) blockedFraction += 0.06;
+  // larger maps (>= 1000 fields) get winding rivers of varying width, several of them,
+  // plus tributaries; smaller maps keep the single river exactly as before
+  const bigRivers = riverEnabled && desiredFields >= 1000;
+  const riverPlan = bigRivers
+    ? { rivers: desiredFields >= 6000 ? 4 : desiredFields >= 3000 ? 3 : desiredFields >= 1400 ? 2 : 1,
+        tribs: desiredFields >= 3000 ? 2 : 1 }
+    : { rivers: 1, tribs: 0 };
+  // share of the fields taken by water (measured): one plain river 6%, larger maps more
+  if(riverEnabled) blockedFraction += !bigRivers ? 0.06 : desiredFields < 1400 ? 0.10 : desiredFields < 3000 ? 0.115 : 0.14;
   blockedFraction = Math.min(blockedFraction, 0.75);
 
   const BLOCKED_COMPENSATION = 1 / (1 - blockedFraction);
@@ -874,112 +882,198 @@ function generateFieldTessellation(outposts, desiredFields){
     return y < depth + wave; // 'oben' (default)
   }
 
-  // optional river: starts at a non-sea edge and always winds its way
-  // into the sea (or off the map if the sea is off), with a few bridges
-  let riverPts = [], bridgePts = [];
+  // optional river(s): each main river starts at a non-sea edge and winds its way into the sea
+  // (or off the map if the sea is off), with a few bridges. On larger maps (see riverPlan)
+  // the rivers meander, widen towards the mouth, there can be several of them, and
+  // tributaries from an inner spring flow into them.
+  const rivers = [];          // { pts: [{x, y, w}], kind: 'main' | 'trib' }
+  let bridgePts = [];
   const riverWidth = 40 * mapScale;
+  const dist2pts = (x, y, pts) => {
+    let best = Infinity;
+    for(let i=0;i<pts.length-1;i++){
+      const d = pointSegDist(x, y, pts[i].x, pts[i].y, pts[i+1].x, pts[i+1].y);
+      if(d < best) best = d;
+    }
+    return best;
+  };
   if(riverEnabled){
     const seaEdgeMap = {oben:'top', unten:'bottom', links:'left', rechts:'right'};
-    let mouthEdge, mouth, reachedMouth;
-    if(seaChoice !== 'aus'){
-      mouthEdge = seaEdgeMap[seaChoice];
-      if(seaChoice === 'unten') mouth = {x: rand(W*0.25, W*0.75), y: H - 25*mapScale};
-      else if(seaChoice === 'links') mouth = {x: 25*mapScale, y: rand(H*0.25, H*0.75)};
-      else if(seaChoice === 'rechts') mouth = {x: W - 25*mapScale, y: rand(H*0.25, H*0.75)};
-      else mouth = {x: rand(W*0.25, W*0.75), y: 25*mapScale};
-      reachedMouth = (x, y) => inSea(x, y);
-    } else {
-      mouthEdge = choice(['left', 'right', 'top', 'bottom']);
-      if(mouthEdge === 'left') mouth = {x: 0, y: rand(H*0.25, H*0.75)};
-      else if(mouthEdge === 'right') mouth = {x: W, y: rand(H*0.25, H*0.75)};
-      else if(mouthEdge === 'top') mouth = {x: rand(W*0.25, W*0.75), y: 0};
-      else mouth = {x: rand(W*0.25, W*0.75), y: H};
-      reachedMouth = (x, y) =>
-        (mouthEdge === 'left' && x <= 6) || (mouthEdge === 'right' && x >= W-6) ||
-        (mouthEdge === 'top' && y <= 6) || (mouthEdge === 'bottom' && y >= H-6);
-    }
-
-    const startEdges = ['left', 'right', 'top', 'bottom'].filter(e => e !== mouthEdge);
-    const edge = choice(startEdges);
-    let x, y;
-    if(edge === 'left'){ x = -10; y = rand(H*0.15, H*0.95); }
-    else if(edge === 'right'){ x = W+10; y = rand(H*0.15, H*0.95); }
-    else if(edge === 'top'){ x = rand(W*0.15, W*0.85); y = -10; }
-    else { x = rand(W*0.15, W*0.85); y = H+10; }
-
-    let angle = Math.atan2(mouth.y-y, mouth.x-x);
-    riverPts.push({x, y});
-    const step = 22 * mapScale;
     const mtnAvoidR = mtnBaseR + 70*mapScale;
     const buildingAvoidBuffer = 60 * mapScale;
     const angDiff = (a, b) => Math.abs(((a - b + Math.PI*3) % (Math.PI*2)) - Math.PI);
-    let guard = 0;
-    while(!reachedMouth(x, y) && guard < 500){
-      guard++;
-      const desired = Math.atan2(mouth.y-y, mouth.x-x);
-      angle = angle*0.72 + desired*0.28 + rand(-0.18, 0.18);
 
-      // steer around obstacles: the mountains, the main castle, and every
-      // outpost. Once the river gets within an obstacle's influence
-      // radius, bend the heading toward whichever tangent direction
-      // skirts it (staying closest to the direction it already wanted to
-      // go) instead of ploughing straight through. Only the single
-      // closest obstacle steers on any given step, so the river doesn't
-      // get pulled in conflicting directions near several obstacles at once.
-      let obstacle = null, obstacleAvoidR = 0, obstacleDist = Infinity;
-      if(mountainChoice !== 'aus'){
-        const d = Math.hypot(x-mtnCx, y-mtnCy);
-        if(d < mtnAvoidR && d < obstacleDist){ obstacle = {x:mtnCx, y:mtnCy}; obstacleAvoidR = mtnAvoidR; obstacleDist = d; }
+    // mouth: in the sea (sea on) or on a map edge (sea off); the rng order of the first river is unchanged
+    const pickMouth = () => {
+      let mouthEdge, mouth, reached;
+      if(seaChoice !== 'aus'){
+        mouthEdge = seaEdgeMap[seaChoice];
+        if(seaChoice === 'unten') mouth = {x: rand(W*0.25, W*0.75), y: H - 25*mapScale};
+        else if(seaChoice === 'links') mouth = {x: 25*mapScale, y: rand(H*0.25, H*0.75)};
+        else if(seaChoice === 'rechts') mouth = {x: W - 25*mapScale, y: rand(H*0.25, H*0.75)};
+        else mouth = {x: rand(W*0.25, W*0.75), y: 25*mapScale};
+        reached = (x, y) => inSea(x, y);
+      } else {
+        mouthEdge = choice(['left', 'right', 'top', 'bottom']);
+        if(mouthEdge === 'left') mouth = {x: 0, y: rand(H*0.25, H*0.75)};
+        else if(mouthEdge === 'right') mouth = {x: W, y: rand(H*0.25, H*0.75)};
+        else if(mouthEdge === 'top') mouth = {x: rand(W*0.25, W*0.75), y: 0};
+        else mouth = {x: rand(W*0.25, W*0.75), y: H};
+        reached = (x, y) =>
+          (mouthEdge === 'left' && x <= 6) || (mouthEdge === 'right' && x >= W-6) ||
+          (mouthEdge === 'top' && y <= 6) || (mouthEdge === 'bottom' && y >= H-6);
       }
-      buildingPoints.forEach(b => {
-        const avoidR = (b.big ? 95 : 72) + buildingAvoidBuffer;
-        const d = Math.hypot(x-b.x, y-b.y);
-        if(d < avoidR && d < obstacleDist){ obstacle = b; obstacleAvoidR = avoidR; obstacleDist = d; }
+      return { edge: mouthEdge, mouth, reached };
+    };
+    const startOnEdge = (edge) => {
+      if(edge === 'left') return { x: -10, y: rand(H*0.15, H*0.95) };
+      if(edge === 'right') return { x: W+10, y: rand(H*0.15, H*0.95) };
+      if(edge === 'top') return { x: rand(W*0.15, W*0.85), y: -10 };
+      return { x: rand(W*0.15, W*0.85), y: H+10 };
+    };
+
+    // walks from start towards target; steers around the mountains, the main castle and every
+    // outpost (only the closest obstacle steers on any given step). Returns { pts, ok }.
+    const traceRiver = (start, target, reachedFn, opts) => {
+      let x = start.x, y = start.y;
+      let angle = Math.atan2(target.y-y, target.x-x);
+      const pts = [{x, y}];
+      const step = 22 * mapScale;
+      // meanders (larger maps only, so the rng of small maps stays untouched)
+      const mPhase = opts.meander ? rand(0, Math.PI*2) : 0;
+      const mAmp = opts.meander ? rand(0.5, 0.85) : 0;
+      const mFreq = opts.meander ? rand(0.26, 0.4) : 0;
+      const maxSteps = opts.maxSteps || 500;
+      let guard = 0;
+      while(!reachedFn(x, y) && guard < maxSteps){
+        guard++;
+        const desired = Math.atan2(target.y-y, target.x-x) + (mAmp ? mAmp * Math.sin(guard*mFreq + mPhase) : 0);
+        angle = angle*0.72 + desired*0.28 + rand(-0.18, 0.18);
+
+        let obstacle = null, obstacleAvoidR = 0, obstacleDist = Infinity;
+        if(mountainChoice !== 'aus'){
+          const d = Math.hypot(x-mtnCx, y-mtnCy);
+          if(d < mtnAvoidR && d < obstacleDist){ obstacle = {x:mtnCx, y:mtnCy}; obstacleAvoidR = mtnAvoidR; obstacleDist = d; }
+        }
+        buildingPoints.forEach(b => {
+          const avoidR = (b.big ? 95 : 72) + buildingAvoidBuffer;
+          const d = Math.hypot(x-b.x, y-b.y);
+          if(d < avoidR && d < obstacleDist){ obstacle = b; obstacleAvoidR = avoidR; obstacleDist = d; }
+        });
+        if(obstacle){
+          const awayAngle = Math.atan2(y-obstacle.y, x-obstacle.x);
+          const tangent1 = awayAngle + Math.PI/2;
+          const tangent2 = awayAngle - Math.PI/2;
+          const steerAngle = angDiff(tangent1, desired) < angDiff(tangent2, desired) ? tangent1 : tangent2;
+          const strength = Math.min(1, (obstacleAvoidR - obstacleDist) / obstacleAvoidR + 0.25);
+          angle = angle*(1-strength) + steerAngle*strength;
+        }
+        x += Math.cos(angle)*step;
+        y += Math.sin(angle)*step;
+        pts.push({x, y});
+      }
+      const ok = reachedFn(x, y);
+      for(let k=0;k<(opts.overshoot || 0);k++){
+        x += Math.cos(angle)*step;
+        y += Math.sin(angle)*step;
+        pts.push({x, y});
+      }
+      return { pts, ok };
+    };
+
+    const setWidths = (r) => {
+      const n = r.pts.length;
+      r.pts.forEach((p, i) => {
+        const t = n > 1 ? i / (n - 1) : 0;
+        p.w = !bigRivers ? riverWidth
+          : (r.kind === 'main' ? riverWidth * (0.62 + 0.7*t) : riverWidth * (0.42 + 0.3*t));
       });
+    };
+    const touchesOthers = (pts, skip) => rivers.some(r => r !== skip && pts.some(p => dist2pts(p.x, p.y, r.pts) < riverWidth*1.6));
 
-      if(obstacle){
-        const awayAngle = Math.atan2(y-obstacle.y, x-obstacle.x);
-        const tangent1 = awayAngle + Math.PI/2;
-        const tangent2 = awayAngle - Math.PI/2;
-        const steerAngle = angDiff(tangent1, desired) < angDiff(tangent2, desired) ? tangent1 : tangent2;
-        const strength = Math.min(1, (obstacleAvoidR - obstacleDist) / obstacleAvoidR + 0.25);
-        angle = angle*(1-strength) + steerAngle*strength;
+    // main rivers
+    const mouths = [], usedStarts = [];
+    for(let k = 0; k < riverPlan.rivers; k++){
+      let river = null;
+      for(let attempt = 0; attempt < (k === 0 ? 1 : 6) && !river; attempt++){
+        const m = pickMouth();
+        if(k > 0 && mouths.some(o => Math.hypot(o.x - m.mouth.x, o.y - m.mouth.y) < Math.min(W, H)*0.28)) continue;
+        const startEdges = ['left', 'right', 'top', 'bottom'].filter(e => e !== m.edge);
+        let pool = startEdges.filter(e => !usedStarts.includes(e));
+        if(!pool.length || k === 0) pool = startEdges;
+        const edge = choice(pool);
+        const st = startOnEdge(edge);
+        const t = traceRiver(st, m.mouth, m.reached, { meander: bigRivers, overshoot: 3 });
+        if(k > 0 && touchesOthers(t.pts, null)) continue;
+        river = { pts: t.pts, kind: 'main' };
+        mouths.push(m.mouth);
+        usedStarts.push(edge);
       }
-
-      x += Math.cos(angle)*step;
-      y += Math.sin(angle)*step;
-      riverPts.push({x, y});
-    }
-    for(let k=0;k<3;k++){
-      x += Math.cos(angle)*step;
-      y += Math.sin(angle)*step;
-      riverPts.push({x, y});
+      if(river){ setWidths(river); rivers.push(river); }
     }
 
+    // tributaries: start at an inner spring and merge into a main river
+    const mains = rivers.slice();
+    mains.forEach(parent => {
+      for(let k = 0; k < riverPlan.tribs; k++){
+        const n = parent.pts.length;
+        if(n < 8) continue;
+        const target = parent.pts[randInt(Math.floor(n*0.3), Math.floor(n*0.75))];
+        let src = null;
+        for(let t = 0; t < 40 && !src; t++){
+          const sx = rand(W*0.1, W*0.9), sy = rand(H*0.1, H*0.9);
+          const d = Math.hypot(sx-target.x, sy-target.y);
+          if(d < Math.min(W, H)*0.22 || d > Math.min(W, H)*0.6) continue;
+          if(inSea(sx, sy)) continue;
+          if(mountainChoice !== 'aus' && Math.hypot(sx-mtnCx, sy-mtnCy) < mtnBaseR + 40*mapScale) continue;
+          if(buildingPoints.some(b => Math.hypot(sx-b.x, sy-b.y) < (b.big ? 95 : 72) + buildingAvoidBuffer + 20)) continue;
+          if(rivers.some(r => dist2pts(sx, sy, r.pts) < riverWidth*2.5)) continue;
+          src = {x: sx, y: sy};
+        }
+        if(!src) continue;
+        const t = traceRiver(src, target, (x, y) => dist2pts(x, y, parent.pts) < riverWidth*0.8,
+          { meander: true, overshoot: 0, maxSteps: 260 });
+        if(!t.ok || t.pts.length < 5) continue;
+        if(touchesOthers(t.pts.slice(0, -2), parent)) continue;     // no crossing other rivers
+        const trib = { pts: t.pts, kind: 'trib' };
+        setWidths(trib);
+        rivers.push(trib);
+      }
+    });
+
+    // bridges: bridgeCount per main river, one per tributary
     const bridgeCountInput = document.getElementById('bridgeCount');
     let numBridges = parseInt(bridgeCountInput.value, 10);
     if(!Number.isFinite(numBridges)) numBridges = 3;
     numBridges = Math.max(1, Math.min(10, numBridges));
     bridgeCountInput.value = numBridges;
-    for(let k=0;k<numBridges;k++){
-      const idx = Math.max(1, Math.min(riverPts.length-2,
-        Math.round((riverPts.length-1) * ((k+1)/(numBridges+1)))));
-      const a = riverPts[idx-1], b = riverPts[idx+1];
-      bridgePts.push({x:riverPts[idx].x, y:riverPts[idx].y, angle:Math.atan2(b.y-a.y, b.x-a.x)});
-    }
+    rivers.forEach((r, ri) => {
+      const cnt = r.kind === 'main' ? numBridges : 1;
+      for(let k=0;k<cnt;k++){
+        const idx = Math.max(1, Math.min(r.pts.length-2,
+          Math.round((r.pts.length-1) * ((k+1)/(cnt+1)))));
+        const a = r.pts[idx-1], b = r.pts[idx+1];
+        bridgePts.push({x:r.pts[idx].x, y:r.pts[idx].y, angle:Math.atan2(b.y-a.y, b.x-a.x), w:r.pts[idx].w, river:ri, kind:r.kind});
+      }
+    });
   }
   function riverDistAt(x, y){
+    // negative = inside the water of some river (distance to the centre line minus the local width)
     let best = Infinity;
-    for(let i=0;i<riverPts.length-1;i++){
-      const d = pointSegDist(x, y, riverPts[i].x, riverPts[i].y, riverPts[i+1].x, riverPts[i+1].y);
-      if(d < best) best = d;
+    for(const r of rivers){
+      for(let i=0;i<r.pts.length-1;i++){
+        const a = r.pts[i], b = r.pts[i+1];
+        const d = pointSegDist(x, y, a.x, a.y, b.x, b.y) - (a.w + b.w) / 2;
+        if(d < best) best = d;
+      }
     }
     return best;
   }
-  function riverSideAt(x, y){
+  function riverSideAt(ri, x, y){
+    const pts = rivers[ri].pts;
     let best = Infinity, side = 1;
-    for(let i=0;i<riverPts.length-1;i++){
-      const a = riverPts[i], b = riverPts[i+1];
+    for(let i=0;i<pts.length-1;i++){
+      const a = pts[i], b = pts[i+1];
       const d = pointSegDist(x, y, a.x, a.y, b.x, b.y);
       if(d < best){
         best = d;
@@ -996,7 +1090,7 @@ function generateFieldTessellation(outposts, desiredFields){
   function terrainAt(px, py){
     if(inSea(px, py)) return 'sea';
     if(inMountains(px, py)) return nearTrail(px, py) ? 'path' : 'mountain';
-    if(riverEnabled && riverDistAt(px, py) < riverWidth) return 'river';
+    if(riverEnabled && riverDistAt(px, py) < 0) return 'river';
     if(inForest(px, py)) return 'forest';
     if(inDesert(px, py)) return 'desert';
     return 'normal';
@@ -1233,7 +1327,7 @@ function generateFieldTessellation(outposts, desiredFields){
 
   bridgePts.forEach(bp => {
     const perpAngle = bp.angle + Math.PI/2;
-    const probeDist = riverWidth * 0.9;
+    const probeDist = (bp.w || riverWidth) * 0.9;
     const fieldA = nearestWalkableTo(bp.x + Math.cos(perpAngle)*probeDist, bp.y + Math.sin(perpAngle)*probeDist);
     const fieldB = nearestWalkableTo(bp.x - Math.cos(perpAngle)*probeDist, bp.y - Math.sin(perpAngle)*probeDist);
     if(!fieldA || !fieldB) return;
@@ -1319,15 +1413,20 @@ function generateFieldTessellation(outposts, desiredFields){
 
     let viaBridge = false;
     if(riverEnabled && bridgePts.length){
-      const fieldSide = riverSideAt(c.px, c.py);
-      const targetSide = riverSideAt(target.x, target.y);
-      if(fieldSide !== targetSide){
-        let bestBd = Infinity;
+      // only the main rivers split the map; a field is sent to the nearest bridge
+      // of a main river that lies between it and its target
+      const split = new Set();
+      rivers.forEach((r, ri) => {
+        if(r.kind === 'main' && riverSideAt(ri, c.px, c.py) !== riverSideAt(ri, target.x, target.y)) split.add(ri);
+      });
+      if(split.size){
+        let bestBd = Infinity, bestBp = null;
         bridgePts.forEach(bp => {
+          if(!split.has(bp.river)) return;
           const d = Math.hypot(bp.x-c.px, bp.y-c.py);
-          if(d < bestBd){ bestBd = d; target = bp; }
+          if(d < bestBd){ bestBd = d; bestBp = bp; }
         });
-        viaBridge = true;
+        if(bestBp){ target = bestBp; viaBridge = true; }
       }
     }
 
