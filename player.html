@@ -819,14 +819,31 @@
     </div>
 
     <div class="field">
+      <label for="heroSpecies" data-i18n="playerLblSpecies">Spezies</label>
+      <select id="heroSpecies">
+        <option value="" data-i18n="playerClassNone">— Keine —</option>
+        <option value="human" data-i18n="playerSpeciesHumanName">Mensch</option>
+        <option value="halfling" data-i18n="playerSpeciesHalflingName">Halbling</option>
+        <option value="gnome" data-i18n="playerSpeciesGnomeName">Gnom</option>
+        <option value="halfelf" data-i18n="playerSpeciesHalfelfName">Halbelf</option>
+        <option value="halforc" data-i18n="playerSpeciesHalforcName">Halbork</option>
+        <option value="dragonborn" data-i18n="playerSpeciesDragonbornName">Drachenblütiger</option>
+        <option value="tiefling" data-i18n="playerSpeciesTieflingName">Tiefling</option>
+        <option value="aasimar" data-i18n="playerSpeciesAasimarName">Aasimar</option>
+        <option value="goliath" data-i18n="playerSpeciesGoliathName">Goliath</option>
+        <option value="tabaxi" data-i18n="playerSpeciesTabaxiName">Tabaxi</option>
+        <option value="goblin" data-i18n="playerClassGoblinName">Kobold</option>
+        <option value="elf" data-i18n="playerClassElfName">Elf</option>
+        <option value="dwarf" data-i18n="playerClassDwarfName">Zwerg</option>
+      </select>
+    </div>
+
+    <div class="field">
       <label for="heroClass" data-i18n="playerLblClass">Klasse</label>
       <select id="heroClass">
         <option value="" data-i18n="playerClassNone">— Keine —</option>
         <option value="mage" data-i18n="playerClassMageName">Magier</option>
         <option value="knight" data-i18n="playerClassKnightName">Ritter</option>
-        <option value="goblin" data-i18n="playerClassGoblinName">Kobold</option>
-        <option value="elf" data-i18n="playerClassElfName">Elf</option>
-        <option value="dwarf" data-i18n="playerClassDwarfName">Zwerg</option>
         <option value="barbarian" data-i18n="playerClassBarbarianName">Barbar</option>
         <option value="rogue" data-i18n="playerClassRogueName">Schurke</option>
         <option value="cleric" data-i18n="playerClassClericName">Kleriker</option>
@@ -997,6 +1014,14 @@
       <div class="story-box" id="storyBox" style="display:none;">
         <div class="label" data-i18n="playerLblStory">Geschichte des Helden</div>
         <p id="storyOut"></p>
+      </div>
+
+      <div class="class-perk" id="speciesPerkRow" style="display:none;">
+        <div class="class-icon" id="speciesIconOut">🧑</div>
+        <div class="class-text">
+          <div class="class-name" id="speciesNameOut">Mensch</div>
+          <div class="class-perk-text" id="speciesPerkOut"></div>
+        </div>
       </div>
 
       <div class="class-perk" id="classPerkRow" style="display:none;">
@@ -1268,9 +1293,6 @@
   const CLASSES = {
     mage:      { icon:'🧙', nameKey:'playerClassMageName',      perkKey:'playerClassMagePerk' },
     knight:    { icon:'🛡️', nameKey:'playerClassKnightName',    perkKey:'playerClassKnightPerk' },
-    goblin:    { icon:'👺', nameKey:'playerClassGoblinName',    perkKey:'playerClassGoblinPerk' },
-    elf:       { icon:'🧝', nameKey:'playerClassElfName',       perkKey:'playerClassElfPerk' },
-    dwarf:     { icon:'⛏️', nameKey:'playerClassDwarfName',     perkKey:'playerClassDwarfPerk' },
     barbarian: { icon:'🪓', nameKey:'playerClassBarbarianName', perkKey:'playerClassBarbarianPerk' },
     rogue:     { icon:'🗡️', nameKey:'playerClassRogueName',     perkKey:'playerClassRoguePerk' },
     cleric:    { icon:'✨', nameKey:'playerClassClericName',    perkKey:'playerClassClericPerk' },
@@ -1283,6 +1305,38 @@
     necromancer:{ icon:'💀', nameKey:'playerClassNecromancerName', perkKey:'playerClassNecromancerPerk' },
     alchemist: { icon:'⚗️', nameKey:'playerClassAlchemistName', perkKey:'playerClassAlchemistPerk' }
   };
+
+  // species: shown like the class perk. nameDe/perkDe are used until the keys exist in languages.js.
+  // NOTE: new species must be appended at the END of the <select> list (the share code stores the position).
+  const SPECIES = {
+    human:     { icon:'🧑', nameKey:'playerSpeciesHumanName', perkKey:'playerSpeciesHumanPerk',
+      nameDe:'Mensch', perkDe:'Darf einmal pro Abenteuer einen misslungenen Wurf wiederholen.' },
+    halfling:  { icon:'🍀', nameKey:'playerSpeciesHalflingName', perkKey:'playerSpeciesHalflingPerk',
+      nameDe:'Halbling', perkDe:'Darf einmal pro Kampf eine gewürfelte 1 neu würfeln.' },
+    gnome:     { icon:'🍄', nameKey:'playerSpeciesGnomeName', perkKey:'playerSpeciesGnomePerk',
+      nameDe:'Gnom', perkDe:'Hat 2 zusätzliche Willenspunkte.' },
+    halfelf:   { icon:'🌙', nameKey:'playerSpeciesHalfelfName', perkKey:'playerSpeciesHalfelfPerk',
+      nameDe:'Halbelf', perkDe:'Darf einmal pro Abenteuer einen Handel zu einem besseren Preis erzwingen.' },
+    halforc:   { icon:'🐗', nameKey:'playerSpeciesHalforcName', perkKey:'playerSpeciesHalforcPerk',
+      nameDe:'Halbork', perkDe:'Überlebt einmal pro Kampf einen tödlichen Treffer mit 1 Stärkepunkt.' },
+    dragonborn:{ icon:'🐉', nameKey:'playerSpeciesDragonbornName', perkKey:'playerSpeciesDragonbornPerk',
+      nameDe:'Drachenblütiger', perkDe:'Kann einmal pro Kampf Feuer speien und allen Gegnern auf dem Feld Schaden zufügen.' },
+    tiefling:  { icon:'😈', nameKey:'playerSpeciesTieflingName', perkKey:'playerSpeciesTieflingPerk',
+      nameDe:'Tiefling', perkDe:'Ist immun gegen Feuerschaden.' },
+    aasimar:   { icon:'😇', nameKey:'playerSpeciesAasimarName', perkKey:'playerSpeciesAasimarPerk',
+      nameDe:'Aasimar', perkDe:'Heilt einmal pro Abenteuer sich oder einen Gefährten um 3 Stärkepunkte.' },
+    goliath:   { icon:'🗿', nameKey:'playerSpeciesGoliathName', perkKey:'playerSpeciesGoliathPerk',
+      nameDe:'Goliath', perkDe:'Kann nicht zurückgeworfen oder betäubt werden.' },
+    tabaxi:    { icon:'🐱', nameKey:'playerSpeciesTabaxiName', perkKey:'playerSpeciesTabaxiPerk',
+      nameDe:'Tabaxi', perkDe:'Darf pro Zug 1 Feld weiter laufen.' },
+    goblin:     { icon:'👺', nameKey:'playerClassGoblinName', perkKey:'playerClassGoblinPerk', nameDe:'Kobold' },
+    elf:        { icon:'🧝', nameKey:'playerClassElfName',    perkKey:'playerClassElfPerk',    nameDe:'Elf' },
+    dwarf:      { icon:'⛏️', nameKey:'playerClassDwarfName',  perkKey:'playerClassDwarfPerk',  nameDe:'Zwerg' }
+  };
+  function tf(key, fallback){
+    const v = t(key);
+    return v !== undefined ? v : fallback;
+  }
 
   // equipment slots; bit = position in the share code (never reorder, only append)
   const EQUIP = [
@@ -1323,6 +1377,18 @@
       medallionOut.appendChild(img);
     } else {
       medallionOut.textContent = document.getElementById('heroIcon').value || '🐺';
+    }
+
+    const speciesKey = document.getElementById('heroSpecies').value;
+    const speciesPerkRow = document.getElementById('speciesPerkRow');
+    if (speciesKey && SPECIES[speciesKey]) {
+      const sp = SPECIES[speciesKey];
+      speciesPerkRow.style.display = 'flex';
+      document.getElementById('speciesIconOut').textContent = sp.icon;
+      document.getElementById('speciesNameOut').textContent = tf(sp.nameKey, sp.nameDe);
+      document.getElementById('speciesPerkOut').textContent = tf(sp.perkKey, sp.perkDe);
+    } else {
+      speciesPerkRow.style.display = 'none';
     }
 
     const classKey = document.getElementById('heroClass').value;
@@ -1430,6 +1496,8 @@
     };
     const story = document.getElementById('heroStory').value;
     if(story) s.st = story;
+    const species = document.getElementById('heroSpecies').value;
+    if(species) s.sp = species;
     const eq = equipMask();
     if(eq) s.eq = eq;
     if(heroImageData) s.im = heroImageShareData || heroImageData;
@@ -1447,6 +1515,7 @@
   //   rejected instead of silently loading wrong values.
   // Anything that cannot be stored exactly (hand-typed odd numbers, ...) falls back to the older
   // JSON/base64 code, so a shared link never silently changes a setting. Old links keep working.
+  // Optional 7th text field = species (position in the species list, base 36); older links without it keep working.
   // NOTE: new class options must be appended at the END of the class list, otherwise existing v3
   // links would point at the wrong class.
   const B64URL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
@@ -1454,8 +1523,18 @@
   const SHARE_JPEG_PREFIX = 'data:image/jpeg;base64,';
   const SHARE_SEP = '\u001f';
 
+  // Fixed list = positions stored in existing links. goblin/elf/dwarf used to be classes and are now species:
+  // they are no longer in the class dropdown, but old links that contain them are still read (see applyHeroSettings).
+  // NOTE: never reorder or remove entries; only append new classes at the end.
+  const SHARE_CLASS_VALUES = ['', 'mage', 'knight', 'goblin', 'elf', 'dwarf', 'barbarian', 'rogue', 'cleric', 'paladin',
+                              'ranger', 'druid', 'bard', 'monk', 'warlock', 'necromancer', 'alchemist'];
+  const LEGACY_SPECIES_CLASSES = ['goblin', 'elf', 'dwarf'];
   function shareClassValues(){
-    return Array.from(document.getElementById('heroClass').options).map(o => o.value);
+    return SHARE_CLASS_VALUES;
+  }
+
+  function shareSpeciesValues(){
+    return Array.from(document.getElementById('heroSpecies').options).map(o => o.value);
   }
 
   // number as base64url digits: 5 data bits + 1 "more follows" bit per character
@@ -1605,13 +1684,19 @@
       for(const k of ['n', 'e', 'i', 'a']) if(typeof s[k] !== 'string') return null;
 
       // optional 5th field (story); without a story the code stays identical to the 4-field format
+      // 6th field: equipment slots, 7th field: species (position in the species list, 1 character)
       const fieldList = [s.n, s.e, s.i, s.a];
-      if(s.st !== undefined || s.eq !== undefined){
+      if(s.st !== undefined || s.eq !== undefined || s.sp !== undefined){
         if(s.st !== undefined && typeof s.st !== 'string') return null;
         fieldList.push(s.st !== undefined ? s.st : '');
-        if(s.eq !== undefined){
-          if(!Number.isInteger(s.eq) || s.eq < 1 || s.eq > 511) return null;
-          fieldList.push(s.eq.toString(36));   // 6th field: equipment slots (1 hand 1, 2 helmet, 4 chest, 8 pants, 16 shoes, 32 hand 2, 64 belt, 256 side layout)
+        if(s.eq !== undefined || s.sp !== undefined){
+          if(s.eq !== undefined && (!Number.isInteger(s.eq) || s.eq < 1 || s.eq > 511)) return null;
+          fieldList.push(s.eq !== undefined ? s.eq.toString(36) : '0');   // 1 hand 1, 2 helmet, 4 chest, 8 pants, 16 shoes, 32 hand 2, 64 belt, 256 side layout
+          if(s.sp !== undefined){
+            const spIdx = shareSpeciesValues().indexOf(s.sp);
+            if(spIdx < 1 || spIdx > 35) return null;
+            fieldList.push(spIdx.toString(36));
+          }
         }
       }
       const joined = fieldList.join(SHARE_SEP);
@@ -1657,7 +1742,7 @@
 
     const joined = (flags & 4) ? alphabetDecode(p[1]) : unescapeShareText(p[1]);
     const fields = joined.split(SHARE_SEP);
-    if(fields.length < 4 || fields.length > 6) throw bad();
+    if(fields.length < 4 || fields.length > 7) throw bad();
 
     const s = {
       v: 3,
@@ -1673,10 +1758,17 @@
     };
     if(fields.length >= 5 && fields[4] !== '') s.st = fields[4];
     let eq = 0;
-    if(fields.length === 6){
+    if(fields.length >= 6){
       if(!/^[0-9a-z]{1,2}$/.test(fields[5])) throw bad();
       eq = parseInt(fields[5], 36);
       if(eq > 511) throw bad();
+    }
+    if(fields.length === 7){
+      if(!/^[0-9a-z]$/.test(fields[6])) throw bad();
+      const spIdx = parseInt(fields[6], 36);
+      const spVal = shareSpeciesValues()[spIdx];
+      if(spIdx < 1 || spVal === undefined) throw bad();
+      s.sp = spVal;
     }
     if(flags & 8) eq |= 1;     // earlier links: weapon flag (now hand 1)
     if(flags & 16) eq |= 30;   // earlier links: armor flag = all four armor pieces
@@ -1719,7 +1811,12 @@
     const epithet = s.e !== undefined ? s.e : s.epithet;
     const rank = s.r !== undefined ? s.r : s.rank;
     const icon = s.i !== undefined ? s.i : s.icon;
-    const cls = s.c !== undefined ? s.c : s.cls;
+    let cls = s.c !== undefined ? s.c : s.cls;
+    let species = s.sp;
+    if(LEGACY_SPECIES_CLASSES.indexOf(cls) >= 0){   // older links: goblin/elf/dwarf were classes
+      if(!species) species = cls;
+      cls = '';
+    }
     const ability = s.a !== undefined ? s.a : s.ability;
     const strengthCount = s.sc !== undefined ? s.sc : s.strengthCount;
     const willCount = s.wc !== undefined ? s.wc : s.willCount;
@@ -1735,6 +1832,7 @@
     setVal('heroRank', rank);
     setVal('heroIcon', icon);
     setVal('heroClass', cls);
+    document.getElementById('heroSpecies').value = (species !== undefined && SPECIES[species]) ? species : '';
     if(ability !== undefined) document.getElementById('heroAbility').innerHTML = ability;
     setVal('strengthCount', strengthCount);
     setVal('willCount', willCount);
