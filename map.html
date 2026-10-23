@@ -515,6 +515,16 @@
           <button type="button" class="castle-reset" id="villageRemoveBtn" data-i18n="actionRemoveBtn" hidden>Entfernen</button>
           <button type="button" class="castle-reset" id="villageResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
         </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblCustomHarbor">Häfen selbst platzieren</span>
+          <input type="checkbox" id="customHarbor">
+        </div>
+        <div class="castle-placer" id="harborPicker" hidden>
+          <div class="placer-hint" data-i18n="harborPickHint">Hafen wählen (oder +), dann auf die Karte klicken</div>
+          <div class="castle-buttons" id="harborButtons"></div>
+          <button type="button" class="castle-reset" id="harborRemoveBtn" data-i18n="actionRemoveBtn" hidden>Entfernen</button>
+          <button type="button" class="castle-reset" id="harborResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
+        </div>
       </div>
 
       <div class="control-group">
@@ -630,6 +640,16 @@
           <span class="f-label" data-i18n="lblBridges">Brücken</span>
           <input type="number" id="bridgeCount" min="1" max="10" value="3">
         </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblCustomBridge">Brücken selbst platzieren</span>
+          <input type="checkbox" id="customBridge">
+        </div>
+        <div class="castle-placer" id="bridgePicker" hidden>
+          <div class="placer-hint" data-i18n="bridgePickHint">Brücke wählen (oder +), dann an den Fluss klicken</div>
+          <div class="castle-buttons" id="bridgeButtons"></div>
+          <button type="button" class="castle-reset" id="bridgeRemoveBtn" data-i18n="actionRemoveBtn" hidden>Entfernen</button>
+          <button type="button" class="castle-reset" id="bridgeResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
+        </div>
       </div>
 
       <div class="control-group">
@@ -637,6 +657,13 @@
         <div class="field-row">
           <span class="f-label" data-i18n="lblFields">Felder (100–10000)</span>
           <input type="number" id="fieldCountInput" min="100" max="10000" step="50" value="700">
+        </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblNumberOrder">Nummerierung</span>
+          <select id="numberOrder">
+            <option value="zeilen" selected>Zeilenweise (links nach rechts)</option>
+            <option value="spalten">Spaltenweise (oben nach unten)</option>
+          </select>
         </div>
       </div>
 
@@ -1151,6 +1178,9 @@ function generateFieldTessellation(outposts, desiredFields){
       }
     });
   }
+  // bridges placed by hand: each click snaps to the nearest point of a river (within three river widths)
+  lastAutoBridgeUV = bridgePts.map(b => ({ u: Math.round(b.x / W * 1000), v: Math.round(b.y / H * 1000) }));
+  lastBridgeStatus = [];
   function riverDistAt(x, y){
     // negative = inside the water of some river (distance to the centre line minus the local width)
     let best = Infinity;
@@ -1206,14 +1236,16 @@ function generateFieldTessellation(outposts, desiredFields){
     const isBuilding = i < buildingPoints.length;
 
     let terrain = 'normal';
+    let baseTerrain = 'normal';          // terrain before single fields were painted by hand
     if(!isBuilding){
-      terrain = terrainAt(px, py);
+      terrain = baseTerrain = terrainAt(px, py);
       if(cellOverrides.has(i)) terrain = cellOverrides.get(i);
     }
     // river fields are always blocked/unwalkable — crossing only ever
     // happens visually via a bridge deck, never through a numbered field
     const blocked = terrain === 'sea' || terrain === 'mountain' || terrain === 'river';
-    info[i] = {px, py, isBuilding, terrain, blocked};
+    const baseBlocked = baseTerrain === 'sea' || baseTerrain === 'mountain' || baseTerrain === 'river';
+    info[i] = {px, py, isBuilding, terrain, blocked, baseBlocked};
 
     const poly = voronoi.cellPolygon(i);
     if(!poly) continue;
@@ -1302,7 +1334,17 @@ function generateFieldTessellation(outposts, desiredFields){
   const numerable = cells.filter(c => !c.blocked);
   const rows = Math.max(1, Math.round(Math.sqrt(numerable.length * (H / W))));
   const bandHeight = H / rows;
+  // numbering: row by row (left to right), or column by column (top to bottom)
+  const byColumns = document.getElementById('numberOrder').value === 'spalten';
+  const cols = Math.max(1, Math.round(Math.sqrt(numerable.length * (W / H))));
+  const bandWidth = W / cols;
   const readingOrder = [...numerable].sort((a, b) => {
+    if(byColumns){
+      const ca = Math.floor(a.px / bandWidth);
+      const cb = Math.floor(b.px / bandWidth);
+      if(ca !== cb) return ca - cb;
+      return a.py - b.py;
+    }
     const ra = Math.floor(a.py / bandHeight);
     const rb = Math.floor(b.py / bandHeight);
     if(ra !== rb) return ra - rb;
@@ -1432,15 +1474,102 @@ function generateFieldTessellation(outposts, desiredFields){
     return best;
   }
 
+  // bridges placed by hand: over a river (the click snaps to the nearest river point, within three river
+  // widths) or over water painted by hand (the shortest crossing at that spot between two walkable fields)
+  if(TERRAIN.bridge.on()){
+    const spacing = Math.sqrt(W * H / Math.max(1, cells.length));
+    const isWater = i => info[i].terrain === 'river' || info[i].terrain === 'sea';
+    const snapToRiver = (x, y) => {
+      let best = null, bestD = Infinity;
+      rivers.forEach((r, ri) => {
+        for(let i = 0; i < r.pts.length - 1; i++){
+          const a = r.pts[i], b = r.pts[i+1];
+          const dx = b.x - a.x, dy = b.y - a.y, L2 = dx*dx + dy*dy;
+          let tt = L2 ? ((x - a.x)*dx + (y - a.y)*dy) / L2 : 0;
+          tt = Math.max(0, Math.min(1, tt));
+          const qx = a.x + dx*tt, qy = a.y + dy*tt, d = Math.hypot(x - qx, y - qy);
+          if(d < bestD){ bestD = d; best = { x: qx, y: qy, angle: Math.atan2(dy, dx), w: a.w + (b.w - a.w)*tt, river: ri, kind: r.kind, seg: i, tt }; }
+        }
+      });
+      if(!best || bestD > 3 * riverWidth) return null;
+      // next to a river vertex (where the automatic bridges sit): same direction as those
+      const r = rivers[best.river], vi = best.tt < 0.5 ? best.seg : best.seg + 1, v = r.pts[vi];
+      if(vi >= 1 && vi <= r.pts.length - 2 && Math.hypot(best.x - v.x, best.y - v.y) < 1.5){
+        const a = r.pts[vi-1], b = r.pts[vi+1];
+        return { x: v.x, y: v.y, angle: Math.atan2(b.y - a.y, b.x - a.x), w: v.w, river: best.river, kind: best.kind };
+      }
+      return best;
+    };
+    // water fields the user painted: the nearest one to the click, if close enough
+    const paintedWaterNear = (x, y) => {
+      let best = -1, bestD = Infinity;
+      for(const i of cellOverrides.keys()){
+        if(!isWater(i)) continue;
+        const d = Math.hypot(info[i].px - x, info[i].py - y);
+        if(d < bestD){ bestD = d; best = i; }
+      }
+      return bestD <= 2 * spacing ? best : -1;
+    };
+    // shortest crossing over water through a point: tries 12 directions and keeps the one where
+    // both ends are ordinary walkable fields and the water between is the narrowest
+    const crossingAt = (cx, cy) => {
+      let best = null;
+      const step = spacing * 0.45, maxSteps = 16;
+      for(let k = 0; k < 12; k++){
+        const th = k * Math.PI / 12, ux = Math.cos(th), uy = Math.sin(th);
+        const walk = sgn => {
+          for(let n = 1; n <= maxSteps; n++){
+            const x = cx + sgn*ux*step*n, y = cy + sgn*uy*step*n;
+            if(x < 0 || y < 0 || x > W || y > H) return null;
+            const i = delaunay.find(x, y);
+            if(isWater(i)) continue;
+            return (info[i].blocked || info[i].isBuilding) ? null : { i, n };
+          }
+          return null;
+        };
+        const a = walk(1), b = walk(-1);
+        if(!a || !b) continue;
+        if(!best || a.n + b.n < best.len) best = { len: a.n + b.n, a: a.i, b: b.i, th };
+      }
+      return best;
+    };
+    bridgePts = [];
+    TERRAIN.bridge.list.forEach((e, i) => {
+      const x = e.u / 1000 * W, y = e.v / 1000 * H;
+      const pw = paintedWaterNear(x, y);
+      if(pw >= 0){
+        const cr = crossingAt(info[pw].px, info[pw].py);
+        const fa = cr && cells.find(c => c.idx === cr.a), fb = cr && cells.find(c => c.idx === cr.b);
+        if(fa && fb){
+          bridgePts.push({ x: info[pw].px, y: info[pw].py, angle: cr.th + Math.PI/2, w: riverWidth, river: -1, kind: 'painted', fa, fb });
+          lastBridgeStatus[i] = 'ok';
+        } else lastBridgeStatus[i] = 'bad';
+        return;
+      }
+      const sp = riverEnabled ? snapToRiver(x, y) : null;
+      if(sp){ bridgePts.push(sp); lastBridgeStatus[i] = 'ok'; } else lastBridgeStatus[i] = 'bad';
+    });
+  }
+
   bridgePts.forEach(bp => {
     const perpAngle = bp.angle + Math.PI/2;
     const probeDist = (bp.w || riverWidth) * 0.9;
-    const fieldA = nearestWalkableTo(bp.x + Math.cos(perpAngle)*probeDist, bp.y + Math.sin(perpAngle)*probeDist);
-    const fieldB = nearestWalkableTo(bp.x - Math.cos(perpAngle)*probeDist, bp.y - Math.sin(perpAngle)*probeDist);
+    const fieldA = bp.fa || nearestWalkableTo(bp.x + Math.cos(perpAngle)*probeDist, bp.y + Math.sin(perpAngle)*probeDist);
+    const fieldB = bp.fb || nearestWalkableTo(bp.x - Math.cos(perpAngle)*probeDist, bp.y - Math.sin(perpAngle)*probeDist);
     if(!fieldA || !fieldB) return;
 
     const dx = fieldB.px - fieldA.px, dy = fieldB.py - fieldA.py;
     const len = Math.hypot(dx, dy);
+    // if the water under the bridge was painted over by hand, the bridge goes away with it
+    let blockedBetween = false, hadWater = false;
+    const samples = Math.max(8, Math.ceil(len / 8));
+    for(let k = 0; k <= samples; k++){
+      const bi = delaunay.find(fieldA.px + dx * k / samples, fieldA.py + dy * k / samples);
+      if(info[bi].blocked) blockedBetween = true;
+      if(info[bi].baseBlocked) hadWater = true;
+    }
+    if(hadWater && !blockedBetween) return;
+    bp.drawn = true;
     const deckDeg = Math.atan2(dy, dx) * 180/Math.PI;
     const midX = (fieldA.px + fieldB.px) / 2, midY = (fieldA.py + fieldB.py) / 2;
     const deckW = 8;
@@ -1529,7 +1658,7 @@ function generateFieldTessellation(outposts, desiredFields){
       if(split.size){
         let bestBd = Infinity, bestBp = null;
         bridgePts.forEach(bp => {
-          if(!split.has(bp.river)) return;
+          if(!split.has(bp.river) || !bp.drawn) return;
           const d = Math.hypot(bp.x-c.px, bp.y-c.py);
           if(d < bestBd){ bestBd = d; bestBp = bp; }
         });
@@ -1733,6 +1862,19 @@ function renderMarkers(){
     layer.appendChild(el('rect', { x:x - 3.2, y:y + 4.2, width:1.4, height:2.8, fill:'#4a3210' }));
   });
 
+  (TERRAIN.harbor.on() ? TERRAIN.harbor.list : []).forEach(num => {
+    const f = fieldLookup.get(num);
+    if(!f) return;
+    // harbour: sea-blue medallion with an anchor (language-neutral symbol)
+    const x = f.px, y = f.py;
+    layer.appendChild(el('circle', { cx:x, cy:y, r:11.5, fill:'#c4dae0', stroke:'#1f4a5a', 'stroke-width':1.6, opacity:0.97 }));
+    const ink = { stroke:'#1b3a47', 'stroke-width':1.5, 'stroke-linecap':'round', fill:'none' };
+    layer.appendChild(el('circle', Object.assign({ cx:x, cy:y - 6.2, r:1.8 }, ink)));
+    layer.appendChild(el('line', Object.assign({ x1:x, y1:y - 4.4, x2:x, y2:y + 5.6 }, ink)));
+    layer.appendChild(el('line', Object.assign({ x1:x - 3.2, y1:y - 2.2, x2:x + 3.2, y2:y - 2.2 }, ink)));
+    layer.appendChild(el('path', Object.assign({ d:`M ${x - 5.6} ${y + 1.4} Q ${x - 5.2} ${y + 6.4} ${x} ${y + 6.2} Q ${x + 5.2} ${y + 6.4} ${x + 5.6} ${y + 1.4}` }, ink)));
+  });
+
   svg.appendChild(layer);
   markersLayerRef = layer;
 }
@@ -1767,6 +1909,8 @@ let customVillageList = [];    // village field numbers chosen by hand (no limit
 const SEA_EDGES = ['oben', 'unten', 'links', 'rechts'];
 const TERRAIN = {};            // desert, forest, mountain, sea: pickers for freely placed terrain
 const TERRAIN_PICKERS = [];
+let lastAutoBridgeUV = [];     // automatic bridges of the last build, in permille: the start of the manual list
+let lastBridgeStatus = [];     // per manual bridge: 'ok' | 'bad' (no river close enough)
 function clearTerrainPickers(except){ TERRAIN_PICKERS.forEach(P => { if(P !== except) P.clearMode(); }); }
 // centres of a placeable terrain: the hand-placed ones, or the one at the default position
 function terrainCenters(P, choice){
@@ -1972,6 +2116,8 @@ function makeTerrainPicker(key, cfg){
   const $ = id => document.getElementById(id);
   const P = {
     key, list: [], seeded: false, placing: null,
+    // lists of field numbers only change the markers, everything else rebuilds the map
+    refresh(){ if(cfg.light){ renderMarkers(); P.update(); } else generateMap(currentSeed); },
     on(){ return $('custom' + cap).checked; },
     auto(){ return cfg.auto(); },
     active(){ return P.on() && P.placing !== null; },
@@ -1994,7 +2140,7 @@ function makeTerrainPicker(key, cfg){
       P.list.forEach((e, i) => {
         const b = document.createElement('button');
         b.type = 'button';
-        b.className = 'castle-btn set' + (P.placing === i ? ' active' : '');
+        b.className = 'castle-btn set' + (P.placing === i ? ' active' : '') + (cfg.invalid && cfg.invalid(e, i) ? ' invalid' : '');
         b.textContent = cfg.label(e, i);
         b.title = cfg.title(e, i);
         b.addEventListener('click', () => P.pick(i));
@@ -2024,7 +2170,7 @@ function makeTerrainPicker(key, cfg){
         P.list[P.placing] = e;
         P.placing = null;
       }
-      generateMap(currentSeed);
+      P.refresh();
       return true;
     },
     toSettings(){ return { flag: $('custom' + cap).checked, list: P.list.map(cfg.toSetting) }; },
@@ -2049,18 +2195,18 @@ function makeTerrainPicker(key, cfg){
       updateCastlePlacer(); updateMerchantPicker(); updateActionPicker(); updateVillagePicker();
       clearTerrainPickers(P);
     }
-    generateMap(currentSeed);
+    P.refresh();
   });
   $(key + 'RemoveBtn').addEventListener('click', () => {
     if(typeof P.placing === 'number') P.list.splice(P.placing, 1);
     P.placing = null;
-    generateMap(currentSeed);
+    P.refresh();
   });
   $(key + 'ResetBtn').addEventListener('click', () => {
     P.list = cfg.auto();
     P.seeded = true;
     P.placing = null;
-    generateMap(currentSeed);
+    P.refresh();
   });
   TERRAIN_PICKERS.push(P);
   return P;
@@ -2238,6 +2384,30 @@ TERRAIN.cell = (() => {
   TERRAIN_PICKERS.push(P);
   return P;
 })();
+
+// bridges: each click is snapped to the nearest river at build time; the list starts with the automatic bridges
+TERRAIN.bridge = makeTerrainPicker('bridge', {
+  max: 40, unique: false,
+  auto: () => lastAutoBridgeUV.map(b => ({ u: b.u, v: b.v })),
+  fromClick: (fx, fy) => ({ u: Math.round(fx * 1000), v: Math.round(fy * 1000) }),
+  label: (e, i) => String(i + 1),
+  title: (e, i) => (t('lblBridges') || 'Brücke') + ' ' + (i + 1),
+  invalid: (e, i) => lastBridgeStatus[i] === 'bad',
+  toSetting: e => [e.u, e.v],
+  fromSetting: e => (Array.isArray(e) && e.length === 2 && e.every(Number.isFinite)) ? { u: e[0], v: e[1] } : null
+});
+
+// harbours: field numbers like the villages (the icon is only drawn, the map is not rebuilt)
+TERRAIN.harbor = makeTerrainPicker('harbor', {
+  max: 200, unique: true, light: true,
+  auto: () => [],
+  fromClick: (fx, fy) => { const c = cellAtMapPoint(fx * W, fy * H); return c ? c.number : null; },
+  label: e => String(e),
+  title: e => (t('lblHarbor') || 'Hafen') + ' ' + e,
+  invalid: e => !!lastFieldTotal && e > lastFieldTotal,
+  toSetting: e => e,
+  fromSetting: x => (Number.isInteger(x) && x >= 1 && x <= 46655) ? x : null
+});
 
 // the sea is a band along a map edge: a click chooses the nearest edge (at most 3, so one edge stays dry for the rivers)
 TERRAIN.sea = makeTerrainPicker('sea', {
@@ -2622,7 +2792,12 @@ function collectSettings(){
     customSea: TERRAIN.sea.toSettings().flag,
     seaList: TERRAIN.sea.toSettings().list,
     customCellTerrain: TERRAIN.cell.toSettings().flag,
-    cellTerrainList: TERRAIN.cell.toSettings().list
+    cellTerrainList: TERRAIN.cell.toSettings().list,
+    numberOrder: document.getElementById('numberOrder').value,
+    customBridge: TERRAIN.bridge.toSettings().flag,
+    bridgeList: TERRAIN.bridge.toSettings().list,
+    customHarbor: TERRAIN.harbor.toSettings().flag,
+    harborList: TERRAIN.harbor.toSettings().list
   };
 }
 
@@ -2762,7 +2937,9 @@ function encodeCompactSettings(s){
       encNums('customActionFields', 'actionList'), encNums('customMerchantFields', 'merchantList'),
       encNums('customVillageFields', 'villageList'),
       encPos('customDesert', 'desertList'), encPos('customForest', 'forestList'), encPos('customMountain', 'mountainList'),
-      encEdges('customSea', 'seaList'), encCells()];
+      encEdges('customSea', 'seaList'), encCells(), encPos('customBridge', 'bridgeList'),
+      s.numberOrder === 'spalten' ? '1' : null,      // part 20: numbering by columns
+      encNums('customHarbor', 'harborList')];        // part 21: harbours (field numbers like villages)
   } catch(e){ return null; }
   let last = tail.length - 1;
   while(last >= 0 && tail[last] === null) last--;
@@ -2773,7 +2950,7 @@ function encodeCompactSettings(s){
 function decodeCompactSettings(raw){
   const bad = () => new Error('invalid share code');
   const p = raw.split('.');
-  if(p.length < 8 || p.length > 18 || p[0] !== '2') throw bad();
+  if(p.length < 8 || p.length > 21 || p[0] !== '2') throw bad();
   const b36 = str => {
     if(!/^-?[0-9a-z]+$/.test(str)) throw bad();
     const n = parseInt(str, 36);
@@ -2821,6 +2998,18 @@ function decodeCompactSettings(raw){
   s.customMountain = false; s.mountainList = [];
   s.customSea = false; s.seaList = [];
   s.customCellTerrain = false; s.cellTerrainList = [];
+  s.customBridge = false; s.bridgeList = [];
+  s.numberOrder = (p.length >= 20 && p[19] === '1') ? 'spalten' : 'zeilen';
+  s.customHarbor = false; s.harborList = [];
+  if(p.length >= 21){
+    if(!/^[01]([0-9a-z]{3})*$/.test(p[20])) throw bad();
+    s.customHarbor = p[20][0] === '1';
+    for(let k = 1; k < p[20].length; k += 3){
+      const n = parseInt(p[20].slice(k, k + 3), 36);
+      if(n < 1) throw bad();
+      s.harborList.push(n);
+    }
+  }
   const posPart = (idx, flagKey, listKey) => {
     if(p.length <= idx) return;
     const str = p[idx];
@@ -2835,6 +3024,7 @@ function decodeCompactSettings(raw){
   posPart(13, 'customDesert', 'desertList');
   posPart(14, 'customForest', 'forestList');
   posPart(15, 'customMountain', 'mountainList');
+  posPart(18, 'customBridge', 'bridgeList');
   if(p.length >= 18){
     if(!/^[01]([0-9a-z]{4}[0-5])*$/.test(p[17])) throw bad();
     s.customCellTerrain = p[17][0] === '1';
@@ -2984,6 +3174,7 @@ function applySettings(s){
   }
   setChecked('customMerchantFields', !!s.customMerchantFields || legacyUsed);
   TERRAIN_PICKERS.forEach(P => P.applyState(s));
+  document.getElementById('numberOrder').value = s.numberOrder === 'spalten' ? 'spalten' : 'zeilen';
   customVillageList = [];
   if(Array.isArray(s.villageList)){
     s.villageList.forEach(n => { if(Number.isFinite(n) && !customVillageList.includes(n)) customVillageList.push(n); });
@@ -3135,6 +3326,7 @@ document.getElementById('desertPosition').addEventListener('change', () => gener
 document.getElementById('fieldCountInput').addEventListener('change', () => generateMap(currentSeed));
 document.getElementById('showRiver').addEventListener('change', () => generateMap(currentSeed));
 document.getElementById('bridgeCount').addEventListener('change', () => generateMap(currentSeed));
+document.getElementById('numberOrder').addEventListener('change', () => generateMap(currentSeed));
 document.getElementById('showFlowArrows').addEventListener('change', function(){
   const layer = document.getElementById('flowArrowLayer');
   if(layer) layer.style.display = this.checked ? '' : 'none';
