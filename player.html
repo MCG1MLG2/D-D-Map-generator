@@ -276,6 +276,20 @@
     justify-content:center;
     padding:50px 30px;
   }
+  /* On desktop the stage stays as tall as the window and sticks while the left panel scrolls,
+     so the card is always centered in the visible area. If the card is taller than the window,
+     the stage scrolls itself (margin:auto keeps the top reachable). */
+  @media (min-width:901px){
+    .stage{
+      position:sticky;
+      top:0;
+      align-self:start;
+      height:100vh;
+      box-sizing:border-box;
+      overflow:auto;
+    }
+    .stage > #card{ margin:auto; flex:none; }
+  }
 
   #card{
     width:520px;
