@@ -1,6 +1,6 @@
 # 🗺️ D&D Helper
 
-A small toolbox for fantasy tabletop RPGs (D&D & co.): a **procedural map generator**, a **hero card generator**, and an **enemy card generator**, all running in the browser with no framework and no build step.
+A small toolbox for fantasy tabletop RPGs (D&D & co.): a **procedural map generator**, a **hero card generator**, an **enemy card generator**, a **campaign timeline tracker**, and a **daily progress tracker**, all running in the browser with no framework and no build step.
 
 > ## 🤖 Note
 > **This project is 100% AI-generated.**
@@ -44,6 +44,16 @@ No installation, no dependencies. Just open the link in your browser.
 - Damage shown as numbered pip boxes, a single badge, or hidden entirely
 - Built-in enemy types (undead, beast, demon, dragon, goblin, giant, elemental, construct, bandit) each with flavor text and a random-generator button for names and abilities
 
+### ⏳ Timeline tracker (`zeitstreifen.html`)
+- A vertical progress strip for tracking the hours of an in-game session or campaign day, filling up field by field as time passes
+- Configurable number of hours and "free" hours, up to 24 each
+- PNG export, accent colors, language picker and fullscreen view, matching the look of the other generators
+
+### 🌅 Day strip (`tagesstreifen.html`)
+- A vertical strip with lettered fields (A–N, counting up from the bottom), styled as dark-green tiles with small icons on individual fields — handy for tracking the stages of a single day
+- Up to 60 fields, automatically splitting into additional columns (20 fields per column) once the strip grows long
+- PNG export, accent colors, language picker and fullscreen view, matching the look of the other generators
+
 ### 🌍 Languages
 - **48 languages** across all pages, with a language picker and automatic browser language detection
 - RTL support for right-to-left languages
@@ -59,6 +69,8 @@ No installation, no dependencies. Just open the link in your browser.
 | `map.html` | The map generator |
 | `player.html` | The hero card generator |
 | `gegner.html` | The enemy card generator |
+| `zeitstreifen.html` | The campaign timeline tracker |
+| `tagesstreifen.html` | The daily progress tracker |
 | `languages.js` | Shared translations for all pages (48 languages) |
 
 ## 🛠️ Tech
