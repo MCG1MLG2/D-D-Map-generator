@@ -247,7 +247,9 @@ const LANGUAGES = {
     "enemyButtonText": "إلى الأعداء",
     "grpBuildings": "المباني",
     "lblCustomVillages": "وضع القرى بنفسك",
-    "villagePickHint": "اختر قرية (أو +) ثم انقر على الخريطة"
+    "villagePickHint": "اختر قرية (أو +) ثم انقر على الخريطة",
+    "timelineButtonText": "إلى الشريط الزمني",
+    "dayStripButtonText": "إلى شريط اليوم"
   },
   "bg": {
     "nativeName": "Български",
@@ -473,7 +475,9 @@ const LANGUAGES = {
     "enemyButtonText": "Към враговете",
     "grpBuildings": "Сгради",
     "lblCustomVillages": "Ръчно поставяне на села",
-    "villagePickHint": "Избери село (или +), после щракни върху картата"
+    "villagePickHint": "Избери село (или +), после щракни върху картата",
+    "timelineButtonText": "Към времевата лента",
+    "dayStripButtonText": "Към дневната лента"
   },
   "bn": {
     "nativeName": "বাংলা",
@@ -699,7 +703,9 @@ const LANGUAGES = {
     "enemyButtonText": "শত্রুদের কাছে যান",
     "grpBuildings": "ভবন",
     "lblCustomVillages": "গ্রাম নিজে স্থাপন করুন",
-    "villagePickHint": "একটি গ্রাম (বা +) বেছে নিন, তারপর মানচিত্রে ক্লিক করুন"
+    "villagePickHint": "একটি গ্রাম (বা +) বেছে নিন, তারপর মানচিত্রে ক্লিক করুন",
+    "timelineButtonText": "সময়রেখায় যান",
+    "dayStripButtonText": "দিনের রেখায় যান"
   },
   "ca": {
     "nativeName": "Català",
@@ -925,7 +931,9 @@ const LANGUAGES = {
     "enemyButtonText": "Als Enemics",
     "grpBuildings": "Edificis",
     "lblCustomVillages": "Col·loca els pobles tu mateix",
-    "villagePickHint": "Tria un poble (o +) i després fes clic al mapa"
+    "villagePickHint": "Tria un poble (o +) i després fes clic al mapa",
+    "timelineButtonText": "A la Línia del Temps",
+    "dayStripButtonText": "A la Tira del Dia"
   },
   "cs": {
     "nativeName": "Čeština",
@@ -1151,7 +1159,9 @@ const LANGUAGES = {
     "enemyButtonText": "K nepřátelům",
     "grpBuildings": "Budovy",
     "lblCustomVillages": "Vesnice umístit ručně",
-    "villagePickHint": "Vyber vesnici (nebo +) a klikni na mapu"
+    "villagePickHint": "Vyber vesnici (nebo +) a klikni na mapu",
+    "timelineButtonText": "K časové ose",
+    "dayStripButtonText": "K denní ose"
   },
   "da": {
     "nativeName": "Dansk",
@@ -1377,7 +1387,9 @@ const LANGUAGES = {
     "enemyButtonText": "Til Fjenderne",
     "grpBuildings": "Bygninger",
     "lblCustomVillages": "Placér landsbyer selv",
-    "villagePickHint": "Vælg en landsby (eller +), og klik derefter på kortet"
+    "villagePickHint": "Vælg en landsby (eller +), og klik derefter på kortet",
+    "timelineButtonText": "Til Tidslinjen",
+    "dayStripButtonText": "Til Dagsstriben"
   },
   "de": {
     "nativeName": "Deutsch",
@@ -1603,7 +1615,9 @@ const LANGUAGES = {
     "enemyButtonText": "Zu den Gegnern",
     "grpBuildings": "Gebäude",
     "lblCustomVillages": "Dörfer selbst platzieren",
-    "villagePickHint": "Dorf wählen (oder +), dann auf die Karte klicken"
+    "villagePickHint": "Dorf wählen (oder +), dann auf die Karte klicken",
+    "timelineButtonText": "Zum Zeitstreifen",
+    "dayStripButtonText": "Zum Tagesstreifen"
   },
   "el": {
     "nativeName": "Ελληνικά",
@@ -1829,7 +1843,9 @@ const LANGUAGES = {
     "enemyButtonText": "Στους Εχθρούς",
     "grpBuildings": "Κτίρια",
     "lblCustomVillages": "Τοποθέτηση χωριών με το χέρι",
-    "villagePickHint": "Επίλεξε ένα χωριό (ή +) και κάνε κλικ στον χάρτη"
+    "villagePickHint": "Επίλεξε ένα χωριό (ή +) και κάνε κλικ στον χάρτη",
+    "timelineButtonText": "Στη Χρονοσειρά",
+    "dayStripButtonText": "Στη Λωρίδα της Ημέρας"
   },
   "en": {
     "nativeName": "English",
@@ -2055,7 +2071,9 @@ const LANGUAGES = {
     "enemyButtonText": "To the Enemies",
     "grpBuildings": "Buildings",
     "lblCustomVillages": "Place villages yourself",
-    "villagePickHint": "Select a village (or +), then click on the map"
+    "villagePickHint": "Select a village (or +), then click on the map",
+    "timelineButtonText": "To the Timeline",
+    "dayStripButtonText": "To the Day Strip"
   },
   "es": {
     "nativeName": "Español",
@@ -2281,7 +2299,9 @@ const LANGUAGES = {
     "enemyButtonText": "A los Enemigos",
     "grpBuildings": "Edificios",
     "lblCustomVillages": "Colocar las aldeas tú mismo",
-    "villagePickHint": "Elige una aldea (o +) y haz clic en el mapa"
+    "villagePickHint": "Elige una aldea (o +) y haz clic en el mapa",
+    "timelineButtonText": "A la Línea de Tiempo",
+    "dayStripButtonText": "A la Tira del Día"
   },
   "et": {
     "nativeName": "Eesti",
@@ -2507,7 +2527,9 @@ const LANGUAGES = {
     "enemyButtonText": "Vaenlaste juurde",
     "grpBuildings": "Hooned",
     "lblCustomVillages": "Aseta külad ise",
-    "villagePickHint": "Vali küla (või +) ja klõpsa seejärel kaardil"
+    "villagePickHint": "Vali küla (või +) ja klõpsa seejärel kaardil",
+    "timelineButtonText": "Ajajoone juurde",
+    "dayStripButtonText": "Päevariba juurde"
   },
   "eu": {
     "nativeName": "Euskara",
@@ -2733,7 +2755,9 @@ const LANGUAGES = {
     "enemyButtonText": "Etsaietara",
     "grpBuildings": "Eraikinak",
     "lblCustomVillages": "Herriak zuk jarri",
-    "villagePickHint": "Aukeratu herri bat (edo +) eta egin klik mapan"
+    "villagePickHint": "Aukeratu herri bat (edo +) eta egin klik mapan",
+    "timelineButtonText": "Denbora-lerrora",
+    "dayStripButtonText": "Eguneko lerrora"
   },
   "fa": {
     "nativeName": "فارسی",
@@ -2959,7 +2983,9 @@ const LANGUAGES = {
     "enemyButtonText": "به دشمنان",
     "grpBuildings": "ساختمان‌ها",
     "lblCustomVillages": "قرار دادن روستاها به‌صورت دستی",
-    "villagePickHint": "یک روستا (یا +) انتخاب کن، سپس روی نقشه کلیک کن"
+    "villagePickHint": "یک روستا (یا +) انتخاب کن، سپس روی نقشه کلیک کن",
+    "timelineButtonText": "به نوار زمان",
+    "dayStripButtonText": "به نوار روز"
   },
   "fi": {
     "nativeName": "Suomi",
@@ -3185,7 +3211,9 @@ const LANGUAGES = {
     "enemyButtonText": "Vihollisiin",
     "grpBuildings": "Rakennukset",
     "lblCustomVillages": "Sijoita kylät itse",
-    "villagePickHint": "Valitse kylä (tai +) ja napsauta sitten karttaa"
+    "villagePickHint": "Valitse kylä (tai +) ja napsauta sitten karttaa",
+    "timelineButtonText": "Aikajanalle",
+    "dayStripButtonText": "Päiväjanalle"
   },
   "fr": {
     "nativeName": "Français",
@@ -3411,7 +3439,9 @@ const LANGUAGES = {
     "enemyButtonText": "Vers les Ennemis",
     "grpBuildings": "Bâtiments",
     "lblCustomVillages": "Placer les villages soi-même",
-    "villagePickHint": "Choisis un village (ou +), puis clique sur la carte"
+    "villagePickHint": "Choisis un village (ou +), puis clique sur la carte",
+    "timelineButtonText": "Vers la Frise du Temps",
+    "dayStripButtonText": "Vers la Bande du Jour"
   },
   "ga": {
     "nativeName": "Gaeilge",
@@ -3637,7 +3667,9 @@ const LANGUAGES = {
     "enemyButtonText": "Chuig na Naimhde",
     "grpBuildings": "Foirgnimh",
     "lblCustomVillages": "Cuir na sráidbhailte i bhfeidhm tú féin",
-    "villagePickHint": "Roghnaigh sráidbhaile (nó +), ansin cliceáil ar an léarscáil"
+    "villagePickHint": "Roghnaigh sráidbhaile (nó +), ansin cliceáil ar an léarscáil",
+    "timelineButtonText": "Chuig an Amlíne",
+    "dayStripButtonText": "Chuig Stiall an Lae"
   },
   "hi": {
     "nativeName": "हिन्दी",
@@ -3863,7 +3895,9 @@ const LANGUAGES = {
     "enemyButtonText": "शत्रुओं पर जाएं",
     "grpBuildings": "इमारतें",
     "lblCustomVillages": "गाँव खुद रखें",
-    "villagePickHint": "एक गाँव (या +) चुनें, फिर मानचित्र पर क्लिक करें"
+    "villagePickHint": "एक गाँव (या +) चुनें, फिर मानचित्र पर क्लिक करें",
+    "timelineButtonText": "समयरेखा पर जाएं",
+    "dayStripButtonText": "दिन की पट्टी पर जाएं"
   },
   "hr": {
     "nativeName": "Hrvatski",
@@ -4089,7 +4123,9 @@ const LANGUAGES = {
     "enemyButtonText": "Na neprijatelje",
     "grpBuildings": "Zgrade",
     "lblCustomVillages": "Sela postavi sam",
-    "villagePickHint": "Odaberi selo (ili +), zatim klikni na kartu"
+    "villagePickHint": "Odaberi selo (ili +), zatim klikni na kartu",
+    "timelineButtonText": "Na vremensku traku",
+    "dayStripButtonText": "Na dnevnu traku"
   },
   "hu": {
     "nativeName": "Magyar",
@@ -4315,7 +4351,9 @@ const LANGUAGES = {
     "enemyButtonText": "Az ellenfelekhez",
     "grpBuildings": "Épületek",
     "lblCustomVillages": "Falvak kézi elhelyezése",
-    "villagePickHint": "Válassz falut (vagy +), majd kattints a térképre"
+    "villagePickHint": "Válassz falut (vagy +), majd kattints a térképre",
+    "timelineButtonText": "Az idővonalhoz",
+    "dayStripButtonText": "A napi sávhoz"
   },
   "id": {
     "nativeName": "Bahasa Indonesia",
@@ -4541,7 +4579,9 @@ const LANGUAGES = {
     "enemyButtonText": "Ke Musuh",
     "grpBuildings": "Bangunan",
     "lblCustomVillages": "Tempatkan desa sendiri",
-    "villagePickHint": "Pilih desa (atau +), lalu klik pada peta"
+    "villagePickHint": "Pilih desa (atau +), lalu klik pada peta",
+    "timelineButtonText": "Ke Garis Waktu",
+    "dayStripButtonText": "Ke Strip Hari"
   },
   "is": {
     "nativeName": "Íslenska",
@@ -4767,7 +4807,9 @@ const LANGUAGES = {
     "enemyButtonText": "Til óvinanna",
     "grpBuildings": "Byggingar",
     "lblCustomVillages": "Settu þorp sjálfur",
-    "villagePickHint": "Veldu þorp (eða +) og smelltu síðan á kortið"
+    "villagePickHint": "Veldu þorp (eða +) og smelltu síðan á kortið",
+    "timelineButtonText": "Á tímalínuna",
+    "dayStripButtonText": "Á dagræmuna"
   },
   "it": {
     "nativeName": "Italiano",
@@ -4993,7 +5035,9 @@ const LANGUAGES = {
     "enemyButtonText": "Vai ai Nemici",
     "grpBuildings": "Edifici",
     "lblCustomVillages": "Posiziona i villaggi manualmente",
-    "villagePickHint": "Scegli un villaggio (o +), poi clicca sulla mappa"
+    "villagePickHint": "Scegli un villaggio (o +), poi clicca sulla mappa",
+    "timelineButtonText": "Vai alla Linea del Tempo",
+    "dayStripButtonText": "Vai alla Striscia del Giorno"
   },
   "ja": {
     "nativeName": "日本語",
@@ -5219,7 +5263,9 @@ const LANGUAGES = {
     "enemyButtonText": "敵カードへ",
     "grpBuildings": "建物",
     "lblCustomVillages": "村を自分で配置する",
-    "villagePickHint": "村（または＋）を選んでから、マップをクリックしてください"
+    "villagePickHint": "村（または＋）を選んでから、マップをクリックしてください",
+    "timelineButtonText": "タイムラインへ",
+    "dayStripButtonText": "日のストリップへ"
   },
   "ko": {
     "nativeName": "한국어",
@@ -5445,7 +5491,9 @@ const LANGUAGES = {
     "enemyButtonText": "적 카드로 이동",
     "grpBuildings": "건물",
     "lblCustomVillages": "마을을 직접 배치",
-    "villagePickHint": "마을(또는 +)을 선택한 다음 지도를 클릭하세요"
+    "villagePickHint": "마을(또는 +)을 선택한 다음 지도를 클릭하세요",
+    "timelineButtonText": "타임라인으로 이동",
+    "dayStripButtonText": "하루 스트립으로 이동"
   },
   "lt": {
     "nativeName": "Lietuvių",
@@ -5671,7 +5719,9 @@ const LANGUAGES = {
     "enemyButtonText": "Į priešus",
     "grpBuildings": "Pastatai",
     "lblCustomVillages": "Kaimus išdėstyti pačiam",
-    "villagePickHint": "Pasirink kaimą (arba +), tada spustelėk žemėlapį"
+    "villagePickHint": "Pasirink kaimą (arba +), tada spustelėk žemėlapį",
+    "timelineButtonText": "Į laiko juostą",
+    "dayStripButtonText": "Į dienos juostą"
   },
   "lv": {
     "nativeName": "Latviešu",
@@ -5897,7 +5947,9 @@ const LANGUAGES = {
     "enemyButtonText": "Uz pretiniekiem",
     "grpBuildings": "Ēkas",
     "lblCustomVillages": "Ciemus izvietot pašam",
-    "villagePickHint": "Izvēlies ciemu (vai +), tad noklikšķini uz kartes"
+    "villagePickHint": "Izvēlies ciemu (vai +), tad noklikšķini uz kartes",
+    "timelineButtonText": "Uz laika joslu",
+    "dayStripButtonText": "Uz dienas joslu"
   },
   "mr": {
     "nativeName": "मराठी",
@@ -6123,7 +6175,9 @@ const LANGUAGES = {
     "enemyButtonText": "शत्रूंकडे जा",
     "grpBuildings": "इमारती",
     "lblCustomVillages": "गावे स्वतः ठेवा",
-    "villagePickHint": "एक गाव (किंवा +) निवडा, मग नकाशावर क्लिक करा"
+    "villagePickHint": "एक गाव (किंवा +) निवडा, मग नकाशावर क्लिक करा",
+    "timelineButtonText": "कालरेषेकडे जा",
+    "dayStripButtonText": "दिवसाच्या पट्टीकडे जा"
   },
   "mt": {
     "nativeName": "Malti",
@@ -6349,7 +6403,9 @@ const LANGUAGES = {
     "enemyButtonText": "Lejn l-Għedewwa",
     "grpBuildings": "Bini",
     "lblCustomVillages": "Poġġi l-irħula int stess",
-    "villagePickHint": "Agħżel raħal (jew +), imbagħad ikklikkja fuq il-mappa"
+    "villagePickHint": "Agħżel raħal (jew +), imbagħad ikklikkja fuq il-mappa",
+    "timelineButtonText": "Lejn il-Linja taż-Żmien",
+    "dayStripButtonText": "Lejn l-Istrixxa tal-Ġurnata"
   },
   "nl": {
     "nativeName": "Nederlands",
@@ -6575,7 +6631,9 @@ const LANGUAGES = {
     "enemyButtonText": "Naar de Vijanden",
     "grpBuildings": "Gebouwen",
     "lblCustomVillages": "Dorpen zelf plaatsen",
-    "villagePickHint": "Kies een dorp (of +) en klik dan op de kaart"
+    "villagePickHint": "Kies een dorp (of +) en klik dan op de kaart",
+    "timelineButtonText": "Naar de Tijdlijn",
+    "dayStripButtonText": "Naar de Dagstrook"
   },
   "no": {
     "nativeName": "Norsk",
@@ -6801,7 +6859,9 @@ const LANGUAGES = {
     "enemyButtonText": "Til Fiendene",
     "grpBuildings": "Bygninger",
     "lblCustomVillages": "Plasser landsbyer selv",
-    "villagePickHint": "Velg en landsby (eller +), og klikk deretter på kartet"
+    "villagePickHint": "Velg en landsby (eller +), og klikk deretter på kartet",
+    "timelineButtonText": "Til Tidslinjen",
+    "dayStripButtonText": "Til Dagsstripen"
   },
   "pl": {
     "nativeName": "Polski",
@@ -7027,7 +7087,9 @@ const LANGUAGES = {
     "enemyButtonText": "Do Przeciwników",
     "grpBuildings": "Budynki",
     "lblCustomVillages": "Wioski rozmieść samodzielnie",
-    "villagePickHint": "Wybierz wioskę (lub +), a potem kliknij na mapie"
+    "villagePickHint": "Wybierz wioskę (lub +), a potem kliknij na mapie",
+    "timelineButtonText": "Do Osi Czasu",
+    "dayStripButtonText": "Do Paska Dnia"
   },
   "pt": {
     "nativeName": "Português",
@@ -7253,7 +7315,9 @@ const LANGUAGES = {
     "enemyButtonText": "Para os Inimigos",
     "grpBuildings": "Edifícios",
     "lblCustomVillages": "Posicionar as aldeias manualmente",
-    "villagePickHint": "Escolha uma aldeia (ou +) e clique no mapa"
+    "villagePickHint": "Escolha uma aldeia (ou +) e clique no mapa",
+    "timelineButtonText": "Para a Linha do Tempo",
+    "dayStripButtonText": "Para a Faixa do Dia"
   },
   "ro": {
     "nativeName": "Română",
@@ -7479,7 +7543,9 @@ const LANGUAGES = {
     "enemyButtonText": "La Inamici",
     "grpBuildings": "Clădiri",
     "lblCustomVillages": "Plasează satele manual",
-    "villagePickHint": "Alege un sat (sau +), apoi dă clic pe hartă"
+    "villagePickHint": "Alege un sat (sau +), apoi dă clic pe hartă",
+    "timelineButtonText": "La Cronologie",
+    "dayStripButtonText": "La Banda Zilei"
   },
   "ru": {
     "nativeName": "Русский",
@@ -7705,7 +7771,9 @@ const LANGUAGES = {
     "enemyButtonText": "К врагам",
     "grpBuildings": "Здания",
     "lblCustomVillages": "Разместить деревни вручную",
-    "villagePickHint": "Выбери деревню (или +), затем нажми на карту"
+    "villagePickHint": "Выбери деревню (или +), затем нажми на карту",
+    "timelineButtonText": "К шкале времени",
+    "dayStripButtonText": "К полосе дня"
   },
   "sk": {
     "nativeName": "Slovenčina",
@@ -7931,7 +7999,9 @@ const LANGUAGES = {
     "enemyButtonText": "K protivníkom",
     "grpBuildings": "Budovy",
     "lblCustomVillages": "Dediny umiestniť ručne",
-    "villagePickHint": "Vyber dedinu (alebo +) a klikni na mapu"
+    "villagePickHint": "Vyber dedinu (alebo +) a klikni na mapu",
+    "timelineButtonText": "K časovej osi",
+    "dayStripButtonText": "K dennej osi"
   },
   "sl": {
     "nativeName": "Slovenščina",
@@ -8157,7 +8227,9 @@ const LANGUAGES = {
     "enemyButtonText": "K nasprotnikom",
     "grpBuildings": "Zgradbe",
     "lblCustomVillages": "Vasi postavi sam",
-    "villagePickHint": "Izberi vas (ali +), nato klikni na zemljevid"
+    "villagePickHint": "Izberi vas (ali +), nato klikni na zemljevid",
+    "timelineButtonText": "K časovnici",
+    "dayStripButtonText": "K dnevnemu traku"
   },
   "sq": {
     "nativeName": "Shqip",
@@ -8383,7 +8455,9 @@ const LANGUAGES = {
     "enemyButtonText": "Te Armiqtë",
     "grpBuildings": "Ndërtesat",
     "lblCustomVillages": "Vendosi fshatrat vetë",
-    "villagePickHint": "Zgjidh një fshat (ose +), pastaj kliko në hartë"
+    "villagePickHint": "Zgjidh një fshat (ose +), pastaj kliko në hartë",
+    "timelineButtonText": "Te Vija Kohore",
+    "dayStripButtonText": "Te Shiriti i Ditës"
   },
   "sr": {
     "nativeName": "Српски",
@@ -8609,7 +8683,9 @@ const LANGUAGES = {
     "enemyButtonText": "Ка противницима",
     "grpBuildings": "Зграде",
     "lblCustomVillages": "Села постави сам",
-    "villagePickHint": "Изабери село (или +), па кликни на мапу"
+    "villagePickHint": "Изабери село (или +), па кликни на мапу",
+    "timelineButtonText": "Ка временској траци",
+    "dayStripButtonText": "Ка дневној траци"
   },
   "sv": {
     "nativeName": "Svenska",
@@ -8835,7 +8911,9 @@ const LANGUAGES = {
     "enemyButtonText": "Till Fienderna",
     "grpBuildings": "Byggnader",
     "lblCustomVillages": "Placera byar själv",
-    "villagePickHint": "Välj en by (eller +) och klicka sedan på kartan"
+    "villagePickHint": "Välj en by (eller +) och klicka sedan på kartan",
+    "timelineButtonText": "Till Tidslinjen",
+    "dayStripButtonText": "Till Dagsremsan"
   },
   "sw": {
     "nativeName": "Kiswahili",
@@ -9061,7 +9139,9 @@ const LANGUAGES = {
     "enemyButtonText": "Kwenda kwa Maadui",
     "grpBuildings": "Majengo",
     "lblCustomVillages": "Weka vijiji mwenyewe",
-    "villagePickHint": "Chagua kijiji (au +), kisha bofya kwenye ramani"
+    "villagePickHint": "Chagua kijiji (au +), kisha bofya kwenye ramani",
+    "timelineButtonText": "Kwenda kwenye Mstari wa Muda",
+    "dayStripButtonText": "Kwenda kwenye Ukanda wa Siku"
   },
   "ta": {
     "nativeName": "தமிழ்",
@@ -9287,7 +9367,9 @@ const LANGUAGES = {
     "enemyButtonText": "எதிரிகளிடம் செல்",
     "grpBuildings": "கட்டடங்கள்",
     "lblCustomVillages": "கிராமங்களை நீங்களே வைக்கவும்",
-    "villagePickHint": "ஒரு கிராமத்தை (அல்லது +) தேர்ந்தெடுத்து, பின்னர் வரைபடத்தில் கிளிக் செய்யவும்"
+    "villagePickHint": "ஒரு கிராமத்தை (அல்லது +) தேர்ந்தெடுத்து, பின்னர் வரைபடத்தில் கிளிக் செய்யவும்",
+    "timelineButtonText": "காலக்கோட்டுக்குச் செல்",
+    "dayStripButtonText": "நாள் பட்டைக்குச் செல்"
   },
   "te": {
     "nativeName": "తెలుగు",
@@ -9513,7 +9595,9 @@ const LANGUAGES = {
     "enemyButtonText": "శత్రువుల వద్దకు వెళ్ళు",
     "grpBuildings": "భవనాలు",
     "lblCustomVillages": "గ్రామాలను మీరే ఉంచండి",
-    "villagePickHint": "ఒక గ్రామాన్ని (లేదా +) ఎంచుకుని, ఆపై మ్యాప్‌పై క్లిక్ చేయండి"
+    "villagePickHint": "ఒక గ్రామాన్ని (లేదా +) ఎంచుకుని, ఆపై మ్యాప్‌పై క్లిక్ చేయండి",
+    "timelineButtonText": "కాలరేఖకు వెళ్ళు",
+    "dayStripButtonText": "రోజు పట్టీకి వెళ్ళు"
   },
   "th": {
     "nativeName": "ไทย",
@@ -9739,7 +9823,9 @@ const LANGUAGES = {
     "enemyButtonText": "ไปที่ศัตรู",
     "grpBuildings": "อาคาร",
     "lblCustomVillages": "วางหมู่บ้านด้วยตัวเอง",
-    "villagePickHint": "เลือกหมู่บ้าน (หรือ +) แล้วคลิกบนแผนที่"
+    "villagePickHint": "เลือกหมู่บ้าน (หรือ +) แล้วคลิกบนแผนที่",
+    "timelineButtonText": "ไปที่ไทม์ไลน์",
+    "dayStripButtonText": "ไปที่แถบวัน"
   },
   "tr": {
     "nativeName": "Türkçe",
@@ -9965,7 +10051,9 @@ const LANGUAGES = {
     "enemyButtonText": "Düşmanlara Git",
     "grpBuildings": "Yapılar",
     "lblCustomVillages": "Köyleri kendin yerleştir",
-    "villagePickHint": "Bir köy (veya +) seç, sonra haritaya tıkla"
+    "villagePickHint": "Bir köy (veya +) seç, sonra haritaya tıkla",
+    "timelineButtonText": "Zaman Çizelgesine Git",
+    "dayStripButtonText": "Gün Şeridine Git"
   },
   "uk": {
     "nativeName": "Українська",
@@ -10191,7 +10279,9 @@ const LANGUAGES = {
     "enemyButtonText": "До ворогів",
     "grpBuildings": "Будівлі",
     "lblCustomVillages": "Розмістити села вручну",
-    "villagePickHint": "Вибери село (або +), потім натисни на карту"
+    "villagePickHint": "Вибери село (або +), потім натисни на карту",
+    "timelineButtonText": "До шкали часу",
+    "dayStripButtonText": "До смуги дня"
   },
   "ur": {
     "nativeName": "اردو",
@@ -10417,7 +10507,9 @@ const LANGUAGES = {
     "enemyButtonText": "دشمنوں کی طرف",
     "grpBuildings": "عمارتیں",
     "lblCustomVillages": "گاؤں خود رکھیں",
-    "villagePickHint": "ایک گاؤں (یا +) منتخب کریں، پھر نقشے پر کلک کریں"
+    "villagePickHint": "ایک گاؤں (یا +) منتخب کریں، پھر نقشے پر کلک کریں",
+    "timelineButtonText": "ٹائم لائن کی طرف",
+    "dayStripButtonText": "دن کی پٹی کی طرف"
   },
   "vi": {
     "nativeName": "Tiếng Việt",
@@ -10643,7 +10735,9 @@ const LANGUAGES = {
     "enemyButtonText": "Đến Kẻ Địch",
     "grpBuildings": "Công trình",
     "lblCustomVillages": "Tự đặt làng",
-    "villagePickHint": "Chọn một làng (hoặc +), rồi nhấp vào bản đồ"
+    "villagePickHint": "Chọn một làng (hoặc +), rồi nhấp vào bản đồ",
+    "timelineButtonText": "Đến Dòng Thời Gian",
+    "dayStripButtonText": "Đến Dải Ngày"
   },
   "zh": {
     "nativeName": "中文",
@@ -10869,6 +10963,8 @@ const LANGUAGES = {
     "enemyButtonText": "前往敌人",
     "grpBuildings": "建筑",
     "lblCustomVillages": "自行放置村庄",
-    "villagePickHint": "选择一个村庄（或＋），然后点击地图"
+    "villagePickHint": "选择一个村庄（或＋），然后点击地图",
+    "timelineButtonText": "前往时间条",
+    "dayStripButtonText": "前往日程条"
   }
 };
