@@ -60,6 +60,10 @@
   .status.ok{color:#7fae6a}
 
   .stage{display:flex;align-items:center;justify-content:center;padding:50px 30px}
+  @media(min-width:901px){
+    .stage{align-self:start;position:sticky;top:0;height:100vh;overflow:auto}
+    .stage #card{margin:auto;flex:0 0 auto}
+  }
   #card{width:520px;min-height:620px;position:relative;padding:34px 38px 30px;color:var(--ink);border-radius:2px;
     background:linear-gradient(155deg,var(--accent-20,rgba(168,130,58,.2)),transparent 65%),radial-gradient(circle at 15% 10%,rgba(255,255,255,.08),transparent 40%),linear-gradient(155deg,var(--tint-1,#e7d9b6) 0%,var(--tint-2,#ded0a6) 60%,var(--tint-3,#d3c092) 100%);
     box-shadow:0 30px 60px -20px rgba(0,0,0,.7),0 0 0 10px #17130f,0 0 0 11px #4a3c28}
