@@ -90,8 +90,8 @@
   /* ---------- Vorschau ---------- */
   .stage{display:flex; align-items:center; justify-content:center; padding:50px 30px; overflow:auto;}
   @media (min-width:901px){
-    .stage{position:sticky; top:0; align-self:start; height:100vh;}
-    #card{margin:auto;}
+    .stage{position:sticky; top:0; align-self:start; height:100vh; overflow:hidden; padding:0;}
+    #card{position:absolute; left:50%; top:50%; margin:0; transform:translate(-50%,-50%); transform-origin:center center;}
   }
   #card{
     flex:none; direction:ltr; width:max-content; min-width:230px;
@@ -338,7 +338,18 @@
     card.style.setProperty('--tile-1', mixHex(P.accent, '#000000', 0.9));
     card.style.setProperty('--tile-2', mixHex(P.accent, '#000000', 0.55));
     card.style.setProperty('--tile-edge', mixHex(P.bright, '#000000', 0.7));
+    fitCard();
   }
+
+  // Am PC (über 900 px): Karte bleibt immer mittig im rechten Bereich, bei Bedarf verkleinert (nur Vorschau)
+  function fitCard(){
+    const stage = document.querySelector('.stage'), card = document.getElementById('card');
+    if(!window.matchMedia('(min-width:901px)').matches){ card.style.transform = ''; return; }
+    const s = Math.min(1, (stage.clientWidth - 90) / card.offsetWidth, (stage.clientHeight - 90) / card.offsetHeight);
+    card.style.transform = 'translate(-50%,-50%) scale(' + Math.max(0.2, s) + ')';
+  }
+  window.addEventListener('resize', fitCard);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(fitCard);
 
   // Farbfelder
   const swWrap = document.getElementById('swatches');
@@ -363,7 +374,12 @@
   document.getElementById('exportBtn').addEventListener('click', () => {
     const status = document.getElementById('exportStatus');
     status.textContent = t('playerExportCreating') || '';
-    html2canvas(document.getElementById('card'), { scale: 2, backgroundColor: null }).then(canvas => {
+    html2canvas(document.getElementById('card'), { scale: 2, backgroundColor: null, onclone: doc => {
+      const st = doc.querySelector('.stage');
+      st.style.position = 'static'; st.style.height = 'auto'; st.style.overflow = 'visible'; st.style.padding = '0';
+      const c = doc.getElementById('card');
+      c.style.position = 'relative'; c.style.left = 'auto'; c.style.top = 'auto'; c.style.margin = '0'; c.style.transform = 'none';
+    } }).then(canvas => {
       const link = document.createElement('a');
       const name = (document.getElementById('dTitle').value || 'tagesstreifen').trim().replace(/\s+/g, '_');
       link.download = 'Tagesstreifen_' + name + '.png';
