@@ -138,6 +138,18 @@
         <button class="btn" id="removeImgBtn" type="button" style="margin:0;display:none" data-i18n="playerRemoveImageBtn">Bild entfernen</button>
       </div>
     </div>
+    <div class="field">
+      <label for="eBorderW"><span data-i18n="enemyLblBorder">Rand des Symbols</span>: <span id="borderVal">3</span> px</label>
+      <div class="row2">
+        <input type="range" id="eBorderW" min="0" max="12" value="3" style="accent-color:var(--gold);width:100%">
+        <select id="eBorderC">
+          <option value="dark" data-i18n="enemyBorderDark">Dunkel</option>
+          <option value="gold" data-i18n="enemyBorderGold">Gold</option>
+          <option value="accent" data-i18n="enemyBorderAccent">Akzentfarbe</option>
+          <option value="light" data-i18n="enemyBorderLight">Hell</option>
+        </select>
+      </div>
+    </div>
     <div class="field"><label for="eType" data-i18n="enemyLblType">Spezies</label><select id="eType"></select></div>
     <div class="field"><label for="ePassive" data-i18n="enemyLblPassive">Passive Fähigkeit</label><select id="ePassive"></select></div>
     <div class="field"><label for="eAbility" data-i18n="enemyLblAbility">Spezialangriff</label><textarea id="eAbility" rows="3">Wirft einmal pro Kampf einen Felsbrocken auf ein Ziel in bis zu 3 Feldern Entfernung.</textarea></div>
@@ -292,6 +304,10 @@
     const med = $('medOut'); med.textContent = '';
     if(portrait){ const im = new Image(); im.src = portrait; med.appendChild(im); } else med.textContent = $('eIcon').value || '👹';
     $('removeImgBtn').style.display = portrait ? '' : 'none';
+    const bw = Math.max(0, Math.min(12, parseInt($('eBorderW').value, 10) || 0));
+    $('borderVal').textContent = bw;
+    med.style.borderWidth = bw + 'px';
+    med.style.borderColor = { dark:'#241a08', gold:'#d9b56a', accent:sel.accent, light:'#f3e8c8' }[$('eBorderC').value] || '#241a08';
     const ab = $('eAbility').value.trim();
     $('abOut').textContent = ab; $('abBox').style.display = ab ? '' : 'none';
 
@@ -406,7 +422,7 @@
   function collect(){
     return { v:1, l:currentLang, n:$('eName').value, e:$('eEpi').value, r:$('eThreat').value, i:$('eIcon').value,
       t:TYPES.findIndex(x => x.id === $('eType').value), p:PASSIVES.findIndex(x => x.id === $('ePassive').value), a:$('eAbility').value, hp:$('eHp').value, ar:$('eArmor').value,
-      d:$('eDmg').value, sd:$('eDmgMode').value, m:$('eMove').value, ac:PALETTE.indexOf(sel) };
+      d:$('eDmg').value, sd:$('eDmgMode').value, bw:$('eBorderW').value, bc:$('eBorderC').value, m:$('eMove').value, ac:PALETTE.indexOf(sel) };
   }
   function shareURL(){
     return location.origin + location.pathname + location.search + '#g=' + encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(collect())))));
@@ -421,6 +437,8 @@
     $('ePassive').value = s.p >= 0 && PASSIVES[s.p] ? PASSIVES[s.p].id : '';
     $('eAbility').value = s.a; $('eHp').value = s.hp; $('eArmor').value = s.ar; $('eDmg').value = s.d; $('eDmgMode').value = s.sd === false ? 'off' : (s.sd === 'badge' || s.sd === 'off' ? s.sd : 'pips'); $('eMove').value = s.m;
     selectColor(s.ac);
+    if(s.bw !== undefined) $('eBorderW').value = s.bw;
+    $('eBorderC').value = ['dark','gold','accent','light'].includes(s.bc) ? s.bc : 'dark';
     portrait = null; $('eImage').value = '';
     if(s.l && L[s.l]) applyLanguage(s.l); else render();
   }
