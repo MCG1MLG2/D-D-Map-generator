@@ -239,6 +239,12 @@
     text-align: center;
     padding: 16px 20px;
   }
+  /* ungerader letzter Knopf: eigene Reihe, mittig, so breit wie eine Spalte */
+  .button-row .button:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: calc(50% - 8px);
+  }
 
   .button:hover {
     transform: translateY(-2px);
@@ -283,6 +289,9 @@
     }
     .button-row {
       grid-template-columns: 1fr;
+    }
+    .button-row .button:last-child:nth-child(odd) {
+      width: 100%;
     }
     .github-link {
       bottom: 12px;
@@ -346,17 +355,20 @@
     </p>
 
     <div class="button-row">
-      <a href="map.html" class="button">
-        <span>🗺️</span> <span data-i18n="buttonText">Zur Karte</span>
-      </a>
       <a href="zeitstreifen.html" class="button">
         <span>⏳</span> <span data-i18n="timelineButtonText">Zum Zeitstreifen</span>
+      </a>
+      <a href="tagesstreifen.html" class="button">
+        <span>🌅</span> <span data-i18n="dayStripButtonText">Zum Tagesstreifen</span>
       </a>
       <a href="player.html" class="button">
         <span>🛡️</span> <span data-i18n="playerButtonText">Zur Heldentafel</span>
       </a>
       <a href="gegner.html" class="button">
         <span>⚔️</span> <span data-i18n="enemyButtonText">Zu den Gegnern</span>
+      </a>
+      <a href="map.html" class="button">
+        <span>🗺️</span> <span data-i18n="buttonText">Zur Karte</span>
       </a>
     </div>
 
