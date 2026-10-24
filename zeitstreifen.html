@@ -89,9 +89,15 @@
   .export-status{font-size:.8rem; color:var(--text-muted); margin-top:8px; min-height:1em;}
 
   /* ---------- Vorschau ---------- */
-  .stage{display:flex; align-items:center; justify-content:center; padding:50px 30px; overflow-x:auto;}
+  .stage{display:flex; padding:50px 30px; overflow:auto;}
+  /* PC: Karte bleibt beim Scrollen des Bedienfelds mittig im Bild */
+  @media (min-width:901px){
+    .layout{align-items:start;}
+    .panel{min-height:100vh;}
+    .stage{position:sticky; top:0; height:100vh;}
+  }
   #card{
-    flex:none; direction:ltr; width:max-content;
+    flex:none; direction:ltr; width:max-content; margin:auto;
     background:
       linear-gradient(155deg, var(--accent-mix-20-transparent, rgba(168,130,58,.2)), transparent 65%),
       radial-gradient(circle at 15% 10%, rgba(255,255,255,.08), transparent 40%),
