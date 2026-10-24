@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="dayHeading">Tagesstreifen-Generator</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Ccircle%20cx='32'%20cy='32'%20r='30'%20fill='%23ead9b4'%20stroke='%23a9782f'%20stroke-width='4'/%3E%3Ccircle%20cx='32'%20cy='32'%20r='11'%20fill='%23d9b56a'%20stroke='%233b2a1a'%20stroke-width='2'/%3E%3Cpath%20d='M32%208v9M32%2047v9M8%2032h9M47%2032h9M15%2015l6%206M43%2043l6%206M49%2015l-6%206M21%2043l-6%206'%20stroke='%233b2a1a'%20stroke-width='3'%20stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="languages.js"></script>
+<style>
+  :root{
+    --stone-1:#171310; --stone-2:#241d17; --gold:#b6903f; --gold-bright:#d9b56a;
+    --ink:#2c2013; --parchment:#e7d9b6; --parchment-dark:#d3c092; --parchment-shadow:#8a7142;
+    --crimson:#7c2020; --text-muted:#a8977b; --shadow:rgba(0,0,0,0.5);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  @property --bg-base   { syntax:'<color>'; inherits:true; initial-value:#171310; }
+  @property --bg-glow-1 { syntax:'<color>'; inherits:true; initial-value:#3a2c1c; }
+  @property --bg-glow-2 { syntax:'<color>'; inherits:true; initial-value:#2a1f14; }
+  @property --bg-spot   { syntax:'<color>'; inherits:true; initial-value:rgba(217,181,106,.12); }
+  body{
+    transition:--bg-base .5s ease, --bg-glow-1 .5s ease, --bg-glow-2 .5s ease, --bg-spot .5s ease;
+    background:
+      radial-gradient(ellipse at 70% 45%, var(--bg-spot) 0%, transparent 55%),
+      radial-gradient(ellipse at 20% -10%, var(--bg-glow-1) 0%, transparent 55%),
+      radial-gradient(ellipse at 90% 110%, var(--bg-glow-2) 0%, transparent 55%),
+      var(--bg-base);
+    color:var(--parchment);
+    font-family:'EB Garamond', serif;
+    min-height:100vh;
+  }
+  .layout{display:grid; grid-template-columns:380px 1fr; min-height:100vh;}
+  @media (max-width:900px){ .layout{grid-template-columns:1fr;} }
+
+  /* ---------- Bedienfeld ---------- */
+  .panel{
+    background:linear-gradient(180deg, var(--stone-2), var(--stone-1));
+    border-right:1px solid #000;
+    padding:64px 30px 40px;
+    box-shadow:inset -18px 0 30px -28px #000;
+  }
+  .panel h1{font-family:'Cinzel Decorative', serif; font-size:1.5rem; color:var(--gold-bright); margin:0 0 4px;}
+  .panel .sub{color:var(--text-muted); font-size:.95rem; margin:0 0 30px; font-style:italic;}
+  .field{margin-bottom:20px;}
+  .field label{display:block; font-size:.8rem; text-transform:uppercase; letter-spacing:.08em; color:var(--gold); margin-bottom:7px;}
+  .field input[type="text"], .field input[type="number"]{
+    width:100%; background:#0f0c09; border:1px solid #4a3c28; color:var(--parchment);
+    font-family:'EB Garamond', serif; font-size:1.05rem; padding:9px 11px; border-radius:3px;
+  }
+  .field input:focus{outline:none; border-color:var(--gold);}
+  .swatches{display:flex; flex-wrap:wrap; gap:10px;}
+  .swatch{width:34px; height:34px; border-radius:50%; border:2px solid #000; cursor:pointer;}
+  .swatch.active{border-color:var(--parchment); box-shadow:0 0 0 2px var(--gold);}
+
+  .field .toggle-row{
+    display:flex; align-items:center; gap:12px; cursor:pointer; user-select:none;
+    padding:8px 10px; border-radius:5px; border:1px solid transparent; transition:background .15s, border-color .15s;
+  }
+  .field .toggle-row:hover{background:rgba(182,144,63,.08); border-color:#4a3c28;}
+  .toggle-row input{display:none;}
+  .toggle-switch{
+    width:56px; height:32px; background:#0f0c09; border:1px solid #4a3c28; border-radius:16px;
+    position:relative; transition:background .25s ease, border-color .25s ease, box-shadow .25s ease;
+    flex:0 0 auto; box-shadow:inset 0 1px 3px rgba(0,0,0,.6);
+  }
+  .toggle-switch::after{
+    content:""; position:absolute; top:3px; left:3px; width:24px; height:24px; border-radius:50%;
+    background:linear-gradient(180deg,#c9bfa8,#8a7a5c); box-shadow:0 1px 2px rgba(0,0,0,.5);
+    transition:left .25s cubic-bezier(.34,1.56,.64,1), background .25s ease;
+  }
+  .toggle-row input:checked + .toggle-switch{
+    background:linear-gradient(180deg, var(--accent, #a8823a), var(--accent-mix-60-black, #654e23));
+    border-color:var(--gold-bright);
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.3), 0 0 8px var(--accent-mix-55-transparent, rgba(168,130,58,.55));
+  }
+  .toggle-row input:checked + .toggle-switch::after{left:27px; background:linear-gradient(180deg,#fff6e0, var(--gold-bright));}
+  .field .toggle-label{display:inline; font-size:.95rem; text-transform:none; color:var(--parchment); margin-bottom:0;}
+
+  .export-btn{
+    margin-top:10px; width:100%; padding:13px;
+    background:linear-gradient(180deg, var(--gold-bright), var(--gold)); border:1px solid #7a5c22; color:#241a08;
+    font-family:'Cinzel', serif; font-weight:700; letter-spacing:.03em; font-size:.95rem; border-radius:4px; cursor:pointer;
+  }
+  .export-btn:hover{filter:brightness(1.07);}
+  .export-status{font-size:.8rem; color:var(--text-muted); margin-top:8px; min-height:1em;}
+
+  /* ---------- Vorschau ---------- */
+  .stage{display:flex; align-items:center; justify-content:center; padding:50px 30px; overflow:auto;}
+  @media (min-width:901px){
+    .stage{position:sticky; top:0; align-self:start; height:100vh;}
+    #card{margin:auto;}
+  }
+  #card{
+    flex:none; direction:ltr; width:max-content; min-width:230px;
+    background:
+      linear-gradient(155deg, var(--accent-mix-20-transparent, rgba(168,130,58,.2)), transparent 65%),
+      radial-gradient(circle at 15% 10%, rgba(255,255,255,.08), transparent 40%),
+      linear-gradient(155deg, var(--card-tint-1, var(--parchment)) 0%, var(--card-tint-2, #ded0a6) 60%, var(--card-tint-3, #d3c092) 100%);
+    border-radius:2px; position:relative; padding:30px 40px 26px; color:var(--ink);
+    box-shadow:0 30px 60px -20px rgba(0,0,0,.7), 0 0 0 10px #17130f, 0 0 0 11px #4a3c28;
+  }
+  #card::before{content:""; position:absolute; inset:10px; border:1px solid var(--parchment-shadow); pointer-events:none;}
+  #card::after{content:""; position:absolute; inset:15px; border:2px solid var(--accent, #a8823a); opacity:.7; pointer-events:none;}
+
+  .header{text-align:center; margin-bottom:6px;}
+  .header h2{font-family:'Cinzel', serif; font-weight:900; font-size:1.8rem; margin:0; color:var(--ink);}
+  .header .epithet{font-style:italic; color:#5a4a30; font-size:1.05rem; margin-top:2px; min-height:1.2em;}
+  .rule{height:1px; margin:12px auto 20px; width:70%; background:linear-gradient(90deg, transparent, var(--accent,#a8823a), transparent);}
+
+  /* Leiste: senkrechte Reihe von Buchstabenfeldern */
+  .strip{
+    display:flex; flex-direction:row; gap:7px; width:max-content; margin:0 auto; padding:10px;
+    background:linear-gradient(180deg, var(--strip-1, #1d2a1b), var(--strip-2, #121a11));
+    border:2px solid var(--accent, #a8823a); border-radius:6px;
+    box-shadow:inset 0 0 14px rgba(0,0,0,.6), 0 3px 8px rgba(0,0,0,.25);
+  }
+  .col{display:flex; flex-direction:column; gap:7px;}
+  .tile{
+    width:68px; height:68px; position:relative; display:flex; align-items:center; justify-content:center;
+    background:
+      radial-gradient(circle at 50% 30%, rgba(255,255,255,.10), transparent 65%),
+      linear-gradient(160deg, var(--tile-1, #2f4a2b), var(--tile-2, #1b2d19));
+    border:2px solid var(--tile-edge, #5c8a52); border-radius:4px;
+    box-shadow:inset 0 0 10px rgba(0,0,0,.55), 0 1px 3px rgba(0,0,0,.5);
+  }
+  .tile::before{content:""; position:absolute; inset:3px; border:1px solid rgba(243,232,200,.22); border-radius:2px; pointer-events:none;}
+  .tile .n{
+    font-family:'Cinzel', serif; font-weight:700; font-size:2.1rem; line-height:1; color:#f3e8c8;
+    text-shadow:0 2px 3px rgba(0,0,0,.7);
+  }
+  .tile .n.small{font-size:1.6rem;}
+  .tile .rune{position:absolute; right:4px; bottom:4px; width:17px; height:17px; line-height:0;}
+  .tile .rune svg{width:17px; height:17px;}
+  .brand{font-family:'Cinzel', serif; font-size:.7rem; letter-spacing:.1em; color:#8a7142; text-transform:uppercase; text-align:center; margin-top:22px;}
+
+  /* Sprachauswahl + Zurück */
+  .lang-picker{
+    position:fixed; top:20px; right:20px; z-index:20; display:flex; align-items:center; gap:8px;
+    background:linear-gradient(180deg, var(--parchment) 0%, var(--parchment-dark) 100%);
+    border:1px solid var(--gold); border-radius:6px; padding:8px 12px; box-shadow:0 6px 16px var(--shadow);
+  }
+  .lang-picker .globe{font-size:16px; line-height:1;}
+  .lang-picker select{
+    appearance:none; -webkit-appearance:none; background:transparent; border:none;
+    font-family:'Cinzel', serif; font-size:13px; font-weight:600; color:var(--ink); padding-right:16px; cursor:pointer;
+  }
+  .lang-picker select:focus{outline:none;}
+  .lang-picker select option{background:var(--parchment); color:var(--ink);}
+  .lang-picker::after{content:"▾"; position:absolute; right:12px; pointer-events:none; color:var(--gold); font-size:11px;}
+  .back-btn{
+    position:fixed; top:20px; left:20px; z-index:20; display:flex; align-items:center; gap:6px;
+    background:linear-gradient(180deg, var(--parchment) 0%, var(--parchment-dark) 100%);
+    border:1px solid var(--gold); border-radius:6px; padding:8px 14px; box-shadow:0 6px 16px var(--shadow);
+    font-family:'Cinzel', serif; font-size:13px; font-weight:600; color:var(--ink); text-decoration:none;
+  }
+  .back-btn:hover{filter:brightness(1.06);}
+  html[dir="rtl"] .lang-picker{right:auto; left:20px;}
+  html[dir="rtl"] .back-btn{left:auto; right:20px;}
+  @media (max-width:480px){
+    .lang-picker{top:12px; right:12px; padding:6px 10px;}
+    .back-btn{top:12px; left:12px; padding:6px 10px;}
+  }
+</style>
+</head>
+<body>
+
+  <a href="index.html" class="back-btn"><span aria-hidden="true">←</span> <span data-i18n="backToHome">Start</span></a>
+  <div class="lang-picker">
+    <span class="globe">🌐</span>
+    <select id="languageSelect" aria-label="Sprache wählen"></select>
+  </div>
+
+<div class="layout">
+  <div class="panel">
+    <h1 data-i18n="dayHeading">Tagesstreifen-Generator</h1>
+    <p class="sub" data-i18n="daySubtitle">Gestalte einen Streifen mit Buchstabenfeldern für deine Kampagne</p>
+
+    <div class="field">
+      <label for="dTitle" data-i18n="timeLblTitle">Titel</label>
+      <input type="text" id="dTitle" value="Tagesstreifen" maxlength="40">
+    </div>
+    <div class="field">
+      <label for="dSub" data-i18n="timeLblSubtitle">Untertitel</label>
+      <input type="text" id="dSub" value="" maxlength="80">
+    </div>
+    <div class="field">
+      <label for="dCount" data-i18n="dayLblCount">Anzahl Felder</label>
+      <input type="number" id="dCount" value="14" min="1" max="60">
+    </div>
+    <div class="field">
+      <label for="dMarked" data-i18n="dayLblMarked">Felder mit Symbol (z. B. B, D, E)</label>
+      <input type="text" id="dMarked" value="B, D, E, F, H" maxlength="80">
+    </div>
+    <div class="field">
+      <label class="toggle-row"><input type="checkbox" id="dSymbols" checked><span class="toggle-switch"></span>
+      <span class="toggle-label" data-i18n="dayToggleSymbols">Symbole anzeigen</span></label>
+    </div>
+    <div class="field">
+      <label class="toggle-row"><input type="checkbox" id="dNumbers"><span class="toggle-switch"></span>
+      <span class="toggle-label" data-i18n="dayToggleNumbers">Zahlen statt Buchstaben</span></label>
+    </div>
+    <div class="field">
+      <label class="toggle-row"><input type="checkbox" id="dBottomUp" checked><span class="toggle-switch"></span>
+      <span class="toggle-label" data-i18n="dayToggleBottomUp">Von unten nach oben (A unten)</span></label>
+    </div>
+    <div class="field">
+      <label data-i18n="playerLblAccentColor">Akzentfarbe</label>
+      <div class="swatches" id="swatches"></div>
+    </div>
+
+    <button class="export-btn" id="exportBtn" data-i18n="playerExportBtn">Als PNG speichern</button>
+    <div class="export-status" id="exportStatus"></div>
+  </div>
+
+  <div class="stage">
+    <div id="card">
+      <div class="header">
+        <h2 id="titleOut">Tagesstreifen</h2>
+        <div class="epithet" id="subOut"></div>
+      </div>
+      <div class="rule"></div>
+      <div class="strip" id="strip"></div>
+      <div class="brand" data-i18n="timeBrand">Legende der Zeit</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Reihenfolge nie ändern (Farbnamen-Keys wie in zeitstreifen.html)
+  const PALETTE = [
+    { key:'playerColorGold',    accent:'#a8823a', bright:'#d9b56a' },
+    { key:'playerColorCrimson', accent:'#7c2020', bright:'#b34d4d' },
+    { key:'playerColorForest',  accent:'#2f4a2b', bright:'#5c8a52' },
+    { key:'playerColorAzure',   accent:'#2a4a66', bright:'#5c8fb3' },
+    { key:'playerColorPurple',  accent:'#4a2a5c', bright:'#7d5399' },
+    { key:'playerColorOrange',  accent:'#a8501c', bright:'#e08a4a' },
+    { key:'playerColorTeal',    accent:'#1f6b6b', bright:'#4fb3b0' },
+    { key:'playerColorRose',    accent:'#8a3a5c', bright:'#d17aa0' },
+    { key:'playerColorSilver',  accent:'#6b7078', bright:'#b8bec8' },
+    { key:'playerColorBronze',  accent:'#6e4a2a', bright:'#a8794a' },
+    { key:'playerColorOlive',   accent:'#5c6023', bright:'#9aa04a' },
+    { key:'playerColorObsidian',accent:'#2b2b33', bright:'#6a6a78' }
+  ];
+  let selectedPalette = PALETTE[2];   // Standard: Waldgrün wie im Vorbild
+
+  // Deutsche Fallback-Texte, bis die Keys in languages.js eingetragen sind
+  const DE = {
+    dayHeading:'Tagesstreifen-Generator',
+    daySubtitle:'Gestalte einen Streifen mit Buchstabenfeldern für deine Kampagne',
+    dayLblCount:'Anzahl Felder', dayLblMarked:'Felder mit Symbol (z. B. B, D, E)',
+    dayToggleSymbols:'Symbole anzeigen', dayToggleNumbers:'Zahlen statt Buchstaben',
+    dayToggleBottomUp:'Von unten nach oben (A unten)', dayDefaultTitle:'Tagesstreifen',
+    timeLblTitle:'Titel', timeLblSubtitle:'Untertitel', timeBrand:'Legende der Zeit'
+  };
+  const LANGS = (typeof LANGUAGES !== 'undefined') ? LANGUAGES : { en:{} };
+  let currentLang = 'en';
+  function t(key){
+    const s = LANGS[currentLang] || LANGS.en || {};
+    if(s[key] !== undefined) return s[key];
+    if(LANGS.en && LANGS.en[key] !== undefined) return LANGS.en[key];
+    return DE[key];
+  }
+
+  function hexToRgb(h){ h = h.replace('#',''); return [0,2,4].map(i => parseInt(h.substr(i,2),16)); }
+  function mixHex(a, b, w){   // w = Anteil von a
+    const A = hexToRgb(a), B = hexToRgb(b);
+    return 'rgb(' + A.map((v,i) => Math.round(v*w + B[i]*(1-w))).join(',') + ')';
+  }
+  function mixWithAlpha(hex, a){ const c = hexToRgb(hex); return 'rgba(' + c.join(',') + ',' + a + ')'; }
+  function clamp(v, lo, hi){ v = parseInt(v, 10); if(isNaN(v)) v = lo; return Math.max(lo, Math.min(hi, v)); }
+
+  // kleines Rundsymbol (Ring mit vier Punkten) wie bei den Feldern im Vorbild
+  const RUNE_SVG = '<svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.5" fill="none" stroke="#d9b56a" stroke-width="1.8"/>'
+    + '<circle cx="10" cy="10" r="2.2" fill="#d9b56a"/>'
+    + '<g fill="#d9b56a"><circle cx="10" cy="3.2" r="1.1"/><circle cx="10" cy="16.8" r="1.1"/><circle cx="3.2" cy="10" r="1.1"/><circle cx="16.8" cy="10" r="1.1"/></g></svg>';
+
+  function render(){
+    const count   = clamp(document.getElementById('dCount').value, 1, 60);
+    const symbols = document.getElementById('dSymbols').checked;
+    const numbers = document.getElementById('dNumbers').checked;
+    const bottomUp= document.getElementById('dBottomUp').checked;
+
+    document.getElementById('titleOut').textContent = document.getElementById('dTitle').value || t('dayDefaultTitle');
+    document.getElementById('subOut').textContent = document.getElementById('dSub').value;
+
+    const marked = new Set(
+      document.getElementById('dMarked').value.toUpperCase().split(/[^A-Z0-9]+/).filter(Boolean)
+    );
+
+    // A–Z, danach AA, AB, … (bei 60 Feldern bis BH)
+    function letterLabel(i){
+      let s = '';
+      i++;
+      while(i > 0){ const r = (i - 1) % 26; s = String.fromCharCode(65 + r) + s; i = Math.floor((i - 1) / 26); }
+      return s;
+    }
+    const labels = [];
+    for(let i = 0; i < count; i++) labels.push(numbers ? String(i + 1) : letterLabel(i));
+
+    // Ab 20 Feldern kommt rechts eine weitere Spalte (je Spalte höchstens 20 Felder)
+    const PER_COL = 20;
+    let html = '';
+    for(let c = 0; c * PER_COL < count; c++){
+      const chunk = labels.slice(c * PER_COL, (c + 1) * PER_COL);
+      if(bottomUp) chunk.reverse();   // erstes Feld jeder Spalte steht unten
+      html += '<div class="col" style="justify-content:' + (bottomUp ? 'flex-end' : 'flex-start') + '">';
+      chunk.forEach(lb => {
+        html += '<div class="tile"><span class="n' + (lb.length > 1 ? ' small' : '') + '">' + lb + '</span>'
+          + (symbols && marked.has(lb) ? '<span class="rune">' + RUNE_SVG + '</span>' : '')
+          + '</div>';
+      });
+      html += '</div>';
+    }
+    document.getElementById('strip').innerHTML = html;
+
+    // Farben (ohne color-mix, damit html2canvas den Export schafft)
+    const card = document.getElementById('card'), P = selectedPalette;
+    card.style.setProperty('--accent', P.accent);
+    card.style.setProperty('--accent-bright', P.bright);
+    document.body.style.setProperty('--accent', P.accent);
+    const bgDark = '#0a0806';
+    document.body.style.setProperty('--bg-base', mixHex(P.accent, bgDark, 0.10));
+    document.body.style.setProperty('--bg-glow-1', mixHex(P.bright, bgDark, 0.22));
+    document.body.style.setProperty('--bg-glow-2', mixHex(P.accent, bgDark, 0.20));
+    document.body.style.setProperty('--bg-spot', mixWithAlpha(P.bright, 0.12));
+    card.style.setProperty('--accent-mix-20-transparent', mixWithAlpha(P.accent, 0.2));
+    card.style.setProperty('--accent-mix-60-black', mixHex(P.accent, '#000000', 0.6));
+    card.style.setProperty('--accent-mix-55-transparent', mixWithAlpha(P.accent, 0.55));
+    card.style.setProperty('--card-tint-1', mixHex(P.accent, '#e7d9b6', 0.14));
+    card.style.setProperty('--card-tint-2', mixHex(P.accent, '#ded0a6', 0.16));
+    card.style.setProperty('--card-tint-3', mixHex(P.accent, '#d3c092', 0.18));
+    // Feldfarben (dunkle Kacheln in der Akzentfarbe)
+    card.style.setProperty('--strip-1', mixHex(P.accent, '#000000', 0.55));
+    card.style.setProperty('--strip-2', mixHex(P.accent, '#000000', 0.32));
+    card.style.setProperty('--tile-1', mixHex(P.accent, '#000000', 0.9));
+    card.style.setProperty('--tile-2', mixHex(P.accent, '#000000', 0.55));
+    card.style.setProperty('--tile-edge', mixHex(P.bright, '#000000', 0.7));
+  }
+
+  // Farbfelder
+  const swWrap = document.getElementById('swatches');
+  PALETTE.forEach((p, i) => {
+    const d = document.createElement('div');
+    d.className = 'swatch' + (p === selectedPalette ? ' active' : '');
+    d.dataset.idx = i;
+    d.style.background = 'radial-gradient(circle at 35% 30%, ' + p.bright + ', ' + p.accent + ' 75%)';
+    d.addEventListener('click', () => {
+      selectedPalette = p;
+      swWrap.querySelectorAll('.swatch').forEach(s => s.classList.toggle('active', s === d));
+      render();
+    });
+    swWrap.appendChild(d);
+  });
+
+  document.querySelectorAll('.panel input').forEach(el => {
+    el.addEventListener('input', render);
+    el.addEventListener('change', render);
+  });
+
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    const status = document.getElementById('exportStatus');
+    status.textContent = t('playerExportCreating') || '';
+    html2canvas(document.getElementById('card'), { scale: 2, backgroundColor: null }).then(canvas => {
+      const link = document.createElement('a');
+      const name = (document.getElementById('dTitle').value || 'tagesstreifen').trim().replace(/\s+/g, '_');
+      link.download = 'Tagesstreifen_' + name + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      status.textContent = t('playerExportSaved') || '';
+      setTimeout(() => status.textContent = '', 2500);
+    }).catch(err => {
+      console.error('PNG export failed:', err);
+      status.textContent = t('playerExportError') || '';
+    });
+  });
+
+  // Sprachauswahl (wie in zeitstreifen.html / player.html)
+  function applyLanguage(lang){
+    currentLang = LANGS[lang] ? lang : 'en';
+    const s = LANGS[currentLang] || {};
+    document.documentElement.lang = currentLang;
+    document.documentElement.dir = s.dir || 'ltr';
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const v = t(el.getAttribute('data-i18n'));
+      if(v !== undefined) el.textContent = v;
+    });
+    document.title = t('dayHeading');
+    document.getElementById('languageSelect').value = currentLang;
+    render();
+  }
+  const sel = document.getElementById('languageSelect');
+  Object.keys(LANGS).forEach(code => {
+    const o = document.createElement('option');
+    o.value = code; o.textContent = LANGS[code].nativeName || code;
+    sel.appendChild(o);
+  });
+  sel.addEventListener('change', () => applyLanguage(sel.value));
+  function detectLanguage(){
+    const list = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'en'];
+    for(const l of list){ const c = l.toLowerCase().split('-')[0]; if(LANGS[c]) return c; }
+    return 'en';
+  }
+  applyLanguage(detectLanguage());
+</script>
+</body>
+</html>
