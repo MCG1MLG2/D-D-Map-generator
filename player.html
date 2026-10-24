@@ -409,6 +409,16 @@
     border-color:#7c2020;
   }
   .upload-btn.remove:hover{ background:rgba(124,32,32,.15); }
+  .border-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .border-row input[type="color"]{
+    width:44px; height:36px; padding:2px;
+    background:rgba(0,0,0,.35);
+    border:1px solid var(--gold);
+    border-radius:4px;
+    cursor:pointer;
+  }
+  .border-row input[type="range"]{ flex:1 1 120px; min-width:100px; accent-color:var(--gold); cursor:pointer; }
+  .border-row .border-width-out{ min-width:34px; text-align:right; color:var(--gold-bright); font-size:.85rem; }
   .ability-box{
     flex:1;
     background:rgba(255,255,255,.28);
@@ -605,7 +615,7 @@
     flex-direction:column;
     gap:16px;
     margin-top:0;
-    padding-top:0;
+    padding-top:34px;   /* keeps the labels below the rank seal (it reaches about 58px into the card) */
     padding-left:24px;
     border-top:none;
     border-left:1px dashed var(--parchment-shadow);
@@ -829,6 +839,16 @@
         <input type="file" id="heroImageUpload" accept="image/*" hidden>
         <button type="button" class="upload-btn" id="heroImageUploadBtn" data-i18n="playerUploadBtn">🖼 Bild hochladen</button>
         <button type="button" class="upload-btn remove" id="heroImageRemoveBtn" data-i18n="playerRemoveImageBtn" hidden>✕ Entfernen</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="heroBorderColor" data-i18n="playerLblPortraitBorder">Porträtrand</label>
+      <div class="border-row">
+        <input type="color" id="heroBorderColor" value="#241a08" data-i18n-title="playerBorderColorTitle" title="Randfarbe">
+        <input type="range" id="heroBorderWidth" min="0" max="12" step="1" value="3" data-i18n-title="playerBorderWidthTitle" title="Randdicke">
+        <span class="border-width-out" id="heroBorderWidthOut">3 px</span>
+        <button type="button" class="upload-btn" id="heroBorderResetBtn" data-i18n="playerBorderResetBtn">↺ Standard</button>
       </div>
     </div>
 
@@ -1255,6 +1275,8 @@
     }
   }
 
+  const BORDER_DEFAULT_COLOR = '#241a08';
+  const BORDER_DEFAULT_WIDTH = 3;
   let heroImageData = null;       // portrait shown on the card / used for the PNG export
   let heroImageShareData = null;  // smaller copy that goes into share links (keeps links short)
 
@@ -1300,6 +1322,11 @@
     this.value = '';
   });
 
+  document.getElementById('heroBorderResetBtn').addEventListener('click', () => {
+    document.getElementById('heroBorderColor').value = BORDER_DEFAULT_COLOR;
+    document.getElementById('heroBorderWidth').value = BORDER_DEFAULT_WIDTH;
+    render();
+  });
   document.getElementById('heroImageRemoveBtn').addEventListener('click', () => {
     setHeroImage(null);
   });
@@ -1383,6 +1410,10 @@
     document.getElementById('storyOut').textContent = story;
     document.getElementById('storyBox').style.display = story ? '' : 'none';
     const medallionOut = document.getElementById('medallionOut');
+    const borderW = parseInt(document.getElementById('heroBorderWidth').value, 10);
+    medallionOut.style.borderWidth = (isNaN(borderW) ? BORDER_DEFAULT_WIDTH : borderW) + 'px';
+    medallionOut.style.borderColor = document.getElementById('heroBorderColor').value || BORDER_DEFAULT_COLOR;
+    document.getElementById('heroBorderWidthOut').textContent = (isNaN(borderW) ? BORDER_DEFAULT_WIDTH : borderW) + ' px';
     if(heroImageData){
       medallionOut.innerHTML = '';
       const img = document.createElement('img');
@@ -1512,6 +1543,10 @@
     if(story) s.st = story;
     const species = document.getElementById('heroSpecies').value;
     if(species) s.sp = species;
+    const bw = parseInt(document.getElementById('heroBorderWidth').value, 10);
+    if(!isNaN(bw) && bw !== BORDER_DEFAULT_WIDTH) s.bw = bw;
+    const bc = document.getElementById('heroBorderColor').value.toLowerCase();
+    if(/^#[0-9a-f]{6}$/.test(bc) && bc !== BORDER_DEFAULT_COLOR) s.bc = bc.slice(1);
     const eq = equipMask();
     if(eq) s.eq = eq;
     if(heroImageData) s.im = heroImageShareData || heroImageData;
@@ -1698,18 +1733,28 @@
       for(const k of ['n', 'e', 'i', 'a']) if(typeof s[k] !== 'string') return null;
 
       // optional 5th field (story); without a story the code stays identical to the 4-field format
-      // 6th field: equipment slots, 7th field: species (position in the species list, 1 character)
+      // 6th field: equipment slots, 7th field: species (position in the species list, 1 character, 0 = none)
+      // 8th field: portrait border = width (1 character, base 36, default 3) + optional color (6 hex digits)
       const fieldList = [s.n, s.e, s.i, s.a];
-      if(s.st !== undefined || s.eq !== undefined || s.sp !== undefined){
+      if(s.st !== undefined || s.eq !== undefined || s.sp !== undefined || s.bw !== undefined || s.bc !== undefined){
         if(s.st !== undefined && typeof s.st !== 'string') return null;
         fieldList.push(s.st !== undefined ? s.st : '');
-        if(s.eq !== undefined || s.sp !== undefined){
+        if(s.eq !== undefined || s.sp !== undefined || s.bw !== undefined || s.bc !== undefined){
           if(s.eq !== undefined && (!Number.isInteger(s.eq) || s.eq < 1 || s.eq > 511)) return null;
           fieldList.push(s.eq !== undefined ? s.eq.toString(36) : '0');   // 1 hand 1, 2 helmet, 4 chest, 8 pants, 16 shoes, 32 hand 2, 64 belt, 256 side layout
-          if(s.sp !== undefined){
-            const spIdx = shareSpeciesValues().indexOf(s.sp);
-            if(spIdx < 1 || spIdx > 35) return null;
+          if(s.sp !== undefined || s.bw !== undefined || s.bc !== undefined){
+            let spIdx = 0;
+            if(s.sp !== undefined){
+              spIdx = shareSpeciesValues().indexOf(s.sp);
+              if(spIdx < 1 || spIdx > 35) return null;
+            }
             fieldList.push(spIdx.toString(36));
+            if(s.bw !== undefined || s.bc !== undefined){
+              const bw = s.bw !== undefined ? s.bw : BORDER_DEFAULT_WIDTH;
+              if(!Number.isInteger(bw) || bw < 0 || bw > 12) return null;
+              if(s.bc !== undefined && !/^[0-9a-f]{6}$/.test(s.bc)) return null;
+              fieldList.push(bw.toString(36) + (s.bc !== undefined ? s.bc : ''));
+            }
           }
         }
       }
@@ -1756,7 +1801,7 @@
 
     const joined = (flags & 4) ? alphabetDecode(p[1]) : unescapeShareText(p[1]);
     const fields = joined.split(SHARE_SEP);
-    if(fields.length < 4 || fields.length > 7) throw bad();
+    if(fields.length < 4 || fields.length > 8) throw bad();
 
     const s = {
       v: 3,
@@ -1777,12 +1822,18 @@
       eq = parseInt(fields[5], 36);
       if(eq > 511) throw bad();
     }
-    if(fields.length === 7){
+    if(fields.length >= 7){
       if(!/^[0-9a-z]$/.test(fields[6])) throw bad();
       const spIdx = parseInt(fields[6], 36);
       const spVal = shareSpeciesValues()[spIdx];
-      if(spIdx < 1 || spVal === undefined) throw bad();
-      s.sp = spVal;
+      if(spVal === undefined || (spIdx < 1 && fields.length === 7)) throw bad();
+      if(spIdx >= 1) s.sp = spVal;
+    }
+    if(fields.length === 8){
+      if(!/^[0-9a-c]([0-9a-f]{6})?$/.test(fields[7])) throw bad();
+      const bw = parseInt(fields[7][0], 36);
+      if(bw !== BORDER_DEFAULT_WIDTH) s.bw = bw;
+      if(fields[7].length === 7) s.bc = fields[7].slice(1);
     }
     if(flags & 8) eq |= 1;     // earlier links: weapon flag (now hand 1)
     if(flags & 16) eq |= 30;   // earlier links: armor flag = all four armor pieces
@@ -1854,6 +1905,8 @@
     EQUIP.forEach(e => setChecked(e.toggle, !!(s.eq & e.bit)));
     setChecked('equipSide', !!(s.eq & 256));
     setVal('storageCapacity', storageCapacity);
+    document.getElementById('heroBorderWidth').value = (Number.isInteger(s.bw) && s.bw >= 0 && s.bw <= 12) ? s.bw : BORDER_DEFAULT_WIDTH;
+    document.getElementById('heroBorderColor').value = (typeof s.bc === 'string' && /^[0-9a-fA-F]{6}$/.test(s.bc)) ? '#' + s.bc.toLowerCase() : BORDER_DEFAULT_COLOR;
     heroImageData = img || null;
     heroImageShareData = heroImageData;
     document.getElementById('heroImageRemoveBtn').hidden = !heroImageData;
