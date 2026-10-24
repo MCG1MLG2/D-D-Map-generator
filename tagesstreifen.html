@@ -118,6 +118,9 @@
     box-shadow:inset 0 0 14px rgba(0,0,0,.6), 0 3px 8px rgba(0,0,0,.25);
   }
   .col{display:flex; flex-direction:column; gap:7px;}
+  /* waagerechte Leiste: Zeilen untereinander, Felder nebeneinander */
+  .strip.horiz{flex-direction:column;}
+  .strip.horiz .col{flex-direction:row;}
   .tile{
     width:68px; height:68px; position:relative; display:flex; align-items:center; justify-content:center;
     background:
@@ -203,8 +206,16 @@
       <span class="toggle-label" data-i18n="dayToggleNumbers">Zahlen statt Buchstaben</span></label>
     </div>
     <div class="field">
+      <label class="toggle-row"><input type="checkbox" id="dHorizontal"><span class="toggle-switch"></span>
+      <span class="toggle-label" data-i18n="dayToggleHorizontal">Waagerecht statt senkrecht</span></label>
+    </div>
+    <div class="field">
+      <label class="toggle-row"><input type="checkbox" id="dReverse"><span class="toggle-switch"></span>
+      <span class="toggle-label" data-i18n="dayToggleReverse">Rückwärts zählen</span></label>
+    </div>
+    <div class="field">
       <label class="toggle-row"><input type="checkbox" id="dBottomUp" checked><span class="toggle-switch"></span>
-      <span class="toggle-label" data-i18n="dayToggleBottomUp">Von unten nach oben (A unten)</span></label>
+      <span class="toggle-label" id="dBottomUpLbl" data-i18n="dayToggleBottomUp">Von unten nach oben (A unten)</span></label>
     </div>
     <div class="field">
       <label data-i18n="playerLblAccentColor">Akzentfarbe</label>
@@ -253,6 +264,7 @@
     dayLblCount:'Anzahl Felder', dayLblMarked:'Felder mit Symbol (z. B. B, D, E)',
     dayToggleSymbols:'Symbole anzeigen', dayToggleNumbers:'Zahlen statt Buchstaben',
     dayToggleBottomUp:'Von unten nach oben (A unten)', dayDefaultTitle:'Tagesstreifen',
+    dayToggleReverse:'Rückwärts zählen', dayToggleHorizontal:'Waagerecht statt senkrecht', dayToggleRightToLeft:'Von rechts nach links (A rechts)',
     timeLblTitle:'Titel', timeLblSubtitle:'Untertitel', timeBrand:'Legende der Zeit'
   };
   const LANGS = (typeof LANGUAGES !== 'undefined') ? LANGUAGES : { en:{} };
@@ -282,6 +294,14 @@
     const symbols = document.getElementById('dSymbols').checked;
     const numbers = document.getElementById('dNumbers').checked;
     const bottomUp= document.getElementById('dBottomUp').checked;
+    const horiz   = document.getElementById('dHorizontal').checked;
+
+    // Beschriftung der Richtungs-Option passt sich der Ausrichtung an
+    const buKey = horiz ? 'dayToggleRightToLeft' : 'dayToggleBottomUp';
+    const buLbl = document.getElementById('dBottomUpLbl');
+    buLbl.setAttribute('data-i18n', buKey);
+    buLbl.textContent = t(buKey);
+    document.getElementById('strip').classList.toggle('horiz', horiz);
 
     document.getElementById('titleOut').textContent = document.getElementById('dTitle').value || t('dayDefaultTitle');
     document.getElementById('subOut').textContent = document.getElementById('dSub').value;
@@ -299,21 +319,26 @@
     }
     const labels = [];
     for(let i = 0; i < count; i++) labels.push(numbers ? String(i + 1) : letterLabel(i));
+    const reverse = document.getElementById('dReverse').checked;
 
     // Ab 20 Feldern kommt rechts eine weitere Spalte (je Spalte höchstens 20 Felder)
     const PER_COL = 20;
-    let html = '';
+    const cols = [];
     for(let c = 0; c * PER_COL < count; c++){
       const chunk = labels.slice(c * PER_COL, (c + 1) * PER_COL);
-      if(bottomUp) chunk.reverse();   // erstes Feld jeder Spalte steht unten
-      html += '<div class="col" style="justify-content:' + (bottomUp ? 'flex-end' : 'flex-start') + '">';
+      // "Rückwärts zählen" dreht nur die Richtung innerhalb jeder Spalte/Zeile um
+      if(bottomUp !== reverse) chunk.reverse();   // erstes Feld jeder Spalte steht unten
+      let h = '<div class="col" style="justify-content:' + (bottomUp ? 'flex-end' : 'flex-start') + '">';
       chunk.forEach(lb => {
-        html += '<div class="tile"><span class="n' + (lb.length > 1 ? ' small' : '') + '">' + lb + '</span>'
+        h += '<div class="tile"><span class="n' + (lb.length > 1 ? ' small' : '') + '">' + lb + '</span>'
           + (symbols && marked.has(lb) ? '<span class="rune">' + RUNE_SVG + '</span>' : '')
           + '</div>';
       });
-      html += '</div>';
+      cols.push(h + '</div>');
     }
+    // Normal: höchster Zahlenbereich zuerst (60–41, 40–21, 20–1); rückwärts: niedrigster zuerst (1–20, 21–40, 41–60)
+    if(!reverse) cols.reverse();
+    const html = cols.join('');
     document.getElementById('strip').innerHTML = html;
 
     // Farben (ohne color-mix, damit html2canvas den Export schafft)
