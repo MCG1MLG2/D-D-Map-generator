@@ -194,6 +194,10 @@
       <input type="number" id="dCount" value="14" min="1" max="60">
     </div>
     <div class="field">
+      <label for="dPerCol" data-i18n="dayLblPerCol">Umbruch nach Feldern</label>
+      <input type="number" id="dPerCol" value="20" min="1" max="60">
+    </div>
+    <div class="field">
       <label for="dMarked" data-i18n="dayLblMarked">Felder mit Symbol (z. B. B, D, E)</label>
       <input type="text" id="dMarked" value="B, D, E, F, H" maxlength="80">
     </div>
@@ -261,7 +265,7 @@
   const DE = {
     dayHeading:'Tagesstreifen-Generator',
     daySubtitle:'Gestalte einen Streifen mit Buchstabenfeldern für deine Kampagne',
-    dayLblCount:'Anzahl Felder', dayLblMarked:'Felder mit Symbol (z. B. B, D, E)',
+    dayLblCount:'Anzahl Felder', dayLblPerCol:'Umbruch nach Feldern', dayLblMarked:'Felder mit Symbol (z. B. B, D, E)',
     dayToggleSymbols:'Symbole anzeigen', dayToggleNumbers:'Zahlen statt Buchstaben',
     dayToggleBottomUp:'Von unten nach oben (A unten)', dayDefaultTitle:'Tagesstreifen',
     dayToggleReverse:'Rückwärts zählen', dayToggleHorizontal:'Waagerecht statt senkrecht', dayToggleRightToLeft:'Von rechts nach links (A rechts)',
@@ -321,8 +325,8 @@
     for(let i = 0; i < count; i++) labels.push(numbers ? String(i + 1) : letterLabel(i));
     const reverse = document.getElementById('dReverse').checked;
 
-    // Ab 20 Feldern kommt rechts eine weitere Spalte (je Spalte höchstens 20 Felder)
-    const PER_COL = 20;
+    // Nach PER_COL Feldern (einstellbar, Standard 20) beginnt eine weitere Spalte bzw. Zeile
+    const PER_COL = clamp(document.getElementById('dPerCol').value, 1, 60);
     const cols = [];
     for(let c = 0; c * PER_COL < count; c++){
       const chunk = labels.slice(c * PER_COL, (c + 1) * PER_COL);
