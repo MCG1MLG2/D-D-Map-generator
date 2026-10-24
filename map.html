@@ -173,6 +173,24 @@
     padding-bottom:6px;
     border-bottom:1px solid #4a3c28;
   }
+  /* collapsible groups: click the heading */
+  .control-group h3{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    cursor:pointer;
+    user-select:none;
+  }
+  .control-group h3:hover{ color:var(--gold-bright); }
+  .control-group h3:focus-visible{ outline:1px solid var(--gold); outline-offset:3px; }
+  .control-group h3::after{
+    content:"▾";
+    font-size:.9em;
+    transition:transform .15s ease;
+  }
+  .control-group.collapsed h3::after{ transform:rotate(-90deg); }
+  .control-group.collapsed > :not(h3){ display:none !important; }
+  .control-group.collapsed h3{ margin-bottom:0; }
   .field-row{
     display:flex;
     align-items:center;
@@ -254,13 +272,18 @@
     padding:50px 30px 20px;
     min-width:0;
   }
+  /* on a PC the map sits exactly in the middle of the right half; the footer line is out of the flow */
+  @media (min-width:901px){
+    .stage{ padding:55px 30px; }
+    .stage footer{ position:absolute; left:20px; right:20px; bottom:14px; margin:0; max-width:none; }
+  }
   @media (max-width:900px){
     .stage{ position:static; height:auto; padding:30px 12px; }
   }
   .map-frame{
     position:relative;
     max-width:100%;
-    max-height:calc(100vh - 120px);
+    max-height:calc(100vh - 110px);
     overflow:auto;
     background:var(--parchment);
     border-radius:2px;
@@ -2589,6 +2612,16 @@ document.getElementById('castleRemoveBtn').addEventListener('click', () => {
 });
 document.getElementById('castleResetBtn').addEventListener('click', () => { customCastlePos = {}; removedCastles = new Set(); placingCastle = null; generateMap(currentSeed); });
 
+// a new map (other seed or size) is shown centred in its frame; re-renders while painting keep the scroll position
+let lastCenterKey = '';
+function centerMapFrame(){
+  const fr = document.querySelector('.stage .map-frame');
+  if(!fr || window.innerWidth <= 900) return;
+  fr.scrollLeft = Math.max(0, (fr.scrollWidth - fr.clientWidth) / 2);
+  fr.scrollTop = Math.max(0, (fr.scrollHeight - fr.clientHeight) / 2);
+}
+window.addEventListener('resize', () => { if(!document.getElementById('fsOverlay').classList.contains('active')) centerMapFrame(); });
+
 function generateMap(explicitSeed){
   clear();
 
@@ -2669,6 +2702,8 @@ function generateMap(explicitSeed){
   updateVillagePicker();
   TERRAIN_PICKERS.forEach(P => P.update());
   updatePickUI();
+  const centerKey = currentSeed + '|' + W + '|' + H;
+  if(centerKey !== lastCenterKey){ lastCenterKey = centerKey; centerMapFrame(); }
 }
 
 // ---------- PNG export ----------
@@ -2716,6 +2751,33 @@ function downloadPNG(){
 }
 
 document.getElementById('generateBtn').addEventListener('click', () => generateMap());
+// settings groups can be folded by clicking their heading (remembered in this browser)
+(function(){
+  const KEY = 'mapGroupsCollapsed';
+  let saved = [];
+  try{ saved = JSON.parse(localStorage.getItem(KEY) || '[]'); }catch(e){ saved = []; }
+  const save = () => {
+    const list = [];
+    document.querySelectorAll('#settingsBody .control-group').forEach((g, i) => { if(g.classList.contains('collapsed')) list.push(i); });
+    try{ localStorage.setItem(KEY, JSON.stringify(list)); }catch(e){}
+  };
+  document.querySelectorAll('#settingsBody .control-group').forEach((g, i) => {
+    const h = g.querySelector('h3');
+    if(!h) return;
+    h.setAttribute('role', 'button');
+    h.tabIndex = 0;
+    if(Array.isArray(saved) && saved.includes(i)) g.classList.add('collapsed');
+    h.setAttribute('aria-expanded', String(!g.classList.contains('collapsed')));
+    const toggle = () => {
+      g.classList.toggle('collapsed');
+      h.setAttribute('aria-expanded', String(!g.classList.contains('collapsed')));
+      save();
+    };
+    h.addEventListener('click', toggle);
+    h.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); } });
+  });
+})();
+
 document.getElementById('toggleSettingsBtn').addEventListener('click', () => {
   document.getElementById('settingsBody').classList.toggle('collapsed');
 });
