@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="textboxHeading">Textfeld-Generator</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📜</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="languages.js"></script>
+<style>
+  :root{--stone-1:#171310;--stone-2:#241d17;--gold:#b6903f;--gold-bright:#d9b56a;--ink:#2c2013;--parchment:#e7d9b6;--parchment-dark:#d3c092;--parchment-shadow:#8a7142;--crimson:#7c2020;--text-muted:#a8977b;--shadow:rgba(0,0,0,.5)}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  @property --bg-base{syntax:'<color>';inherits:true;initial-value:#171310}
+  @property --bg-glow-1{syntax:'<color>';inherits:true;initial-value:#3a2c1c}
+  @property --bg-glow-2{syntax:'<color>';inherits:true;initial-value:#2a1f14}
+  @property --bg-spot{syntax:'<color>';inherits:true;initial-value:rgba(217,181,106,.12)}
+  body{transition:--bg-base .5s,--bg-glow-1 .5s,--bg-glow-2 .5s,--bg-spot .5s;
+    background:radial-gradient(ellipse at 70% 45%,var(--bg-spot) 0%,transparent 55%),radial-gradient(ellipse at 20% -10%,var(--bg-glow-1) 0%,transparent 55%),radial-gradient(ellipse at 90% 110%,var(--bg-glow-2) 0%,transparent 55%),var(--bg-base);
+    color:var(--parchment);font-family:'EB Garamond',serif;min-height:100vh}
+  .layout{display:grid;grid-template-columns:380px 1fr;min-height:100vh}
+  @media(max-width:900px){.layout{grid-template-columns:1fr}}
+
+  .panel{background:linear-gradient(180deg,var(--stone-2),var(--stone-1));border-right:1px solid #000;padding:64px 30px 40px;box-shadow:inset -18px 0 30px -28px #000}
+  .panel h1{font-family:'Cinzel Decorative',serif;font-size:1.5rem;color:var(--gold-bright);margin:0 0 4px}
+  .panel .sub{color:var(--text-muted);font-size:.95rem;margin:0 0 30px;font-style:italic}
+  .field{margin-bottom:20px}
+  .field label{display:block;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);margin-bottom:7px}
+  .field input[type=text],.field textarea{width:100%;background:#0f0c09;border:1px solid #4a3c28;color:var(--parchment);font-family:'EB Garamond',serif;font-size:1.05rem;padding:9px 11px;border-radius:3px}
+  .field input:focus,.field textarea:focus{outline:none;border-color:var(--gold)}
+  .field textarea{resize:vertical;min-height:160px;line-height:1.4}
+  .swatches{display:flex;flex-wrap:wrap;gap:10px}
+  .swatch{width:34px;height:34px;border-radius:50%;border:2px solid #000;cursor:pointer}
+  .swatch.active{border-color:var(--parchment);box-shadow:0 0 0 2px var(--gold)}
+  .btn{display:block;margin-top:8px;width:100%;padding:11px;font-family:'Cinzel',serif;font-weight:600;letter-spacing:.03em;font-size:.88rem;border-radius:4px;cursor:pointer;background:transparent;border:1px solid var(--gold);color:var(--gold-bright)}
+  .btn:hover{background:rgba(182,144,63,.12)}
+  .btn.main,.btn.active{background:linear-gradient(180deg,var(--gold-bright),var(--gold));border-color:#7a5c22;color:#241a08}
+  .btn.main{padding:13px;font-size:.95rem;font-weight:700;margin-top:10px}
+  .btn.main:hover{background:linear-gradient(180deg,var(--gold-bright),var(--gold));filter:brightness(1.07)}
+  .share-panel{display:flex;flex-direction:column;gap:8px;margin-top:8px;padding:12px;background:rgba(0,0,0,.25);border:1px solid var(--gold);border-radius:4px}
+  .share-panel.collapsed{display:none}
+  .share-panel .field{margin:0}
+  .share-panel .btn{margin:0;background:linear-gradient(180deg,#f3e8c8,#d8c599);border-color:#7a5c22;color:#241a08}
+  .share-panel .btn.primary{background:linear-gradient(180deg,var(--gold-bright),var(--gold))}
+  .status{font-size:.8rem;color:var(--text-muted);margin-top:8px;min-height:1em}
+  .status.ok{color:#7fae6a}
+
+  .stage{display:flex;align-items:center;justify-content:center;padding:50px 30px}
+  @media(min-width:901px){
+    .stage{align-self:start;position:sticky;top:0;height:100vh;overflow:auto}
+    .stage #card{margin:auto;flex:0 0 auto}
+  }
+  #card{width:520px;min-height:200px;position:relative;padding:34px 38px 34px;color:var(--ink);border-radius:2px;
+    background:linear-gradient(155deg,var(--accent-20,rgba(168,130,58,.2)),transparent 65%),radial-gradient(circle at 15% 10%,rgba(255,255,255,.08),transparent 40%),linear-gradient(155deg,var(--tint-1,#e7d9b6) 0%,var(--tint-2,#ded0a6) 60%,var(--tint-3,#d3c092) 100%);
+    box-shadow:0 30px 60px -20px rgba(0,0,0,.7),0 0 0 10px #17130f,0 0 0 11px #4a3c28}
+  #card::before{content:"";position:absolute;inset:10px;border:1px solid var(--parchment-shadow);pointer-events:none}
+  #card::after{content:"";position:absolute;inset:15px;border:2px solid var(--accent,#7c2020);opacity:.7;pointer-events:none}
+  .header{text-align:center;margin:6px 0 0}
+  .header h2{font-family:'Cinzel',serif;font-weight:900;font-size:2rem;margin:0;color:var(--ink);overflow-wrap:anywhere}
+  .rule{height:1px;margin:16px auto;width:70%;background:linear-gradient(90deg,transparent,var(--accent,#7c2020),transparent)}
+  .box{background:rgba(255,255,255,.28);border:1px solid var(--parchment-shadow);border-radius:3px;padding:14px 16px;margin-top:6px}
+  .box p{margin:0;font-size:1.05rem;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+
+  .lang-picker,.back-btn{position:fixed;top:20px;z-index:20;display:flex;align-items:center;gap:8px;background:linear-gradient(180deg,var(--parchment),var(--parchment-dark));border:1px solid var(--gold);border-radius:6px;box-shadow:0 6px 16px var(--shadow);font-family:'Cinzel',serif;font-size:13px;font-weight:600;color:var(--ink)}
+  .lang-picker{right:20px;padding:8px 12px}
+  .lang-picker select{appearance:none;-webkit-appearance:none;background:transparent;border:none;font:inherit;color:var(--ink);padding-right:16px;cursor:pointer}
+  .lang-picker select:focus{outline:none}
+  .lang-picker select option{background:var(--parchment);color:var(--ink)}
+  .lang-picker::after{content:"▾";position:absolute;right:12px;pointer-events:none;color:var(--gold);font-size:11px}
+  .back-btn{left:20px;padding:8px 14px;text-decoration:none}
+  .back-btn:hover{filter:brightness(1.06)}
+  html[dir=rtl] .lang-picker{right:auto;left:20px}
+  html[dir=rtl] .back-btn{left:auto;right:20px}
+  @media(max-width:480px){.lang-picker{top:12px;right:12px;padding:6px 10px}.back-btn{top:12px;left:12px;padding:6px 10px}html[dir=rtl] .lang-picker{left:12px}html[dir=rtl] .back-btn{right:12px}#card{width:100%;padding:30px 24px}}
+</style>
+</head>
+<body>
+<a href="index.html" class="back-btn"><span aria-hidden="true">←</span> <span data-i18n="backToHome">Start</span></a>
+<div class="lang-picker"><span>🌐</span><select id="languageSelect" aria-label="Sprache wählen"></select></div>
+
+<div class="layout">
+  <div class="panel">
+    <h1 data-i18n="textboxHeading">Textfeld-Generator</h1>
+    <p class="sub" data-i18n="textboxSubtitle">Schreibe einen Text mit Überschrift</p>
+
+    <div class="field"><label for="tTitle" data-i18n="textboxLblTitle">Überschrift</label><input type="text" id="tTitle" value="Die alte Schenke" maxlength="60"></div>
+    <div class="field"><label for="tBody" data-i18n="textboxLblBody">Text</label><textarea id="tBody" rows="8" maxlength="3000">Hinter dem Stadttor liegt eine verrauchte Schenke. Am Tresen sitzt ein einsamer Zwerg und starrt in seinen Krug.</textarea></div>
+    <div class="field"><label data-i18n="playerLblAccentColor">Akzentfarbe</label><div class="swatches" id="swatches"></div></div>
+
+    <button class="btn main" id="exportBtn" data-i18n="playerExportBtn">Als PNG speichern</button>
+    <button class="btn" id="shareToggleBtn" data-i18n="shareToggleBtn">🔗 Teilen</button>
+    <div class="share-panel collapsed" id="sharePanel">
+      <button class="btn" id="copyBtn" data-i18n="copySettingsBtn">📋 Kopieren</button>
+      <div class="field"><input type="text" id="pasteInput" data-i18n-placeholder="pasteSettingsPrompt" placeholder="Link oder Code hier einfügen:"></div>
+      <button class="btn primary" id="applyBtn" data-i18n="applyPasteSettingsBtn">✓ Anwenden</button>
+      <span class="status" id="pasteStatus"></span>
+    </div>
+    <div class="status" id="exportStatus"></div>
+  </div>
+
+  <div class="stage">
+    <div id="card">
+      <div class="header" id="headBox"><h2 id="titleOut"></h2><div class="rule"></div></div>
+      <div class="box" id="bodyBox"><p id="bodyOut"></p></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const L = (typeof LANGUAGES !== 'undefined') ? LANGUAGES : { en:{} };
+  let currentLang = 'en';
+  const $ = id => document.getElementById(id);
+  function t(k){ const s = L[currentLang] || L.en || {}; return s[k] !== undefined ? s[k] : (L.en || {})[k]; }
+  function tt(k, fallback){ const v = t(k); return v !== undefined ? v : fallback; }
+
+  // Reihenfolge = Position im Teilen-Link, nur ans Ende anhängen (gleich wie gegner.html)
+  const PALETTE = [
+    { name:'Karmesin', key:'playerColorCrimson',  accent:'#7c2020', bright:'#b34d4d' },
+    { name:'Gold',     key:'playerColorGold',     accent:'#a8823a', bright:'#d9b56a' },
+    { name:'Wald',     key:'playerColorForest',   accent:'#2f4a2b', bright:'#5c8a52' },
+    { name:'Azur',     key:'playerColorAzure',    accent:'#2a4a66', bright:'#5c8fb3' },
+    { name:'Purpur',   key:'playerColorPurple',   accent:'#4a2a5c', bright:'#7d5399' },
+    { name:'Orange',   key:'playerColorOrange',   accent:'#a8501c', bright:'#e08a4a' },
+    { name:'Türkis',   key:'playerColorTeal',     accent:'#1f6b6b', bright:'#4fb3b0' },
+    { name:'Silber',   key:'playerColorSilver',   accent:'#6b7078', bright:'#b8bec8' },
+    { name:'Oliv',     key:'playerColorOlive',    accent:'#5c6023', bright:'#9aa04a' },
+    { name:'Obsidian', key:'playerColorObsidian', accent:'#2b2b33', bright:'#6a6a78' },
+    { name:'Weinrot',  key:'playerColorWine',     accent:'#5e1a2f', bright:'#a8475f' },
+    { name:'Smaragd',  key:'playerColorEmerald',  accent:'#1d5c45', bright:'#3fae83' }
+  ];
+  let sel = PALETTE[0];
+  PALETTE.forEach((p, i) => {
+    const d = document.createElement('div');
+    d.className = 'swatch' + (i === 0 ? ' active' : ''); d.dataset.idx = i; d.title = p.name;
+    d.style.background = `radial-gradient(circle at 35% 30%, ${p.bright}, ${p.accent} 75%)`;
+    d.addEventListener('click', () => { selectColor(i); render(); });
+    $('swatches').appendChild(d);
+  });
+  function selectColor(i){
+    if(!PALETTE[i]) return;
+    sel = PALETTE[i];
+    document.querySelectorAll('.swatch').forEach(el => el.classList.toggle('active', +el.dataset.idx === i));
+  }
+
+  // Mischfarben in JS (kein CSS color-mix(), das kann html2canvas 1.4.1 nicht lesen)
+  const rgb = h => [1,3,5].map(i => parseInt(h.slice(i, i+2), 16));
+  const mix = (a, b, r) => { const x = rgb(a), y = rgb(b); return 'rgb(' + x.map((v, i) => Math.round(v*r + y[i]*(1-r))).join(',') + ')'; };
+  const alpha = (h, a) => 'rgba(' + rgb(h).join(',') + ',' + a + ')';
+
+  function render(){
+    const title = $('tTitle').value.trim(), body = $('tBody').value.trim();
+    $('titleOut').textContent = title;
+    $('headBox').style.display = title ? '' : 'none';
+    $('bodyOut').textContent = body;
+    $('bodyBox').style.display = body ? '' : 'none';
+
+    const c = $('card'), a = sel.accent, b = sel.bright, dark = '#0a0806';
+    c.style.setProperty('--accent', a); c.style.setProperty('--accent-bright', b);
+    c.style.setProperty('--accent-20', alpha(a, .2));
+    c.style.setProperty('--tint-1', mix(a, '#e7d9b6', .14));
+    c.style.setProperty('--tint-2', mix(a, '#ded0a6', .16));
+    c.style.setProperty('--tint-3', mix(a, '#d3c092', .18));
+    const s = document.body.style;
+    s.setProperty('--accent', a); s.setProperty('--accent-60', mix(a, '#000000', .6)); s.setProperty('--accent-55', alpha(a, .55));
+    s.setProperty('--bg-base', mix(a, dark, .10)); s.setProperty('--bg-glow-1', mix(b, dark, .22));
+    s.setProperty('--bg-glow-2', mix(a, dark, .20)); s.setProperty('--bg-spot', alpha(b, .12));
+  }
+  document.querySelectorAll('.panel input, .panel textarea').forEach(el => {
+    el.addEventListener('input', render); el.addEventListener('change', render);
+  });
+
+  // ---------- PNG-Export ----------
+  $('exportBtn').addEventListener('click', () => {
+    const st = $('exportStatus');
+    st.textContent = tt('playerExportCreating', 'Erstelle Bild …');
+    html2canvas($('card'), { scale: 2, backgroundColor: null }).then(canvas => {
+      const a = document.createElement('a');
+      a.download = 'Textfeld_' + ($('tTitle').value || 'text').trim().replace(/\s+/g, '_') + '.png';
+      a.href = canvas.toDataURL('image/png'); a.click();
+      st.textContent = tt('playerExportSaved', 'Gespeichert!');
+      setTimeout(() => st.textContent = '', 2500);
+    }).catch(err => { console.error('PNG export failed:', err); st.textContent = tt('playerExportError', 'Export fehlgeschlagen'); });
+  });
+
+  // ---------- Teilen per Link (#g=<base64 JSON>) ----------
+  function collect(){ return { v:1, l:currentLang, h:$('tTitle').value, x:$('tBody').value, ac:PALETTE.indexOf(sel) }; }
+  function shareURL(){
+    return location.origin + location.pathname + location.search + '#g=' + encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(collect())))));
+  }
+  function applyShared(code){
+    const m = code.trim().match(/[#&]g=([^&]+)/);
+    const raw = m ? decodeURIComponent(m[1]) : code.trim();
+    const s = JSON.parse(decodeURIComponent(escape(atob(raw))));
+    if(s.v !== 1) throw new Error('invalid');
+    $('tTitle').value = s.h || ''; $('tBody').value = s.x || '';
+    selectColor(s.ac);
+    if(s.l && L[s.l]) applyLanguage(s.l); else render();
+  }
+  $('shareToggleBtn').addEventListener('click', function(){
+    const p = $('sharePanel'), show = p.classList.contains('collapsed');
+    p.classList.toggle('collapsed'); this.classList.toggle('active', show);
+    $('pasteStatus').textContent = ''; if(show){ $('pasteInput').value = ''; $('pasteInput').focus(); }
+  });
+  function copyText(text){
+    if(navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text).then(() => true, () => false);
+    const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+    let ok = false; try{ ok = document.execCommand('copy'); }catch(e){} document.body.removeChild(ta); return Promise.resolve(ok);
+  }
+  $('copyBtn').addEventListener('click', function(){
+    const btn = this, old = btn.textContent;
+    copyText(shareURL()).then(ok => { btn.textContent = ok ? tt('settingsCopied', 'Kopiert!') : tt('settingsCopyError', 'Kopieren fehlgeschlagen'); setTimeout(() => btn.textContent = old, 1800); });
+  });
+  function applyPasted(){
+    const code = $('pasteInput').value.trim(), st = $('pasteStatus');
+    if(!code) return;
+    try{ applyShared(code); st.textContent = tt('settingsCopied', 'Kopiert!'); st.className = 'status ok'; $('pasteInput').value = ''; }
+    catch(e){ st.textContent = tt('pasteSettingsError', 'Ungültiger Code'); st.className = 'status'; }
+  }
+  $('applyBtn').addEventListener('click', applyPasted);
+  $('pasteInput').addEventListener('keydown', e => { if(e.key === 'Enter') applyPasted(); });
+
+  // ---------- Sprache ----------
+  function applyLanguage(lang){
+    currentLang = L[lang] ? lang : 'en';
+    const s = L[currentLang] || {}, en = L.en || {};
+    const get = k => s[k] !== undefined ? s[k] : en[k];
+    document.documentElement.lang = currentLang;
+    document.documentElement.dir = s.dir || 'ltr';
+    [['data-i18n', (el, v) => el.textContent = v], ['data-i18n-placeholder', (el, v) => el.placeholder = v]].forEach(([attr, fn]) => {
+      document.querySelectorAll('[' + attr + ']').forEach(el => { const v = get(el.getAttribute(attr)); if(v !== undefined) fn(el, v); });
+    });
+    document.querySelectorAll('.swatch').forEach(el => { const v = get(PALETTE[+el.dataset.idx].key); if(v !== undefined) el.title = v; });
+    const h = get('textboxHeading'); if(h) document.title = h;
+    $('languageSelect').value = currentLang;
+    render();
+  }
+  Object.keys(L).forEach(code => {
+    const o = document.createElement('option'); o.value = code; o.textContent = L[code].nativeName || code; $('languageSelect').appendChild(o);
+  });
+  $('languageSelect').addEventListener('change', function(){ applyLanguage(this.value); });
+  function detectLanguage(){
+    for(const l of (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'en'])){
+      const c = l.toLowerCase().split('-')[0]; if(L[c]) return c;
+    }
+    return 'en';
+  }
+
+  let restored = false;
+  if(location.hash.indexOf('g=') !== -1){ try{ applyShared(location.hash); restored = true; }catch(e){} }
+  if(!restored) applyLanguage(detectLanguage());
+</script>
+</body>
+</html>
