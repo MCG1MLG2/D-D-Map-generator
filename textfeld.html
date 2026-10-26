@@ -60,6 +60,18 @@
   .header{text-align:center;margin:6px 0 0}
   .header h2{font-family:'Cinzel',serif;font-weight:900;font-size:2rem;margin:0;color:var(--ink);overflow-wrap:anywhere}
   .rule{height:1px;margin:16px auto;width:70%;background:linear-gradient(90deg,transparent,var(--accent,#7c2020),transparent)}
+  .fmt-row{display:flex;gap:8px;margin-bottom:8px}
+  .fmt-btn{width:38px;height:34px;font-family:'EB Garamond',serif;font-size:1.1rem;background:#0f0c09;border:1px solid #4a3c28;color:var(--gold-bright);border-radius:3px;cursor:pointer;padding:0}
+  .fmt-btn:hover{border-color:var(--gold);background:rgba(182,144,63,.12)}
+  .epithet{font-style:italic;color:#5a4a30;font-size:1.05rem;margin-top:4px;overflow-wrap:anywhere}
+  .field .toggle-row{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;padding:8px 10px;border-radius:5px;border:1px solid transparent;transition:background .15s,border-color .15s;margin:0}
+  .field .toggle-row:hover{background:rgba(182,144,63,.08);border-color:#4a3c28}
+  .toggle-row input{display:none}
+  .toggle-switch{width:56px;height:32px;background:#0f0c09;border:1px solid #4a3c28;border-radius:16px;position:relative;transition:background .25s,border-color .25s,box-shadow .25s;flex:0 0 auto;box-shadow:inset 0 1px 3px rgba(0,0,0,.6)}
+  .toggle-switch::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:linear-gradient(180deg,#c9bfa8,#8a7a5c);box-shadow:0 1px 2px rgba(0,0,0,.5);transition:left .25s cubic-bezier(.34,1.56,.64,1),background .25s}
+  .toggle-row input:checked+.toggle-switch{background:linear-gradient(180deg,var(--accent,#7c2020),var(--accent-60,#4a1313));border-color:var(--gold-bright);box-shadow:inset 0 1px 3px rgba(0,0,0,.3),0 0 8px var(--accent-55,rgba(124,32,32,.55))}
+  .toggle-row input:checked+.toggle-switch::after{left:27px;background:linear-gradient(180deg,#fff6e0,var(--gold-bright))}
+  .field .toggle-label{display:inline;font-size:.95rem;text-transform:none;color:var(--parchment);margin:0;letter-spacing:0}
   .box{background:rgba(255,255,255,.28);border:1px solid var(--parchment-shadow);border-radius:3px;padding:14px 16px;margin-top:6px}
   .box p{margin:0;font-size:1.05rem;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
 
@@ -85,8 +97,18 @@
     <h1 data-i18n="textboxHeading">Textfeld-Generator</h1>
     <p class="sub" data-i18n="textboxSubtitle">Schreibe einen Text mit Überschrift</p>
 
-    <div class="field"><label for="tTitle" data-i18n="textboxLblTitle">Überschrift</label><input type="text" id="tTitle" value="Die alte Schenke" maxlength="60"></div>
-    <div class="field"><label for="tBody" data-i18n="textboxLblBody">Text</label><textarea id="tBody" rows="8" maxlength="3000">Hinter dem Stadttor liegt eine verrauchte Schenke. Am Tresen sitzt ein einsamer Zwerg und starrt in seinen Krug.</textarea></div>
+    <div class="field"><label class="toggle-row"><input type="checkbox" id="tTitleOn" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowTitle">Überschrift anzeigen</span></label></div>
+    <div class="field" id="titleField"><label for="tTitle" data-i18n="textboxLblTitle">Überschrift</label><input type="text" id="tTitle" value="Die alte Schenke" maxlength="60"></div>
+    <div class="field"><label class="toggle-row"><input type="checkbox" id="tSubOn" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowSub">Untertitel anzeigen</span></label></div>
+    <div class="field" id="subField"><label for="tSub" data-i18n="textboxLblSubtitle">Untertitel</label><input type="text" id="tSub" value="Erster Abend in der Stadt" maxlength="60"></div>
+    <div class="field"><label class="toggle-row"><input type="checkbox" id="tBodyOn" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowText">Text anzeigen</span></label></div>
+    <div class="field" id="bodyField"><label for="tBody" data-i18n="textboxLblBody">Text</label>
+      <div class="fmt-row">
+        <button type="button" class="fmt-btn" data-mark="**" title="Ctrl+B"><b>B</b></button>
+        <button type="button" class="fmt-btn" data-mark="*" title="Ctrl+I"><i>I</i></button>
+        <button type="button" class="fmt-btn" data-mark="__" title="Ctrl+U"><u>U</u></button>
+        <button type="button" class="fmt-btn" data-mark="~~"><s>S</s></button>
+      </div><textarea id="tBody" rows="8" maxlength="3000">Hinter dem Stadttor liegt eine verrauchte Schenke. Am Tresen sitzt ein einsamer Zwerg und starrt in seinen Krug.</textarea></div>
     <div class="field"><label data-i18n="playerLblAccentColor">Akzentfarbe</label><div class="swatches" id="swatches"></div></div>
 
     <button class="btn main" id="exportBtn" data-i18n="playerExportBtn">Als PNG speichern</button>
@@ -102,7 +124,8 @@
 
   <div class="stage">
     <div id="card">
-      <div class="header" id="headBox"><h2 id="titleOut"></h2><div class="rule"></div></div>
+      <div class="header" id="headBox"><h2 id="titleOut"></h2><div class="epithet" id="subOut"></div></div>
+      <div class="rule" id="ruleOut"></div>
       <div class="box" id="bodyBox"><p id="bodyOut"></p></div>
     </div>
   </div>
@@ -149,12 +172,57 @@
   const mix = (a, b, r) => { const x = rgb(a), y = rgb(b); return 'rgb(' + x.map((v, i) => Math.round(v*r + y[i]*(1-r))).join(',') + ')'; };
   const alpha = (h, a) => 'rgba(' + rgb(h).join(',') + ',' + a + ')';
 
+  // ---------- Formatierung: **fett**, *kursiv*, __unterstrichen__, ~~durchgestrichen~~ ----------
+  function renderFormatted(el, text){
+    el.textContent = '';
+    const parts = text.split(/(\*\*|__|~~|\*)/);
+    const marks = ['**', '*', '__', '~~'], last = {};
+    parts.forEach((p, i) => { if(marks.includes(p)) (last[p] = last[p] || []).push(i); });
+    const literal = new Set();
+    Object.keys(last).forEach(k => { if(last[k].length % 2) literal.add(last[k][last[k].length - 1]); });
+    const on = { '**': false, '*': false, '__': false, '~~': false };
+    parts.forEach((p, i) => {
+      if(!p) return;
+      if(marks.includes(p) && !literal.has(i)){ on[p] = !on[p]; return; }
+      const sp = document.createElement('span'); sp.textContent = p;
+      if(on['**']) sp.style.fontWeight = '700';
+      if(on['*']) sp.style.fontStyle = 'italic';
+      const dec = [on['__'] ? 'underline' : '', on['~~'] ? 'line-through' : ''].filter(Boolean).join(' ');
+      if(dec) sp.style.textDecoration = dec;
+      el.appendChild(sp);
+    });
+  }
+  function wrapSelection(mark){
+    const ta = $('tBody'), s = ta.selectionStart, e = ta.selectionEnd;
+    const sel = ta.value.slice(s, e);
+    ta.setRangeText(mark + sel + mark, s, e, 'end');
+    if(!sel){ const c = s + mark.length; ta.setSelectionRange(c, c); }
+    ta.focus(); render();
+  }
+  document.querySelectorAll('.fmt-btn').forEach(b => {
+    b.addEventListener('mousedown', e => e.preventDefault());
+    b.addEventListener('click', () => wrapSelection(b.dataset.mark));
+  });
+  $('tBody').addEventListener('keydown', e => {
+    if(!(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey) return;
+    const m = { b:'**', i:'*', u:'__' }[e.key.toLowerCase()];
+    if(m){ e.preventDefault(); wrapSelection(m); }
+  });
+
   function render(){
-    const title = $('tTitle').value.trim(), body = $('tBody').value.trim();
+    const tOn = $('tTitleOn').checked, sOn = $('tSubOn').checked, on = $('tBodyOn').checked;
+    const title = tOn ? $('tTitle').value.trim() : '', sub = sOn ? $('tSub').value.trim() : '', body = on ? $('tBody').value.trim() : '';
+    $('titleField').style.display = tOn ? '' : 'none';
+    $('subField').style.display = sOn ? '' : 'none';
     $('titleOut').textContent = title;
-    $('headBox').style.display = title ? '' : 'none';
-    $('bodyOut').textContent = body;
+    $('titleOut').style.display = title ? '' : 'none';
+    $('subOut').textContent = sub;
+    $('subOut').style.display = sub ? '' : 'none';
+    $('headBox').style.display = (title || sub) ? '' : 'none';
+    renderFormatted($('bodyOut'), body);
     $('bodyBox').style.display = body ? '' : 'none';
+    $('bodyField').style.display = on ? '' : 'none';
+    $('ruleOut').style.display = (title || sub) && body ? '' : 'none';
 
     const c = $('card'), a = sel.accent, b = sel.bright, dark = '#0a0806';
     c.style.setProperty('--accent', a); c.style.setProperty('--accent-bright', b);
@@ -185,7 +253,7 @@
   });
 
   // ---------- Teilen per Link (#g=<base64 JSON>) ----------
-  function collect(){ return { v:1, l:currentLang, h:$('tTitle').value, x:$('tBody').value, ac:PALETTE.indexOf(sel) }; }
+  function collect(){ return { v:1, l:currentLang, h:$('tTitle').value, x:$('tBody').value, ac:PALETTE.indexOf(sel), st:$('tSub').value, bo:$('tBodyOn').checked ? 1 : 0, ho:$('tTitleOn').checked ? 1 : 0, so:$('tSubOn').checked ? 1 : 0 }; }
   function shareURL(){
     return location.origin + location.pathname + location.search + '#g=' + encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(collect())))));
   }
@@ -195,6 +263,7 @@
     const s = JSON.parse(decodeURIComponent(escape(atob(raw))));
     if(s.v !== 1) throw new Error('invalid');
     $('tTitle').value = s.h || ''; $('tBody').value = s.x || '';
+    $('tSub').value = s.st || ''; $('tBodyOn').checked = s.bo !== 0; $('tTitleOn').checked = s.ho !== 0; $('tSubOn').checked = s.so !== 0;
     selectColor(s.ac);
     if(s.l && L[s.l]) applyLanguage(s.l); else render();
   }
