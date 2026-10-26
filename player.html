@@ -392,6 +392,27 @@
     gap:10px;
     flex-wrap:wrap;
   }
+  .control-group{ margin-bottom:6px; }
+  .group-title{
+    display:flex; align-items:center; justify-content:space-between;
+    margin:6px 0 16px;
+    padding:8px 0;
+    font-family:'Cinzel', serif;
+    font-size:.95rem;
+    font-weight:600;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--gold-bright);
+    border-bottom:1px solid rgba(182,144,63,.45);
+    cursor:pointer;
+    user-select:none;
+  }
+  .group-title::after{ content:'▾'; font-size:.9rem; color:var(--gold); transition:transform .15s ease; }
+  .group-title:hover{ color:#fff3cf; }
+  .group-title:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; border-radius:2px; }
+  .control-group.collapsed .group-title{ margin-bottom:12px; }
+  .control-group.collapsed .group-title::after{ content:'▸'; }
+  .control-group.collapsed .group-body{ display:none; }
   .upload-btn{
     font-family:'Cinzel', serif;
     font-size:.82rem;
@@ -811,6 +832,9 @@
     <h1 data-i18n="playerHeading">Heldentafel-Generator</h1>
     <p class="sub" data-i18n="playerSubtitle">Gestalte eine eigene Heldentafel für deine Kampagne</p>
 
+    <div class="control-group">
+      <h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="playerGrpHero">Held</h3>
+      <div class="group-body">
     <div class="field">
       <label for="heroName" data-i18n="playerLblName">Heldenname</label>
       <input type="text" id="heroName" value="Orfen" maxlength="24">
@@ -852,6 +876,12 @@
       </div>
     </div>
 
+      </div>
+    </div>
+
+    <div class="control-group">
+      <h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="playerGrpSpeciesClass">Spezies &amp; Klasse</h3>
+      <div class="group-body">
     <div class="field">
       <label for="heroSpecies" data-i18n="playerLblSpecies">Spezies</label>
       <select id="heroSpecies">
@@ -902,11 +932,23 @@
       <div class="rich-editable" id="heroAbility" contenteditable="true">Orfen hat im Kampf mindestens Stärkepunkte in Höhe der 10er-Stelle seiner aktuellen Feldzahl.</div>
     </div>
 
+      </div>
+    </div>
+
+    <div class="control-group">
+      <h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="playerGrpStory">Geschichte</h3>
+      <div class="group-body">
     <div class="field">
       <label for="heroStory" data-i18n="playerLblStory">Geschichte des Helden</label>
       <textarea id="heroStory" rows="5" maxlength="1200" data-i18n-placeholder="playerStoryPlaceholder" placeholder="Woher kommt dein Held? Was hat er erlebt?"></textarea>
     </div>
 
+      </div>
+    </div>
+
+    <div class="control-group">
+      <h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="playerGrpStats">Werte &amp; Farbe</h3>
+      <div class="group-body">
     <div class="field row2">
       <div>
         <label for="strengthCount" data-i18n="playerLblStrengthCount">Stärkepunkte-Felder</label>
@@ -925,6 +967,12 @@
 
     <div class="panel-divider"></div>
 
+      </div>
+    </div>
+
+    <div class="control-group">
+      <h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="playerGrpGear">Inventar &amp; Ausstattung</h3>
+      <div class="group-body">
     <div class="field">
       <label class="toggle-row">
         <input type="checkbox" id="showStorage" checked>
@@ -1002,6 +1050,9 @@
         <span class="toggle-switch"></span>
         <span class="toggle-label" data-i18n="playerToggleShoes">Schuhe anzeigen</span>
       </label>
+    </div>
+
+      </div>
     </div>
 
     <button class="export-btn" id="exportBtn" data-i18n="playerExportBtn">Als PNG speichern</button>
@@ -1503,6 +1554,31 @@
     el.addEventListener('change', render);
   });
   document.getElementById('heroAbility').addEventListener('input', render);
+
+  // collapsible groups in the panel (state per group position in localStorage)
+  (function(){
+    const KEY = 'playerGroupsCollapsed';
+    let saved = [];
+    try { saved = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch(e) { saved = []; }
+    if(!Array.isArray(saved)) saved = [];
+    const groups = Array.from(document.querySelectorAll('.panel .control-group'));
+    function save(){
+      try { localStorage.setItem(KEY, JSON.stringify(groups.map(g => g.classList.contains('collapsed') ? 1 : 0))); } catch(e) {}
+    }
+    groups.forEach((g, i) => {
+      const h = g.querySelector('.group-title');
+      function setState(collapsed){
+        g.classList.toggle('collapsed', collapsed);
+        h.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+      }
+      setState(saved[i] === 1);
+      function toggle(){ setState(!g.classList.contains('collapsed')); save(); }
+      h.addEventListener('click', toggle);
+      h.addEventListener('keydown', e => {
+        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }
+      });
+    });
+  })();
 
   document.getElementById('exportBtn').addEventListener('click', () => {
     const status = document.getElementById('exportStatus');
