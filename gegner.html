@@ -26,6 +26,13 @@
   .panel{background:linear-gradient(180deg,var(--stone-2),var(--stone-1));border-right:1px solid #000;padding:64px 30px 40px;box-shadow:inset -18px 0 30px -28px #000}
   .panel h1{font-family:'Cinzel Decorative',serif;font-size:1.5rem;color:var(--gold-bright);margin:0 0 4px}
   .panel .sub{color:var(--text-muted);font-size:.95rem;margin:0 0 30px;font-style:italic}
+  details.cat{border-top:1px solid #4a3c28;margin-bottom:6px}
+  details.cat>summary{display:flex;align-items:center;justify-content:space-between;cursor:pointer;list-style:none;padding:13px 4px;font-family:'Cinzel',serif;font-weight:700;font-size:.95rem;letter-spacing:.06em;color:var(--gold-bright);user-select:none}
+  details.cat>summary::-webkit-details-marker{display:none}
+  details.cat>summary::after{content:"▾";color:var(--gold);transition:transform .2s}
+  details.cat:not([open])>summary::after{transform:rotate(-90deg)}
+  details.cat>summary:hover{color:var(--parchment)}
+  .cat-body{padding:6px 0 2px}
   .field{margin-bottom:20px}
   .field label{display:block;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);margin-bottom:7px}
   .field input[type=text],.field input[type=number],.field textarea,.field select{width:100%;background:#0f0c09;border:1px solid #4a3c28;color:var(--parchment);font-family:'EB Garamond',serif;font-size:1.05rem;padding:9px 11px;border-radius:3px}
@@ -129,12 +136,18 @@
 
     <button class="btn main" id="randomBtn" style="margin:0 0 24px" data-i18n="enemyRandomBtn">🎲 Zufälliger Gegner</button>
 
+    <details class="cat" open data-cat="general">
+      <summary data-i18n="enemyCat_general">Allgemein</summary>
+      <div class="cat-body">
     <div class="field"><label for="eName" data-i18n="enemyLblName">Name des Gegners</label><input type="text" id="eName" value="Gorgash" maxlength="24"></div>
     <div class="field"><label for="eEpi" data-i18n="playerLblEpithet">Beiname / Herkunft</label><input type="text" id="eEpi" value="Schrecken der Sumpfpfade" maxlength="60"></div>
-    <div class="field row2">
-      <div><label for="eThreat" data-i18n="enemyLblThreat">Gefahrenstufe</label><input type="number" id="eThreat" value="8" min="1" max="150"></div>
-      <div><label for="eIcon" data-i18n="playerLblIcon">Symbol (Emoji)</label><input type="text" id="eIcon" value="👹" maxlength="8"></div>
-    </div>
+    <div class="field"><label for="eThreat" data-i18n="enemyLblThreat">Gefahrenstufe</label><input type="number" id="eThreat" value="8" min="1" max="150"></div>
+      </div>
+    </details>
+    <details class="cat" open data-cat="symbol">
+      <summary data-i18n="enemyCat_symbol">Symbol &amp; Bild</summary>
+      <div class="cat-body">
+    <div class="field"><label for="eIcon" data-i18n="playerLblIcon">Symbol (Emoji)</label><input type="text" id="eIcon" value="👹" maxlength="8"></div>
     <p class="hint" data-i18n-html="playerHintEmoji">Tipp: Emoji-Tastatur öffnen mit <kbd>⊞ Win</kbd> + <kbd>.</kbd> (Windows) oder <kbd>⌃⌘Space</kbd> (Mac)</p>
     <div class="field">
       <label data-i18n="playerLblPortrait">Bild statt Symbol</label>
@@ -153,9 +166,19 @@
         <button type="button" class="upload-btn" id="borderResetBtn" data-i18n="playerBorderResetBtn">↺ Standard</button>
       </div>
     </div>
+      </div>
+    </details>
+    <details class="cat" open data-cat="abilities">
+      <summary data-i18n="enemyCat_abilities">Spezies &amp; Fähigkeiten</summary>
+      <div class="cat-body">
     <div class="field"><label for="eType" data-i18n="enemyLblType">Spezies</label><select id="eType"></select></div>
     <div class="field"><label for="ePassive" data-i18n="enemyLblPassive">Passive Fähigkeit</label><select id="ePassive"></select></div>
     <div class="field"><label for="eAbility" data-i18n="enemyLblAbility">Spezialangriff</label><textarea id="eAbility" rows="3">Wirft einmal pro Kampf einen Felsbrocken auf ein Ziel in bis zu 3 Feldern Entfernung.</textarea></div>
+      </div>
+    </details>
+    <details class="cat" open data-cat="stats">
+      <summary data-i18n="enemyCat_stats">Werte</summary>
+      <div class="cat-body">
     <div class="field row2">
       <div><label for="eHp" data-i18n="enemyLblHp">Lebenspunkte</label><input type="number" id="eHp" value="12" min="1" max="100"></div>
       <div><label for="eArmor" data-i18n="enemyLblArmor">Rüstungspunkte</label><input type="number" id="eArmor" value="3" min="0" max="100"></div>
@@ -172,7 +195,13 @@
       <div><label for="eDmg" data-i18n="enemyLblDamage">Schaden</label><input type="number" id="eDmg" value="4" min="0" max="30"></div>
       <div><label for="eMove" data-i18n="enemyLblMove">Bewegung (Felder)</label><input type="number" id="eMove" value="2" min="0" max="20"></div>
     </div>
-    <div class="field"><label data-i18n="playerLblAccentColor">Akzentfarbe</label><div class="swatches" id="swatches"></div></div>
+      </div>
+    </details>
+    <details class="cat" open data-cat="color">
+      <summary data-i18n="enemyCat_color">Farbe</summary>
+      <div class="cat-body">
+    <div class="field"><label data-i18n="playerLblAccentColor">Akzentfarbe</label><div class="swatches" id="swatches"></div></div>      </div>
+    </details>
 
     <button class="btn main" id="exportBtn" data-i18n="playerExportBtn">Als PNG speichern</button>
     <button class="btn" id="shareToggleBtn" data-i18n="shareToggleBtn">🔗 Teilen</button>
@@ -497,6 +526,19 @@
     }
     return 'en';
   }
+
+  // Kategorien einklappbar, Zustand wird im Browser gemerkt
+  (function(){
+    let saved = {};
+    try{ saved = JSON.parse(localStorage.getItem('gegnerCats') || '{}'); }catch(e){}
+    document.querySelectorAll('details.cat').forEach(d => {
+      if(saved[d.dataset.cat] === false) d.open = false;
+      d.addEventListener('toggle', () => {
+        saved[d.dataset.cat] = d.open;
+        try{ localStorage.setItem('gegnerCats', JSON.stringify(saved)); }catch(e){}
+      });
+    });
+  })();
 
   let restored = false;
   if(location.hash.indexOf('g=') !== -1){ try{ applyShared(location.hash); restored = true; }catch(e){} }
