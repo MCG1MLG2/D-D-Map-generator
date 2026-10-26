@@ -28,7 +28,7 @@
   .panel .sub{color:var(--text-muted);font-size:.95rem;margin:0 0 30px;font-style:italic}
   .field{margin-bottom:20px}
   .field label{display:block;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);margin-bottom:7px}
-  .field input[type=text],.field textarea{width:100%;background:#0f0c09;border:1px solid #4a3c28;color:var(--parchment);font-family:'EB Garamond',serif;font-size:1.05rem;padding:9px 11px;border-radius:3px}
+  .field input[type=text],.field input[type=number],.field textarea{width:100%;background:#0f0c09;border:1px solid #4a3c28;color:var(--parchment);font-family:'EB Garamond',serif;font-size:1.05rem;padding:9px 11px;border-radius:3px}
   .field input:focus,.field textarea:focus{outline:none;border-color:var(--gold)}
   .field textarea{resize:vertical;min-height:160px;line-height:1.4}
   .swatches{display:flex;flex-wrap:wrap;gap:10px}
@@ -57,6 +57,10 @@
     box-shadow:0 30px 60px -20px rgba(0,0,0,.7),0 0 0 10px #17130f,0 0 0 11px #4a3c28}
   #card::before{content:"";position:absolute;inset:10px;border:1px solid var(--parchment-shadow);pointer-events:none}
   #card::after{content:"";position:absolute;inset:15px;border:2px solid var(--accent,#7c2020);opacity:.7;pointer-events:none}
+  .seal{position:absolute;top:-20px;right:26px;z-index:5;width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--accent-bright,#b34d4d),var(--accent,#7c2020) 70%);border:2px solid #241a08;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 10px rgba(0,0,0,.5)}
+  .seal .num{font-family:'Cinzel Decorative',serif;font-size:1.6rem;color:#f3e8c8}
+  .seal .num.long{font-size:1.15rem}
+  #card.has-num .header{padding:0 62px}
   .header{text-align:center;margin:0}
   .header h2{font-family:'Cinzel',serif;font-weight:900;font-size:1.55rem;line-height:1.15;margin:0;color:var(--ink);overflow-wrap:anywhere}
   .rule{height:1px;margin:10px auto;width:70%;background:linear-gradient(90deg,transparent,var(--accent,#7c2020),transparent)}
@@ -101,6 +105,8 @@
     <div class="field" id="titleField"><label for="tTitle" data-i18n="textboxLblTitle">Überschrift</label><input type="text" id="tTitle" value="Die alte Schenke" maxlength="60"></div>
     <div class="field"><label class="toggle-row"><input type="checkbox" id="tSubOn" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowSub">Untertitel anzeigen</span></label></div>
     <div class="field" id="subField"><label for="tSub" data-i18n="textboxLblSubtitle">Untertitel</label><input type="text" id="tSub" value="Erster Abend in der Stadt" maxlength="60"></div>
+    <div class="field"><label class="toggle-row"><input type="checkbox" id="tNumOn" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowNumber">Zahl anzeigen</span></label></div>
+    <div class="field" id="numField"><label for="tNum" data-i18n="textboxLblNumber">Zahl</label><input type="number" id="tNum" value="1" min="0" max="999"></div>
     <div class="field"><label class="toggle-row"><input type="checkbox" id="tBodyOn" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowText">Text anzeigen</span></label></div>
     <div class="field" id="bodyField"><label for="tBody" data-i18n="textboxLblBody">Text</label>
       <div class="fmt-row">
@@ -124,6 +130,7 @@
 
   <div class="stage">
     <div id="card">
+      <div class="seal" id="seal"><span class="num" id="numOut">1</span></div>
       <div class="header" id="headBox"><h2 id="titleOut"></h2><div class="epithet" id="subOut"></div></div>
       <div class="rule" id="ruleOut"></div>
       <div class="box" id="bodyBox"><p id="bodyOut"></p></div>
@@ -212,6 +219,13 @@
   function render(){
     const tOn = $('tTitleOn').checked, sOn = $('tSubOn').checked, on = $('tBodyOn').checked;
     const title = tOn ? $('tTitle').value.trim() : '', sub = sOn ? $('tSub').value.trim() : '', body = on ? $('tBody').value.trim() : '';
+    const nOn = $('tNumOn').checked;
+    const num = Math.max(0, Math.min(999, parseInt($('tNum').value, 10) || 0));
+    $('numOut').textContent = num;
+    $('numOut').classList.toggle('long', String(num).length > 2);
+    $('seal').style.display = nOn ? '' : 'none';
+    $('numField').style.display = nOn ? '' : 'none';
+    $('card').classList.toggle('has-num', nOn);
     $('titleField').style.display = tOn ? '' : 'none';
     $('subField').style.display = sOn ? '' : 'none';
     $('titleOut').textContent = title;
@@ -253,7 +267,7 @@
   });
 
   // ---------- Teilen per Link (#g=<base64 JSON>) ----------
-  function collect(){ return { v:1, l:currentLang, h:$('tTitle').value, x:$('tBody').value, ac:PALETTE.indexOf(sel), st:$('tSub').value, bo:$('tBodyOn').checked ? 1 : 0, ho:$('tTitleOn').checked ? 1 : 0, so:$('tSubOn').checked ? 1 : 0 }; }
+  function collect(){ return { v:1, l:currentLang, h:$('tTitle').value, x:$('tBody').value, ac:PALETTE.indexOf(sel), st:$('tSub').value, bo:$('tBodyOn').checked ? 1 : 0, ho:$('tTitleOn').checked ? 1 : 0, so:$('tSubOn').checked ? 1 : 0, n:$('tNum').value, no:$('tNumOn').checked ? 1 : 0 }; }
   function shareURL(){
     return location.origin + location.pathname + location.search + '#g=' + encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(collect())))));
   }
@@ -264,6 +278,7 @@
     if(s.v !== 1) throw new Error('invalid');
     $('tTitle').value = s.h || ''; $('tBody').value = s.x || '';
     $('tSub').value = s.st || ''; $('tBodyOn').checked = s.bo !== 0; $('tTitleOn').checked = s.ho !== 0; $('tSubOn').checked = s.so !== 0;
+    $('tNum').value = s.n !== undefined ? s.n : 1; $('tNumOn').checked = s.no === 1;
     selectColor(s.ac);
     if(s.l && L[s.l]) applyLanguage(s.l); else render();
   }
