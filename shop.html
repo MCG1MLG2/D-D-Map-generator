@@ -660,6 +660,9 @@
   .equip-shape.square{border-radius:6px;}
   .equip-shape.pouch{width:62px;height:62px;border-radius:8px;background:var(--slot-bg,rgba(230,190,90,.35));}
   .equip-shape .qb{position:absolute;right:-7px;top:-8px;min-width:20px;height:18px;padding:0 4px;box-sizing:border-box;line-height:15px;text-align:center;font-family:'Cinzel',serif;font-weight:700;font-size:.68rem;color:var(--ink);background:var(--parchment);border:1.5px solid var(--slot-border,#8a7142);border-radius:9px;}
+  .equip-shape .nn,.legend .ln{min-width:18px;height:18px;box-sizing:border-box;padding:0 4px;line-height:15px;text-align:center;border-radius:9px;font-family:'Cinzel',serif;font-weight:700;font-size:.68rem;color:var(--parchment);background:var(--accent,#7c2020);border:1.5px solid var(--parchment);}
+  .equip-shape .nn{position:absolute;left:-7px;top:-8px;}
+  .legend .ln{flex:none;}
   .equip-row{position:relative;width:260px;height:330px;margin:0 auto;}
   .doll-bg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
   .equip-slot{position:absolute;}
@@ -948,8 +951,8 @@ function render(){
   const showQty=$('sQty').checked,out=$('waresOut');out.innerHTML='';
   const price=w=>w.p===''?'–':w.p+' '+w.c;
   const span=(c,tx)=>{const e=document.createElement('span');e.className=c;e.textContent=tx;return e;};
-  const box=w=>{const d=document.createElement('div');d.className='equip-shape '+ICONS[w.ic].shape;if(!ICONS[w.ic].empty)d.innerHTML=ICONS[w.ic].svg;
-    if(showQty&&w.q!=='')d.appendChild(span('qb','×'+w.q));return d;};
+  const box=(w,n)=>{const d=document.createElement('div');d.className='equip-shape '+ICONS[w.ic].shape;if(!ICONS[w.ic].empty)d.innerHTML=ICONS[w.ic].svg;
+    if(showQty&&w.q!=='')d.appendChild(span('qb','×'+w.q));if(n)d.appendChild(span('nn',''+n));return d;};
   const emptyList=()=>{const ul=document.createElement('ul');ul.className='wares';const e=document.createElement('li');e.className='empty';
     e.textContent=t('shopEmpty','Keine Waren im Angebot.');ul.appendChild(e);return ul;};
   const secs=[...secBox.children];const side=$('sSide').checked;out.classList.toggle('side',side);
@@ -972,15 +975,15 @@ function render(){
         wares.forEach(w=>{if(w.ic==='item'||seen[w.ic])return;seen[w.ic]=1;const sl=document.createElement('div');sl.className='equip-slot '+w.ic;sl.appendChild(box(w));row.appendChild(sl);});
         wrap.appendChild(row);
       }else{
-        const sh=document.createElement('div');sh.className='shelf';
+        const sh=document.createElement('div');sh.className='shelf';wares.forEach((w,i)=>{w.n=i+1;});
         const avail=side?262:398;let cur=null,used=0;
         wares.forEach(w=>{const wd=ICONS[w.ic].shape==='belt'?90:ICONS[w.ic].shape==='pouch'?62:56;
           if(!cur||used+wd+10>avail){cur=document.createElement('div');cur.className='shelf-row';sh.appendChild(cur);used=0;}
-          cur.appendChild(box(w));used+=wd+10;});
+          cur.appendChild(box(w,w.n));used+=wd+10;});
         wrap.appendChild(sh);
       }
       const lg=document.createElement('ul');lg.className='legend';
-      wares.forEach(w=>{const li=document.createElement('li');const mi=document.createElement('span');mi.className='mi';mi.innerHTML=ICONS[w.ic].svg;li.appendChild(mi);
+      wares.forEach(w=>{const li=document.createElement('li');const mi=document.createElement('span');mi.className='mi';mi.innerHTML=ICONS[w.ic].svg;if(mode==='shelf')li.appendChild(span('ln',''+w.n));li.appendChild(mi);
         li.appendChild(span('nm',w.nm));if(showQty&&w.q!=='')li.appendChild(span('qt','×'+w.q));li.appendChild(span('dots',''));li.appendChild(span('pr',price(w)));lg.appendChild(li);});
       wrap.appendChild(lg);
     }
