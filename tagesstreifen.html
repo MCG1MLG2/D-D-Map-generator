@@ -91,7 +91,7 @@
   .stage{display:flex; align-items:center; justify-content:center; padding:50px 30px; overflow:auto;}
   @media (min-width:901px){
     .stage{position:sticky; top:0; align-self:start; height:100vh; overflow:hidden; padding:0;}
-    #card{position:absolute; left:50%; top:50%; margin:0; transform:translate(-50%,-50%); transform-origin:center center;}
+    .stage #card{position:absolute; left:50%; top:50%; margin:0; transform:translate(-50%,-50%); transform-origin:center center;}   /* .stage davor: sonst überschreibt das spätere #card{position:relative} die absolute Zentrierung */
   }
   #card{
     flex:none; direction:ltr; width:max-content; min-width:230px;
