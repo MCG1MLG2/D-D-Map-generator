@@ -223,13 +223,13 @@
   }
   document.querySelectorAll('.fmt-btn').forEach(b => {
     b.addEventListener('mousedown', e => e.preventDefault());
-    b.addEventListener('click', () => wrapSelection(b.dataset.mark));
+    b.addEventListener('click', () => wrapSelection(b.dataset.mark, b.dataset.target));
   });
-  $('tBody').addEventListener('keydown', e => {
+  ['tBody', 't2Body'].forEach(id => $(id).addEventListener('keydown', e => {
     if(!(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey) return;
     const m = { b:'**', i:'*', u:'__' }[e.key.toLowerCase()];
-    if(m){ e.preventDefault(); wrapSelection(m); }
-  });
+    if(m){ e.preventDefault(); wrapSelection(m, id); }
+  }));
 
   function render(){
     const tOn = $('tTitleOn').checked, sOn = $('tSubOn').checked, on = $('tBodyOn').checked;
@@ -287,7 +287,7 @@
   });
 
   // ---------- Teilen per Link (#g=<base64 JSON>) ----------
-  function collect(){ return { v:1, l:currentLang, h:$('tTitle').value, x:$('tBody').value, ac:PALETTE.indexOf(sel), st:$('tSub').value, bo:$('tBodyOn').checked ? 1 : 0, ho:$('tTitleOn').checked ? 1 : 0, so:$('tSubOn').checked ? 1 : 0, n:$('tNum').value, no:$('tNumOn').checked ? 1 : 0 }; }
+  function collect(){ return { v:1, l:currentLang, h:$('tTitle').value, x:$('tBody').value, ac:PALETTE.indexOf(sel), st:$('tSub').value, bo:$('tBodyOn').checked ? 1 : 0, ho:$('tTitleOn').checked ? 1 : 0, so:$('tSubOn').checked ? 1 : 0, n:$('tNum').value, no:$('tNumOn').checked ? 1 : 0, o2:$('t2On').checked ? 1 : 0, h2:$('t2Title').value, x2:$('t2Body').value }; }
   function shareURL(){
     return location.origin + location.pathname + location.search + '#g=' + encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(collect())))));
   }
@@ -299,6 +299,7 @@
     $('tTitle').value = s.h || ''; $('tBody').value = s.x || '';
     $('tSub').value = s.st || ''; $('tBodyOn').checked = s.bo !== 0; $('tTitleOn').checked = s.ho !== 0; $('tSubOn').checked = s.so !== 0;
     $('tNum').value = s.n !== undefined ? s.n : 1; $('tNumOn').checked = s.no === 1;
+    $('t2On').checked = s.o2 === 1; $('t2Title').value = s.h2 || ''; $('t2Body').value = s.x2 || '';
     selectColor(s.ac);
     if(s.l && L[s.l]) applyLanguage(s.l); else render();
   }
