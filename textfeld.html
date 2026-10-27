@@ -77,6 +77,8 @@
   .toggle-row input:checked+.toggle-switch::after{left:27px;background:linear-gradient(180deg,#fff6e0,var(--gold-bright))}
   .field .toggle-label{display:inline;font-size:.95rem;text-transform:none;color:var(--parchment);margin:0;letter-spacing:0}
   .box{background:rgba(255,255,255,.28);border:1px solid var(--parchment-shadow);border-radius:3px;padding:10px 13px;margin-top:4px}
+  .box+.box{margin-top:8px}
+  .box h3{font-family:'Cinzel',serif;font-weight:700;font-size:1rem;line-height:1.2;margin:0 0 6px;color:var(--accent,#7c2020);overflow-wrap:anywhere}
   .box p{margin:0;font-size:1rem;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}
 
   .lang-picker,.back-btn{position:fixed;top:20px;z-index:20;display:flex;align-items:center;gap:8px;background:linear-gradient(180deg,var(--parchment),var(--parchment-dark));border:1px solid var(--gold);border-radius:6px;box-shadow:0 6px 16px var(--shadow);font-family:'Cinzel',serif;font-size:13px;font-weight:600;color:var(--ink)}
@@ -115,6 +117,18 @@
         <button type="button" class="fmt-btn" data-mark="__" title="Ctrl+U"><u>U</u></button>
         <button type="button" class="fmt-btn" data-mark="~~"><s>S</s></button>
       </div><textarea id="tBody" rows="8" maxlength="3000">Hinter dem Stadttor liegt eine verrauchte Schenke. Am Tresen sitzt ein einsamer Zwerg und starrt in seinen Krug.</textarea></div>
+    <div class="field"><label class="toggle-row"><input type="checkbox" id="t2On" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowSection2">Zweiten Textbereich anzeigen</span></label></div>
+    <div id="sec2Field">
+      <div class="field"><label for="t2Title" data-i18n="textboxLblSection2Title">Überschrift (Textbereich 2)</label><input type="text" id="t2Title" value="Gerüchte am Tresen" maxlength="60"></div>
+      <div class="field"><label for="t2Body" data-i18n="textboxLblSection2Body">Text (Textbereich 2)</label>
+        <div class="fmt-row">
+          <button type="button" class="fmt-btn" data-mark="**" data-target="t2Body" title="Ctrl+B"><b>B</b></button>
+          <button type="button" class="fmt-btn" data-mark="*" data-target="t2Body" title="Ctrl+I"><i>I</i></button>
+          <button type="button" class="fmt-btn" data-mark="__" data-target="t2Body" title="Ctrl+U"><u>U</u></button>
+          <button type="button" class="fmt-btn" data-mark="~~" data-target="t2Body"><s>S</s></button>
+        </div>
+        <textarea id="t2Body" rows="6" maxlength="3000">Der Wirt flüstert von einem verschwundenen Händler und einer Karte, die im Keller versteckt sein soll.</textarea></div>
+    </div>
     <div class="field"><label data-i18n="playerLblAccentColor">Akzentfarbe</label><div class="swatches" id="swatches"></div></div>
 
     <button class="btn main" id="exportBtn" data-i18n="playerExportBtn">Als PNG speichern</button>
@@ -134,6 +148,7 @@
       <div class="header" id="headBox"><h2 id="titleOut"></h2><div class="epithet" id="subOut"></div></div>
       <div class="rule" id="ruleOut"></div>
       <div class="box" id="bodyBox"><p id="bodyOut"></p></div>
+      <div class="box" id="box2"><h3 id="t2Out"></h3><p id="body2Out"></p></div>
     </div>
   </div>
 </div>
@@ -199,8 +214,8 @@
       el.appendChild(sp);
     });
   }
-  function wrapSelection(mark){
-    const ta = $('tBody'), s = ta.selectionStart, e = ta.selectionEnd;
+  function wrapSelection(mark, id){
+    const ta = $(id || 'tBody'), s = ta.selectionStart, e = ta.selectionEnd;
     const sel = ta.value.slice(s, e);
     ta.setRangeText(mark + sel + mark, s, e, 'end');
     if(!sel){ const c = s + mark.length; ta.setSelectionRange(c, c); }
@@ -236,7 +251,12 @@
     renderFormatted($('bodyOut'), body);
     $('bodyBox').style.display = body ? '' : 'none';
     $('bodyField').style.display = on ? '' : 'none';
-    $('ruleOut').style.display = (title || sub) && body ? '' : 'none';
+    const o2 = $('t2On').checked, h2 = o2 ? $('t2Title').value.trim() : '', b2 = o2 ? $('t2Body').value.trim() : '';
+    $('t2Out').textContent = h2; $('t2Out').style.display = h2 ? '' : 'none';
+    renderFormatted($('body2Out'), b2); $('body2Out').style.display = b2 ? '' : 'none';
+    $('box2').style.display = (h2 || b2) ? '' : 'none';
+    $('sec2Field').style.display = o2 ? '' : 'none';
+    $('ruleOut').style.display = (title || sub) && (body || h2 || b2) ? '' : 'none';
 
     const c = $('card'), a = sel.accent, b = sel.bright, dark = '#0a0806';
     c.style.setProperty('--accent', a); c.style.setProperty('--accent-bright', b);
