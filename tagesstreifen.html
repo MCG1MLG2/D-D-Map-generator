@@ -85,6 +85,27 @@
     font-family:'Cinzel', serif; font-weight:700; letter-spacing:.03em; font-size:.95rem; border-radius:4px; cursor:pointer;
   }
   .export-btn:hover{filter:brightness(1.07);}
+  .share-btn{
+    margin-top:8px; width:100%; padding:11px; background:transparent; border:1px solid var(--gold); color:var(--gold-bright);
+    font-family:'Cinzel', serif; font-weight:600; letter-spacing:.03em; font-size:.88rem; border-radius:4px; cursor:pointer;
+  }
+  .share-btn:hover{background:rgba(182,144,63,.12);}
+  .share-btn.active{background:linear-gradient(180deg, var(--gold-bright), var(--gold)); color:#241a08;}
+  .share-panel{
+    display:flex; flex-direction:column; gap:8px; margin-top:8px; padding:12px;
+    background:rgba(0,0,0,.25); border:1px solid var(--gold); border-radius:4px;
+  }
+  .share-panel.collapsed{display:none;}
+  .share-panel .field{margin-bottom:0;}
+  .share-panel-btn{
+    font-family:'Cinzel', serif; font-size:.85rem; font-weight:600; color:#241a08;
+    background:linear-gradient(180deg, #f3e8c8, #d8c599); border:1px solid #7a5c22; border-radius:4px; padding:9px; cursor:pointer;
+  }
+  .share-panel-btn.primary{background:linear-gradient(180deg, var(--gold-bright), var(--gold));}
+  .share-panel-btn:hover{filter:brightness(1.07);}
+  .share-panel-btn:active{transform:translateY(1px);}
+  .paste-settings-feedback{font-size:.8rem; color:var(--text-muted); min-height:1em;}
+  .paste-settings-feedback.success{color:#7fae6a;}
   .export-status{font-size:.8rem; color:var(--text-muted); margin-top:8px; min-height:1em;}
 
   /* ---------- Vorschau ---------- */
@@ -230,6 +251,15 @@
     </div>
 
     <button class="export-btn" id="exportBtn" data-i18n="playerExportBtn">Als PNG speichern</button>
+    <button class="share-btn" id="shareToggleBtn" data-i18n="shareToggleBtn">🔗 Teilen</button>
+    <div class="share-panel collapsed" id="sharePanel">
+      <button class="share-panel-btn" id="copySettingsBtn" data-i18n="copySettingsBtn">📋 Kopieren</button>
+      <div class="field">
+        <input type="text" id="pasteSettingsInput" placeholder="Link oder Code hier einfügen:">
+      </div>
+      <button class="share-panel-btn primary" id="applyPasteSettingsBtn" data-i18n="applyPasteSettingsBtn">✓ Anwenden</button>
+      <span class="paste-settings-feedback" id="pasteSettingsFeedback"></span>
+    </div>
     <div class="export-status" id="exportStatus"></div>
   </div>
 
@@ -260,7 +290,20 @@
     { key:'playerColorSilver',  accent:'#6b7078', bright:'#b8bec8' },
     { key:'playerColorBronze',  accent:'#6e4a2a', bright:'#a8794a' },
     { key:'playerColorOlive',   accent:'#5c6023', bright:'#9aa04a' },
-    { key:'playerColorObsidian',accent:'#2b2b33', bright:'#6a6a78' }
+    { key:'playerColorObsidian',accent:'#2b2b33', bright:'#6a6a78' },
+    // wie in player.html angehängt - die Position in dieser Liste steckt in Teilen-Links, deshalb nur am ENDE ergänzen
+    { key:'playerColorIndigo',   accent:'#2d3a7c', bright:'#6574c4' },
+    { key:'playerColorWine',     accent:'#5e1a2f', bright:'#a8475f' },
+    { key:'playerColorEmerald',  accent:'#1d5c45', bright:'#3fae83' },
+    { key:'playerColorRoyal',    accent:'#1c3f94', bright:'#4f7be0' },
+    { key:'playerColorCopper',   accent:'#8a4a2e', bright:'#d98560' },
+    { key:'playerColorOchre',    accent:'#8a6a12', bright:'#d6b23c' },
+    { key:'playerColorLilac',    accent:'#6a5a8e', bright:'#a899d1' },
+    { key:'playerColorPetrol',   accent:'#17505c', bright:'#3d9db0' },
+    { key:'playerColorChestnut', accent:'#5a2e1a', bright:'#94593a' },
+    { key:'playerColorSlate',    accent:'#3a4a5a', bright:'#7a93ad' },
+    { key:'playerColorMagenta',  accent:'#8a1f6a', bright:'#d65aa8' },
+    { key:'playerColorScarlet',  accent:'#b02a1c', bright:'#e8604d' }
   ];
   let selectedPalette = PALETTE[2];   // Standard: Waldgrün wie im Vorbild
 
@@ -272,7 +315,10 @@
     dayToggleSymbols:'Symbole anzeigen', dayToggleNumbers:'Zahlen statt Buchstaben',
     dayToggleBottomUp:'Von unten nach oben (A unten)', dayDefaultTitle:'Tagesstreifen',
     dayToggleReverse:'Rückwärts zählen', dayToggleHorizontal:'Waagerecht statt senkrecht', dayToggleRightToLeft:'Von rechts nach links (A rechts)',
-    timeLblTitle:'Titel', timeLblSubtitle:'Untertitel', timeBrand:'Legende der Zeit'
+    timeLblTitle:'Titel', timeLblSubtitle:'Untertitel', timeBrand:'Legende der Zeit',
+    shareToggleBtn:'🔗 Teilen', copySettingsBtn:'📋 Kopieren', pasteSettingsPrompt:'Link oder Code hier einfügen:',
+    applyPasteSettingsBtn:'✓ Anwenden', settingsCopied:'✓ Kopiert', settingsCopyError:'Kopieren nicht möglich',
+    pasteSettingsError:'Ungültiger Link oder Code'
   };
   const LANGS = (typeof LANGUAGES !== 'undefined') ? LANGUAGES : { en:{} };
   let currentLang = 'en';
@@ -388,7 +434,25 @@
 
   // Farbfelder
   const swWrap = document.getElementById('swatches');
-  PALETTE.forEach((p, i) => {
+  // Anzeige nach Farbton sortiert (Rot -> Gelb -> Grün -> Blau -> Violett, Grautöne zuletzt); PALETTE selbst bleibt unverändert (Indizes in Teilen-Links)
+  function hueSortKey(hex){
+    const r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255;
+    const max = Math.max(r,g,b), min = Math.min(r,g,b), l = (max+min)/2, d = max-min;
+    let h = 0;
+    if(d){
+      if(max === r) h = ((g-b)/d) % 6; else if(max === g) h = (b-r)/d + 2; else h = (r-g)/d + 4;
+      h *= 60; if(h < 0) h += 360;
+    }
+    const sat = d ? d/(1-Math.abs(2*l-1)) : 0;
+    return { h, l, neutral: sat < 0.2 };
+  }
+  const swatchOrder = PALETTE.map((p, i) => ({ i, k: hueSortKey(p.accent) })).sort((a, b) => {
+    if(a.k.neutral !== b.k.neutral) return a.k.neutral ? 1 : -1;
+    if(a.k.neutral) return a.k.l - b.k.l;
+    return a.k.h - b.k.h || a.k.l - b.k.l;
+  }).map(o => o.i);
+  swatchOrder.forEach(i => {
+    const p = PALETTE[i];
     const d = document.createElement('div');
     d.className = 'swatch' + (p === selectedPalette ? ' active' : '');
     d.dataset.idx = i;
@@ -453,6 +517,12 @@
       if(v !== undefined) el.textContent = v;
     });
     document.title = t('dayHeading');
+    document.getElementById('pasteSettingsInput').placeholder = t('pasteSettingsPrompt');
+    document.querySelectorAll('#swatches .swatch').forEach(el => {   // Farbnamen als Tooltip
+      const pal = PALETTE[Number(el.dataset.idx)];
+      const v = pal && t(pal.key);
+      if(v !== undefined) el.title = v;
+    });
     document.getElementById('languageSelect').value = currentLang;
     render();
   }
@@ -468,7 +538,104 @@
     for(const l of list){ const c = l.toLowerCase().split('-')[0]; if(LANGS[c]) return c; }
     return 'en';
   }
-  applyLanguage(detectLanguage());
+  // ---------- Teilen: Einstellungen als Link oder Code ----------
+  function collectSettings(){
+    return {
+      v: 1, l: currentLang,
+      t: document.getElementById('dTitle').value,
+      s: document.getElementById('dSub').value,
+      n: clamp(document.getElementById('dCount').value, 1, 60),
+      p: clamp(document.getElementById('dPerCol').value, 1, 60),
+      m: document.getElementById('dMarked').value,
+      y: document.getElementById('dSymbols').checked ? 1 : 0,
+      z: document.getElementById('dNumbers').checked ? 1 : 0,
+      h: document.getElementById('dHorizontal').checked ? 1 : 0,
+      r: document.getElementById('dReverse').checked ? 1 : 0,
+      a: PALETTE.indexOf(selectedPalette)
+    };
+  }
+  function encodeSettings(o){
+    return btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  function decodeSettings(input){
+    const m = input.trim().match(/[#&]h=([^&\s]+)/);
+    let b = (m ? m[1] : input.trim()).replace(/-/g, '+').replace(/_/g, '/');
+    while(b.length % 4) b += '=';
+    const o = JSON.parse(decodeURIComponent(escape(atob(b))));
+    if(!o || typeof o !== 'object' || o.v !== 1) throw new Error('invalid share code');
+    for(const k of ['t', 's', 'm']) if(typeof o[k] !== 'string') throw new Error('invalid share code');
+    if(!Number.isInteger(o.a) || !PALETTE[o.a]) throw new Error('invalid share code');
+    return o;
+  }
+  function applySettings(o){
+    document.getElementById('dTitle').value = o.t.slice(0, 40);
+    document.getElementById('dSub').value = o.s.slice(0, 80);
+    document.getElementById('dCount').value = clamp(o.n, 1, 60);
+    document.getElementById('dPerCol').value = clamp(o.p, 1, 60);
+    document.getElementById('dMarked').value = o.m.slice(0, 400);
+    document.getElementById('dSymbols').checked = !!o.y;
+    document.getElementById('dNumbers').checked = !!o.z;
+    document.getElementById('dHorizontal').checked = !!o.h;
+    document.getElementById('dReverse').checked = !!o.r;
+    selectedPalette = PALETTE[o.a];
+    swWrap.querySelectorAll('.swatch').forEach(el => el.classList.toggle('active', Number(el.dataset.idx) === o.a));
+    applyLanguage(typeof o.l === 'string' && LANGS[o.l] ? o.l : currentLang);   // rendert auch
+  }
+  function buildShareURL(){
+    return location.origin + location.pathname + location.search + '#h=' + encodeSettings(collectSettings());
+  }
+  function fallbackCopy(text){
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    let ok = false;
+    try{ ok = document.execCommand('copy'); }catch(e){ ok = false; }
+    document.body.removeChild(ta);
+    return ok;
+  }
+  const sharePanel = document.getElementById('sharePanel'), shareBtn = document.getElementById('shareToggleBtn');
+  const pasteInput = document.getElementById('pasteSettingsInput'), pasteFeedback = document.getElementById('pasteSettingsFeedback');
+  shareBtn.addEventListener('click', () => {
+    const willShow = sharePanel.classList.contains('collapsed');
+    sharePanel.classList.toggle('collapsed');
+    shareBtn.classList.toggle('active', willShow);
+    pasteFeedback.textContent = ''; pasteFeedback.className = 'paste-settings-feedback';
+    if(willShow){ pasteInput.value = ''; pasteInput.focus(); }
+  });
+  document.getElementById('copySettingsBtn').addEventListener('click', () => {
+    const link = buildShareURL(), btn = document.getElementById('copySettingsBtn'), original = btn.textContent;
+    const flash = msg => { btn.textContent = msg; setTimeout(() => { btn.textContent = original; }, 1800); };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(link).then(() => flash(t('settingsCopied')))
+        .catch(() => flash(fallbackCopy(link) ? t('settingsCopied') : t('settingsCopyError')));
+    } else {
+      flash(fallbackCopy(link) ? t('settingsCopied') : t('settingsCopyError'));
+    }
+  });
+  function applyPasted(){
+    const code = pasteInput.value.trim();
+    if(!code) return;
+    try{
+      applySettings(decodeSettings(code));
+      pasteFeedback.textContent = t('settingsCopied'); pasteFeedback.className = 'paste-settings-feedback success';
+      pasteInput.value = '';
+      setTimeout(() => {
+        sharePanel.classList.add('collapsed'); shareBtn.classList.remove('active');
+        pasteFeedback.textContent = ''; pasteFeedback.className = 'paste-settings-feedback';
+      }, 1200);
+    }catch(e){
+      pasteFeedback.textContent = t('pasteSettingsError'); pasteFeedback.className = 'paste-settings-feedback';
+    }
+  }
+  document.getElementById('applyPasteSettingsBtn').addEventListener('click', applyPasted);
+  pasteInput.addEventListener('keydown', e => { if(e.key === 'Enter') applyPasted(); });
+
+  // Beim Öffnen eines geteilten Links die Einstellungen übernehmen
+  let restored = false;
+  if(location.hash && location.hash.indexOf('h=') !== -1){
+    try{ applySettings(decodeSettings(location.hash)); restored = true; }catch(e){ restored = false; }
+  }
+  if(!restored) applyLanguage(detectLanguage());
 </script>
 </body>
 </html>
