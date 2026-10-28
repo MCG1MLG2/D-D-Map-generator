@@ -794,6 +794,12 @@ const DESERT_COLORS = ['#dcc38a', '#e0cd9c', '#d1b57a'];
 const PATH_COLOR = '#c9a66b';
 const DEFAULT_FIELDS = 700;
 
+function polyPoints(poly){
+  let out = '';
+  for(let i = 0; i < poly.length; i++) out += (i ? ' ' : '') + poly[i][0] + ',' + poly[i][1];
+  return out;
+}
+
 function biomeColor(x, y, seed){
   const n = Math.sin(x*0.012 + seed) + Math.sin(y*0.015 + seed*1.7) + Math.sin((x+y)*0.008 + seed*0.6);
   const idx = Math.floor(((n + 3) / 6) * FIELD_COLORS.length) % FIELD_COLORS.length;
@@ -1172,17 +1178,26 @@ function generateFieldTessellation(outposts, desiredFields){
   // bridges placed by hand: each click snaps to the nearest point of a river (within three river widths)
   lastAutoBridgeUV = bridgePts.map(b => ({ u: Math.round(b.x / W * 1000), v: Math.round(b.y / H * 1000) }));
   lastBridgeStatus = [];
+  // only used as "is this point inside the water of some river": returns a negative number as soon as it is,
+  // otherwise a positive one. Segments are rejected by their bounding box first (cheap), which keeps the
+  // terrain pass fast on large maps with several rivers.
+  let riverSegs = null;
   function riverDistAt(x, y){
-    // negative = inside the water of some river (distance to the centre line minus the local width)
-    let best = Infinity;
-    for(const r of rivers){
-      for(let i=0;i<r.pts.length-1;i++){
-        const a = r.pts[i], b = r.pts[i+1];
-        const d = pointSegDist(x, y, a.x, a.y, b.x, b.y) - (a.w + b.w) / 2;
-        if(d < best) best = d;
+    if(!riverSegs){
+      riverSegs = [];
+      for(const r of rivers){
+        for(let i = 0; i < r.pts.length - 1; i++){
+          const a = r.pts[i], b = r.pts[i+1], w = (a.w + b.w) / 2;
+          riverSegs.push({ a, b, w, x0: Math.min(a.x, b.x) - w, x1: Math.max(a.x, b.x) + w, y0: Math.min(a.y, b.y) - w, y1: Math.max(a.y, b.y) + w });
+        }
       }
     }
-    return best;
+    for(let i = 0; i < riverSegs.length; i++){
+      const g = riverSegs[i];
+      if(x < g.x0 || x > g.x1 || y < g.y0 || y > g.y1) continue;
+      if(pointSegDist(x, y, g.a.x, g.a.y, g.b.x, g.b.y) < g.w) return -1;
+    }
+    return 1;
   }
   function riverSideAt(ri, x, y){
     const pts = rivers[ri].pts;
@@ -1242,7 +1257,7 @@ function generateFieldTessellation(outposts, desiredFields){
     if(!poly) continue;
     const mid = polygonCentroid(poly, px, py);
     cells.push({
-      idx: i, poly, px, py, isBuilding, terrain, blocked,
+      idx: i, poly, px, py, isBuilding, terrain, blocked, baseTerrain,
       cx: mid.x, cy: mid.y,
       big: isBuilding && buildingPoints[i].big
     });
@@ -1390,7 +1405,7 @@ function generateFieldTessellation(outposts, desiredFields){
     else { fill = biomeColor(c.px, c.py, seed); opacity = 0.55; }
 
     fieldsLayer.appendChild(el('polygon', {
-      points: c.poly.map(p => p.join(',')).join(' '),
+      points: polyPoints(c.poly),
       fill, opacity, stroke:'#5a4530', 'stroke-width':1, 'stroke-linejoin':'round'
     }));
 
@@ -2292,19 +2307,42 @@ TERRAIN.cell = (() => {
       let changed = false;
       for(const c of cells){
         const u = Math.round(c.px / W * 1000), v = Math.round(c.py / H * 1000), k = key(u, v);
-        if(P.placing === 'erase'){ if(map.delete(k)) changed = true; continue; }
+        if(P.placing === 'erase'){
+          if(map.delete(k)){ changed = true; P.showPreview(c, c.baseTerrain || 'normal'); }
+          continue;
+        }
         const ex = map.get(k);
-        if(ex){ if(ex.t !== P.placing){ ex.t = P.placing; changed = true; } }
-        else if(c.terrain !== P.placing && map.size < CELL_MAX){ map.set(k, { u, v, t: P.placing }); changed = true; }
+        if(ex){ if(ex.t !== P.placing){ ex.t = P.placing; changed = true; P.showPreview(c, P.placing); } }
+        else if(c.terrain !== P.placing && map.size < CELL_MAX){ map.set(k, { u, v, t: P.placing }); changed = true; P.showPreview(c, P.placing); }
       }
-      if(changed) P.list = [...map.values()];
+      if(changed){ P.list = [...map.values()]; P.dirty = true; }
       return changed;
     },
-    pending: false,
-    requestRegen(){
-      if(P.pending) return;
-      P.pending = true;
-      requestAnimationFrame(() => { P.pending = false; generateMap(currentSeed); });
+    dirty: false,
+    previewLayer: null,
+    previewMap: new Map(),
+    // while the pointer is down only the touched fields are redrawn (cheap); the whole map is rebuilt once on release
+    showPreview(c, terrain){
+      if(!P.previewLayer || !P.previewLayer.isConnected){
+        P.previewLayer = el('g', { 'pointer-events': 'none' });
+        P.previewMap = new Map();
+        svg.insertBefore(P.previewLayer, svg.querySelector('.castles-layer') || null);     // castles stay on top
+      }
+      const old = P.previewMap.get(c.idx);
+      if(old) old.forEach(n => n.remove());
+      let fill, opacity;
+      if(terrain === 'sea'){ fill = SEA_COLORS[1]; opacity = 0.8; }
+      else if(terrain === 'river'){ fill = SEA_COLORS[1]; opacity = 0.85; }
+      else if(terrain === 'mountain'){ fill = MOUNTAIN_COLORS[0]; opacity = 0.75; }
+      else if(terrain === 'forest'){ fill = FOREST_COLORS[1]; opacity = 0.65; }
+      else if(terrain === 'desert'){ fill = DESERT_COLORS[0]; opacity = 0.65; }
+      else { fill = biomeColor(c.px, c.py, currentSeed); opacity = 0.55; }
+      const pts = polyPoints(c.poly);
+      const paper = el('polygon', { points: pts, fill: '#e7d9b6', stroke: 'none' });
+      const tint = el('polygon', { points: pts, fill, opacity, stroke: '#5a4530', 'stroke-width': 1, 'stroke-linejoin': 'round' });
+      P.previewLayer.appendChild(paper);
+      P.previewLayer.appendChild(tint);
+      P.previewMap.set(c.idx, [paper, tint]);
     },
     toSettings(){ return { flag: $('customCellTerrain').checked, list: P.list.map(e => [e.u, e.v, CELL_TYPES.indexOf(e.t)]) }; },
     applyState(s){
@@ -2358,16 +2396,21 @@ TERRAIN.cell = (() => {
     down = true;
     try{ svg.setPointerCapture(e.pointerId); }catch(err){}
     moveCursor(e);
-    if(P.paint(pos.fx, pos.fy)) P.requestRegen();
+    P.paint(pos.fx, pos.fy);
     e.preventDefault();
   });
   svg.addEventListener('pointermove', e => {
     moveCursor(e);
     if(!down || !P.active()) return;
     const pos = relPos(e);
-    if(pos && P.paint(pos.fx, pos.fy)) P.requestRegen();
+    if(pos) P.paint(pos.fx, pos.fy);
   });
-  const stop = () => { down = false; };
+  // one full rebuild when the stroke ends
+  const stop = () => {
+    if(!down) return;
+    down = false;
+    if(P.dirty){ P.dirty = false; generateMap(currentSeed); }
+  };
   svg.addEventListener('pointerup', stop);
   svg.addEventListener('pointercancel', stop);
   svg.addEventListener('pointerleave', () => { $('brushCursor').style.display = 'none'; });
