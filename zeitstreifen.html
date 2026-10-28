@@ -140,6 +140,28 @@
   .bracket-label.over{color:var(--crimson);}
   .brand{font-family:'Cinzel', serif; font-size:.7rem; letter-spacing:.1em; color:#8a7142; text-transform:uppercase; text-align:center; margin-top:18px;}
 
+  .share-btn{
+    margin-top:8px; width:100%; padding:11px; background:transparent; border:1px solid var(--gold); color:var(--gold-bright);
+    font-family:'Cinzel', serif; font-weight:600; letter-spacing:.03em; font-size:.88rem; border-radius:4px; cursor:pointer;
+  }
+  .share-btn:hover{background:rgba(182,144,63,.12);}
+  .share-btn.active{background:linear-gradient(180deg, var(--gold-bright), var(--gold)); color:#241a08;}
+  .share-panel{
+    display:flex; flex-direction:column; gap:8px; margin-top:8px; padding:12px;
+    background:rgba(0,0,0,.25); border:1px solid var(--gold); border-radius:4px;
+  }
+  .share-panel.collapsed{display:none;}
+  .share-panel .field{margin-bottom:0;}
+  .share-panel-btn{
+    font-family:'Cinzel', serif; font-size:.85rem; font-weight:600; color:#241a08;
+    background:linear-gradient(180deg, #f3e8c8, #d8c599); border:1px solid #7a5c22; border-radius:4px; padding:9px; cursor:pointer;
+  }
+  .share-panel-btn.primary{background:linear-gradient(180deg, var(--gold-bright), var(--gold));}
+  .share-panel-btn:hover{filter:brightness(1.07);}
+  .share-panel-btn:active{transform:translateY(1px);}
+  .paste-settings-feedback{font-size:.8rem; color:var(--text-muted); min-height:1em;}
+  .paste-settings-feedback.success{color:#7fae6a;}
+
   /* Sprachauswahl + Zurück */
   .lang-picker{
     position:fixed; top:20px; right:20px; z-index:20; display:flex; align-items:center; gap:8px;
@@ -222,6 +244,15 @@
     </div>
 
     <button class="export-btn" id="exportBtn" data-i18n="playerExportBtn">Als PNG speichern</button>
+    <button class="share-btn" id="shareToggleBtn" data-i18n="shareToggleBtn">🔗 Teilen</button>
+    <div class="share-panel collapsed" id="sharePanel">
+      <button class="share-panel-btn" id="copySettingsBtn" data-i18n="copySettingsBtn">📋 Kopieren</button>
+      <div class="field">
+        <input type="text" id="pasteSettingsInput" data-i18n-placeholder="pasteSettingsPrompt" placeholder="Link oder Code hier einfügen:">
+      </div>
+      <button class="share-panel-btn primary" id="applyPasteSettingsBtn" data-i18n="applyPasteSettingsBtn">✓ Anwenden</button>
+      <span class="paste-settings-feedback" id="pasteSettingsFeedback"></span>
+    </div>
     <div class="export-status" id="exportStatus"></div>
   </div>
 
@@ -252,7 +283,20 @@
     { key:'playerColorSilver',  accent:'#6b7078', bright:'#b8bec8' },
     { key:'playerColorBronze',  accent:'#6e4a2a', bright:'#a8794a' },
     { key:'playerColorOlive',   accent:'#5c6023', bright:'#9aa04a' },
-    { key:'playerColorObsidian',accent:'#2b2b33', bright:'#6a6a78' }
+    { key:'playerColorObsidian',accent:'#2b2b33', bright:'#6a6a78' },
+    // wie in player.html: nur am ENDE anhängen, die Position steckt in den Teilen-Links
+    { key:'playerColorIndigo',   accent:'#2d3a7c', bright:'#6574c4' },
+    { key:'playerColorWine',     accent:'#5e1a2f', bright:'#a8475f' },
+    { key:'playerColorEmerald',  accent:'#1d5c45', bright:'#3fae83' },
+    { key:'playerColorRoyal',    accent:'#1c3f94', bright:'#4f7be0' },
+    { key:'playerColorCopper',   accent:'#8a4a2e', bright:'#d98560' },
+    { key:'playerColorOchre',    accent:'#8a6a12', bright:'#d6b23c' },
+    { key:'playerColorLilac',    accent:'#6a5a8e', bright:'#a899d1' },
+    { key:'playerColorPetrol',   accent:'#17505c', bright:'#3d9db0' },
+    { key:'playerColorChestnut', accent:'#5a2e1a', bright:'#94593a' },
+    { key:'playerColorSlate',    accent:'#3a4a5a', bright:'#7a93ad' },
+    { key:'playerColorMagenta',  accent:'#8a1f6a', bright:'#d65aa8' },
+    { key:'playerColorScarlet',  accent:'#b02a1c', bright:'#e8604d' }
   ];
   let selectedPalette = PALETTE[0];
 
@@ -263,7 +307,10 @@
     timeLblCost:'Willenspunkte je Überstunde', timeToggleSun:'Startfeld mit Sonne anzeigen',
     timeToggleSunrise:'Sonnenaufgang-Feld am Ende anzeigen', timeToggleBrackets:'Klammern unter den Stunden anzeigen',
     timeSunStart:'Start', timeSunrise:'Sonnen­aufgang', timeFreeLabel:'Freie Stunden', timeOverLabel:'Überstunden',
-    timeBrand:'Legende der Zeit', timeDefaultTitle:'Tagesleiste'
+    timeBrand:'Legende der Zeit', timeDefaultTitle:'Tagesleiste',
+    shareToggleBtn:'🔗 Teilen', copySettingsBtn:'📋 Kopieren', applyPasteSettingsBtn:'✓ Anwenden',
+    pasteSettingsPrompt:'Link oder Code hier einfügen:', settingsCopied:'✓ Kopiert', settingsCopyError:'Kopieren nicht möglich',
+    pasteSettingsError:'Ungültiger Link oder Code'
   };
   const LANGS = (typeof LANGUAGES !== 'undefined') ? LANGUAGES : { en:{} };
   let currentLang = 'en';
@@ -344,9 +391,26 @@
     card.style.setProperty('--card-tint-3', mixHex(P.accent, '#d3c092', 0.18));
   }
 
-  // Farbfelder
+  // Farbfelder: Anzeige nach Farbton sortiert (wie player.html), PALETTE selbst behält die Reihenfolge (Index steckt im Link)
+  function hueSortKey(hex){
+    const [r,g,b] = hexToRgb(hex).map(v => v/255);
+    const max = Math.max(r,g,b), min = Math.min(r,g,b), l = (max+min)/2, d = max-min;
+    let h = 0;
+    if(d){
+      if(max === r) h = ((g-b)/d) % 6; else if(max === g) h = (b-r)/d + 2; else h = (r-g)/d + 4;
+      h *= 60; if(h < 0) h += 360;
+    }
+    const sat = d ? d/(1-Math.abs(2*l-1)) : 0;
+    return { h, l, neutral: sat < 0.2 };
+  }
+  const swatchOrder = PALETTE.map((p, i) => ({ i, k: hueSortKey(p.accent) })).sort((a, b) => {
+    if(a.k.neutral !== b.k.neutral) return a.k.neutral ? 1 : -1;
+    if(a.k.neutral) return a.k.l - b.k.l;
+    return a.k.h - b.k.h || a.k.l - b.k.l;
+  }).map(o => o.i);
   const swWrap = document.getElementById('swatches');
-  PALETTE.forEach((p, i) => {
+  swatchOrder.forEach(i => {
+    const p = PALETTE[i];
     const d = document.createElement('div');
     d.className = 'swatch' + (i === 0 ? ' active' : '');
     d.dataset.idx = i;
@@ -381,6 +445,97 @@
     });
   });
 
+  // ---------- Teilen: Link / Code kopieren und einfügen ----------
+  // Code = Base64 eines kleinen JSON-Objekts; Link = Seite + "#h=" + Code. Beim Laden wird der Hash ausgewertet.
+  function collectSettings(){
+    return {
+      v:1, l:currentLang,
+      t:document.getElementById('tTitle').value, u:document.getElementById('tSub').value,
+      h:clamp(document.getElementById('tHours').value, 1, 24), f:clamp(document.getElementById('tFree').value, 0, 24),
+      c:clamp(document.getElementById('tCost').value, 1, 9),
+      s:document.getElementById('tSun').checked, r:document.getElementById('tSunrise').checked,
+      b:document.getElementById('tBrackets').checked, a:PALETTE.indexOf(selectedPalette)
+    };
+  }
+  function encodeSettings(o){
+    return btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  }
+  function decodeSettings(code){
+    code = code.trim();
+    const m = code.match(/[#&]h=([^&]+)/);
+    let raw = m ? m[1] : code;
+    raw = raw.replace(/-/g,'+').replace(/_/g,'/');
+    while(raw.length % 4) raw += '=';
+    const o = JSON.parse(decodeURIComponent(escape(atob(raw))));
+    if(!o || typeof o !== 'object' || o.v !== 1) throw new Error('invalid share code');
+    return o;
+  }
+  function applySettings(o){
+    const str = v => typeof v === 'string' ? v : '';
+    document.getElementById('tTitle').value = str(o.t).slice(0, 40);
+    document.getElementById('tSub').value = str(o.u).slice(0, 80);
+    const hours = clamp(o.h, 1, 24);
+    document.getElementById('tHours').value = hours;
+    document.getElementById('tFree').value = clamp(o.f, 0, hours);
+    document.getElementById('tCost').value = clamp(o.c, 1, 9);
+    document.getElementById('tSun').checked = !!o.s;
+    document.getElementById('tSunrise').checked = !!o.r;
+    document.getElementById('tBrackets').checked = !!o.b;
+    if(Number.isInteger(o.a) && PALETTE[o.a]){
+      selectedPalette = PALETTE[o.a];
+      swWrap.querySelectorAll('.swatch').forEach(el => el.classList.toggle('active', Number(el.dataset.idx) === o.a));
+    }
+    if(typeof o.l === 'string' && LANGS[o.l]) applyLanguage(o.l); else render();
+  }
+  function buildShareURL(){
+    return location.origin + location.pathname + location.search + '#h=' + encodeSettings(collectSettings());
+  }
+  function fallbackCopy(text){
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    let ok = false;
+    try{ ok = document.execCommand('copy'); }catch(e){ ok = false; }
+    document.body.removeChild(ta);
+    return ok;
+  }
+  document.getElementById('shareToggleBtn').addEventListener('click', () => {
+    const panel = document.getElementById('sharePanel'), input = document.getElementById('pasteSettingsInput');
+    const show = panel.classList.contains('collapsed');
+    panel.classList.toggle('collapsed');
+    document.getElementById('shareToggleBtn').classList.toggle('active', show);
+    const fb = document.getElementById('pasteSettingsFeedback');
+    fb.textContent = ''; fb.className = 'paste-settings-feedback';
+    if(show){ input.value = ''; input.focus(); }
+  });
+  document.getElementById('copySettingsBtn').addEventListener('click', () => {
+    const link = buildShareURL(), btn = document.getElementById('copySettingsBtn'), orig = btn.textContent;
+    const flash = msg => { btn.textContent = msg; setTimeout(() => btn.textContent = orig, 1800); };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(link).then(() => flash(t('settingsCopied')))
+        .catch(() => flash(fallbackCopy(link) ? t('settingsCopied') : t('settingsCopyError')));
+    } else flash(fallbackCopy(link) ? t('settingsCopied') : t('settingsCopyError'));
+  });
+  function applyPasted(){
+    const input = document.getElementById('pasteSettingsInput'), fb = document.getElementById('pasteSettingsFeedback');
+    const code = input.value.trim();
+    if(!code) return;
+    try{
+      applySettings(decodeSettings(code));
+      fb.textContent = t('settingsCopied'); fb.className = 'paste-settings-feedback success';
+      input.value = '';
+      setTimeout(() => {
+        document.getElementById('sharePanel').classList.add('collapsed');
+        document.getElementById('shareToggleBtn').classList.remove('active');
+        fb.textContent = ''; fb.className = 'paste-settings-feedback';
+      }, 1200);
+    }catch(e){
+      fb.textContent = t('pasteSettingsError'); fb.className = 'paste-settings-feedback';
+    }
+  }
+  document.getElementById('applyPasteSettingsBtn').addEventListener('click', applyPasted);
+  document.getElementById('pasteSettingsInput').addEventListener('keydown', e => { if(e.key === 'Enter') applyPasted(); });
+
   // Sprachauswahl (wie in player.html)
   function applyLanguage(lang){
     currentLang = LANGS[lang] ? lang : 'en';
@@ -390,6 +545,15 @@
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const v = t(el.getAttribute('data-i18n'));
       if(v !== undefined) el.textContent = v;
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const v = t(el.getAttribute('data-i18n-placeholder'));
+      if(v !== undefined) el.placeholder = v;
+    });
+    document.querySelectorAll('#swatches .swatch').forEach(el => {
+      const pk = PALETTE[Number(el.dataset.idx)];
+      const v = pk && (s[pk.key] !== undefined ? s[pk.key] : (LANGS.en || {})[pk.key]);
+      if(v !== undefined) el.title = v;
     });
     document.title = t('timeHeading');
     document.getElementById('languageSelect').value = currentLang;
@@ -407,7 +571,11 @@
     for(const l of list){ const c = l.toLowerCase().split('-')[0]; if(LANGS[c]) return c; }
     return 'en';
   }
-  applyLanguage(detectLanguage());
+  let restored = false;
+  if(location.hash.indexOf('h=') !== -1){
+    try{ applySettings(decodeSettings(location.hash)); restored = true; }catch(e){ restored = false; }
+  }
+  if(!restored) applyLanguage(detectLanguage());
 </script>
 </body>
 </html>
