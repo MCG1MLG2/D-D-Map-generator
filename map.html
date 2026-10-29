@@ -794,9 +794,11 @@ const DESERT_COLORS = ['#dcc38a', '#e0cd9c', '#d1b57a'];
 const PATH_COLOR = '#c9a66b';
 const DEFAULT_FIELDS = 700;
 
+// coordinates with two decimals (0.01 px is far below what can be seen): much shorter strings, much faster to parse
+function f2(v){ return Math.round(v * 100) / 100; }
 function polyPoints(poly){
   let out = '';
-  for(let i = 0; i < poly.length; i++) out += (i ? ' ' : '') + poly[i][0] + ',' + poly[i][1];
+  for(let i = 0; i < poly.length; i++) out += (i ? ' ' : '') + f2(poly[i][0]) + ',' + f2(poly[i][1]);
   return out;
 }
 
@@ -804,6 +806,20 @@ function biomeColor(x, y, seed){
   const n = Math.sin(x*0.012 + seed) + Math.sin(y*0.015 + seed*1.7) + Math.sin((x+y)*0.008 + seed*0.6);
   const idx = Math.floor(((n + 3) / 6) * FIELD_COLORS.length) % FIELD_COLORS.length;
   return FIELD_COLORS[(idx + FIELD_COLORS.length) % FIELD_COLORS.length];
+}
+
+// the chevron of drawBorderArrow as absolute path data (for merging all arrows of a colour into one path)
+function arrowPathD(x1, y1, x2, y2, size){
+  const th = Math.atan2(y2 - y1, x2 - x1) + Math.PI / 2;
+  const cs = Math.cos(th), sn = Math.sin(th), sc = size / 24;
+  const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+  let d = '';
+  const P = [[12, 1], [22.5, 22], [12, 14.5], [1.5, 22]];
+  for(let i = 0; i < 4; i++){
+    const X = (P[i][0] - 12) * sc, Y = (P[i][1] - 12) * sc;
+    d += (i ? 'L' : 'M') + (mx + X * cs - Y * sn).toFixed(2) + ',' + (my + X * sn + Y * cs).toFixed(2) + ' ';
+  }
+  return d + 'Z ';
 }
 
 // small chevron-shaped flow arrow, centred on the border between two
@@ -1199,15 +1215,27 @@ function generateFieldTessellation(outposts, desiredFields){
     }
     return 1;
   }
+  // which side of river ri a point is on (side of the nearest segment); squared distances, segment data cached
+  const sideSegs = [];
   function riverSideAt(ri, x, y){
-    const pts = rivers[ri].pts;
+    let segs = sideSegs[ri];
+    if(!segs){
+      const pts = rivers[ri].pts;
+      segs = sideSegs[ri] = [];
+      for(let i = 0; i < pts.length - 1; i++){
+        const a = pts[i], b = pts[i+1], dx = b.x - a.x, dy = b.y - a.y;
+        segs.push({ ax: a.x, ay: a.y, dx, dy, L2: dx*dx + dy*dy });
+      }
+    }
     let best = Infinity, side = 1;
-    for(let i=0;i<pts.length-1;i++){
-      const a = pts[i], b = pts[i+1];
-      const d = pointSegDist(x, y, a.x, a.y, b.x, b.y);
-      if(d < best){
-        best = d;
-        side = ((b.x-a.x)*(y-a.y) - (b.y-a.y)*(x-a.x)) >= 0 ? 1 : -1;
+    for(let i = 0; i < segs.length; i++){
+      const g = segs[i];
+      let t = g.L2 ? ((x - g.ax)*g.dx + (y - g.ay)*g.dy) / g.L2 : 0;
+      t = t < 0 ? 0 : t > 1 ? 1 : t;
+      const qx = x - (g.ax + g.dx*t), qy = y - (g.ay + g.dy*t), d2 = qx*qx + qy*qy;
+      if(d2 < best){
+        best = d2;
+        side = (g.dx*(y - g.ay) - g.dy*(x - g.ax)) >= 0 ? 1 : -1;
       }
     }
     return side;
@@ -1393,8 +1421,15 @@ function generateFieldTessellation(outposts, desiredFields){
     actionFieldNumbers = new Set();
   }
 
+  // The field polygons, icons and numbers (thousands of nodes on a big map) are built as one SVG string and
+  // parsed once: much faster than createElementNS + setAttribute per node. To keep the node count small the
+  // shared stroke settings sit on the parent group and icons of one kind are one path each (they never overlap
+  // between fields). The random draws are unchanged.
   const fieldsLayer = el('g', {});
-  cells.forEach(c => {
+  let polyHtml = '', mtnD = '', waveD = '', treeD = '', textHtml = '';
+  let cactusDarkTrunk = '', cactusDarkArms = '', cactusTrunk = '', cactusArms = '';
+  for(let ci = 0; ci < cells.length; ci++){
+    const c = cells[ci];
     let fill, opacity;
     if(c.terrain === 'sea'){ fill = choice(SEA_COLORS); opacity = 0.8; }
     else if(c.terrain === 'river'){ fill = choice(SEA_COLORS); opacity = 0.85; }
@@ -1404,10 +1439,7 @@ function generateFieldTessellation(outposts, desiredFields){
     else if(c.terrain === 'path'){ fill = PATH_COLOR; opacity = 0.6; }
     else { fill = biomeColor(c.px, c.py, seed); opacity = 0.55; }
 
-    fieldsLayer.appendChild(el('polygon', {
-      points: polyPoints(c.poly),
-      fill, opacity, stroke:'#5a4530', 'stroke-width':1, 'stroke-linejoin':'round'
-    }));
+    polyHtml += `<polygon points="${polyPoints(c.poly)}" fill="${fill}" opacity="${opacity}"/>`;
 
     // icons and numbers are centred in the middle of the field; for a field
     // with icon + number the pair is centred as a whole (dy shifts both)
@@ -1416,55 +1448,39 @@ function generateFieldTessellation(outposts, desiredFields){
     let dy = 0;
 
     if(c.terrain === 'mountain'){
-      fieldsLayer.appendChild(el('path', {
-        d:`M ${ux-6} ${uy+6} L ${ux} ${uy-6} L ${ux+6} ${uy+6} Z`,
-        fill:'#4a433a', stroke:'#2f2a24', 'stroke-width':0.6, opacity:0.85
-      }));
-      return;
+      mtnD += `M ${f2(ux-6)} ${f2(uy+6)} L ${f2(ux)} ${f2(uy-6)} L ${f2(ux+6)} ${f2(uy+6)} Z `;
+      continue;
     }
     if(c.terrain === 'sea' || c.terrain === 'river'){
-      fieldsLayer.appendChild(el('path', {
-        d:`M ${ux-7} ${uy} Q ${ux-3} ${uy-4} ${ux} ${uy} Q ${ux+4} ${uy+4} ${ux+7} ${uy}`,
-        fill:'none', stroke:'#dfeef0', 'stroke-width':1, opacity:0.6
-      }));
-      return;
+      waveD += `M ${f2(ux-7)} ${f2(uy)} Q ${f2(ux-3)} ${f2(uy-4)} ${f2(ux)} ${f2(uy)} Q ${f2(ux+4)} ${f2(uy+4)} ${f2(ux+7)} ${f2(uy)} `;
+      continue;
     }
     if(c.terrain === 'forest'){
       if(!c.isBuilding) dy = 4.75;
-      fieldsLayer.appendChild(el('path', {
-        d:`M ${ux} ${uy-12+dy} L ${ux-3.5} ${uy-7+dy} L ${ux+3.5} ${uy-7+dy} Z M ${ux} ${uy-9+dy} L ${ux-4.5} ${uy-3.5+dy} L ${ux+4.5} ${uy-3.5+dy} Z`,
-        fill:'#2e3d22', stroke:'#1f2a17', 'stroke-width':0.5, opacity:0.8
-      }));
+      treeD += `M ${f2(ux)} ${f2(uy-12+dy)} L ${f2(ux-3.5)} ${f2(uy-7+dy)} L ${f2(ux+3.5)} ${f2(uy-7+dy)} Z M ${f2(ux)} ${f2(uy-9+dy)} L ${f2(ux-4.5)} ${f2(uy-3.5+dy)} L ${f2(ux+4.5)} ${f2(uy-3.5+dy)} Z `;
     }
     if(c.terrain === 'desert'){
       // saguaro cactus, same height as the forest tree so the icon + number
       // pair is centred the same way (spans uy-12 .. uy-3.5 before the shift)
       if(!c.isBuilding) dy = 4.75;
-      const trunk = `M ${ux} ${uy-10.8+dy} L ${ux} ${uy-4.7+dy}`;
-      const armL = `M ${ux-1} ${uy-6.8+dy} H ${ux-3.4} V ${uy-9.6+dy}`;
-      const armR = `M ${ux+1} ${uy-8.2+dy} H ${ux+3.4} V ${uy-10.6+dy}`;
-      [[ '#2f3d18', 1.0 ], [ '#5f7f32', 0 ]].forEach(([col, extra]) => {
-        fieldsLayer.appendChild(el('path', {
-          d: trunk, fill:'none', stroke:col, 'stroke-width':2.4 + extra, 'stroke-linecap':'round', opacity:0.9
-        }));
-        fieldsLayer.appendChild(el('path', {
-          d: armL + ' ' + armR, fill:'none', stroke:col, 'stroke-width':1.5 + extra, 'stroke-linecap':'round', 'stroke-linejoin':'round', opacity:0.9
-        }));
-      });
+      const trunk = `M ${f2(ux)} ${f2(uy-10.8+dy)} L ${f2(ux)} ${f2(uy-4.7+dy)} `;
+      const arms = `M ${f2(ux-1)} ${f2(uy-6.8+dy)} H ${f2(ux-3.4)} V ${f2(uy-9.6+dy)} M ${f2(ux+1)} ${f2(uy-8.2+dy)} H ${f2(ux+3.4)} V ${f2(uy-10.6+dy)} `;
+      cactusDarkTrunk += trunk; cactusDarkArms += arms; cactusTrunk += trunk; cactusArms += arms;
     }
 
     const labelY = c.isBuilding ? uy + (c.big ? 20 : 14) : uy + dy;
-    const t = el('text', {
-      x: ux, y: labelY + 2.5,
-      'text-anchor': 'middle',
-      'font-family': "'Cinzel', serif",
-      'font-size': c.isBuilding ? 8 : 7,
-      fill: '#3c2c1e',
-      opacity: 0.75
-    });
-    t.textContent = c.number;
-    fieldsLayer.appendChild(t);
-  });
+    textHtml += `<text x="${f2(ux)}" y="${f2(labelY + 2.5)}"${c.isBuilding ? ' font-size="8"' : ''}>${c.number}</text>`;
+  }
+  fieldsLayer.innerHTML =
+    `<g stroke="#5a4530" stroke-width="1" stroke-linejoin="round">${polyHtml}</g>`
+    + (waveD ? `<path d="${waveD}" fill="none" stroke="#dfeef0" stroke-width="1" opacity="0.6"/>` : '')
+    + (mtnD ? `<path d="${mtnD}" fill="#4a433a" stroke="#2f2a24" stroke-width="0.6" opacity="0.85"/>` : '')
+    + (treeD ? `<path d="${treeD}" fill="#2e3d22" stroke="#1f2a17" stroke-width="0.5" opacity="0.8"/>` : '')
+    + (cactusDarkTrunk ? `<path d="${cactusDarkTrunk}" fill="none" stroke="#2f3d18" stroke-width="3.4" stroke-linecap="round" opacity="0.9"/>`
+      + `<path d="${cactusDarkArms}" fill="none" stroke="#2f3d18" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>`
+      + `<path d="${cactusTrunk}" fill="none" stroke="#5f7f32" stroke-width="2.4" stroke-linecap="round" opacity="0.9"/>`
+      + `<path d="${cactusArms}" fill="none" stroke="#5f7f32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>` : '')
+    + `<g text-anchor="middle" font-family="'Cinzel', serif" font-size="7" fill="#3c2c1e" opacity="0.75">${textHtml}</g>`;
 
   // bridges: one continuous deck per crossing, running from the centre of
   // the nearest walkable field on one bank straight to the centre of the
@@ -1607,6 +1623,7 @@ function generateFieldTessellation(outposts, desiredFields){
   // around through whatever walkable/path fields connect it — instead of
   // the arrows simply stopping at the mountain wall.
   const arrowLayer = el('g', { id: 'flowArrowLayer' });
+  const arrowD = {};
   arrowLayer.style.display = document.getElementById('showFlowArrows').checked ? '' : 'none';
   const mainPt = { x: castleCells[0].px, y: castleCells[0].py };
   const outpostPts = castleCells.slice(1).map(c => ({ x: c.px, y: c.py }));
@@ -1615,18 +1632,26 @@ function generateFieldTessellation(outposts, desiredFields){
     ? ringPts.reduce((s, o) => s + Math.hypot(o.x-mainPt.x, o.y-mainPt.y), 0) / ringPts.length
     : 0;
 
+  // neighbour lists once (the generator of delaunay.neighbors is slow when called for every field again and again)
+  const adj = new Array(points.length);
+  for(let i = 0; i < points.length; i++) adj[i] = Array.from(delaunay.neighbors(i));
+  // hop counts as a typed array (-1 = not reachable)
   function bfsHopDistances(sourceIdx){
-    const dist = new Map();
+    const dist = new Int32Array(points.length).fill(-1);
     if(!info[sourceIdx] || info[sourceIdx].blocked) return dist;
-    dist.set(sourceIdx, 0);
-    const queue = [sourceIdx];
-    for(let h=0; h<queue.length; h++){
-      const cur = queue[h];
-      const d = dist.get(cur);
-      for(const nb of delaunay.neighbors(cur)){
-        if(!info[nb] || info[nb].blocked || dist.has(nb)) continue;
-        dist.set(nb, d+1);
-        queue.push(nb);
+    dist[sourceIdx] = 0;
+    const queue = new Int32Array(points.length);
+    let qh = 0, qt = 0;
+    queue[qt++] = sourceIdx;
+    while(qh < qt){
+      const cur = queue[qh++];
+      const d = dist[cur] + 1;
+      const nbs = adj[cur];
+      for(let k = 0; k < nbs.length; k++){
+        const nb = nbs[k];
+        if(dist[nb] >= 0 || !info[nb] || info[nb].blocked) continue;
+        dist[nb] = d;
+        queue[qt++] = nb;
       }
     }
     return dist;
@@ -1674,15 +1699,17 @@ function generateFieldTessellation(outposts, desiredFields){
 
     let bestNeighbor = null;
 
-    if(!viaBridge && hopDist.has(c.idx)){
+    if(!viaBridge && hopDist[c.idx] >= 0){
       // true shortest-path step: walk toward whichever neighbour has a
       // strictly smaller hop count to the target through the walkable graph
-      let bestHops = hopDist.get(c.idx);
-      for(const j of delaunay.neighbors(c.idx)){
+      let bestHops = hopDist[c.idx];
+      const nbs = adj[c.idx];
+      for(let k = 0; k < nbs.length; k++){
+        const j = nbs[k];
         const n = info[j];
         if(!n || n.blocked) continue;
-        const h = hopDist.get(j);
-        if(h !== undefined && h < bestHops){ bestHops = h; bestNeighbor = n; }
+        const h = hopDist[j];
+        if(h >= 0 && h < bestHops){ bestHops = h; bestNeighbor = n; }
       }
     }
 
@@ -1691,8 +1718,9 @@ function generateFieldTessellation(outposts, desiredFields){
       // or fields not connected to the target through walkable terrain
       const ownDist = Math.hypot(target.x-c.px, target.y-c.py);
       let bestNeighborDist = ownDist;
-      for(const j of delaunay.neighbors(c.idx)){
-        const n = info[j];
+      const nbs2 = adj[c.idx];
+      for(let k = 0; k < nbs2.length; k++){
+        const n = info[nbs2[k]];
         if(!n || n.blocked) continue;
         const d = Math.hypot(target.x-n.px, target.y-n.py);
         if(d < bestNeighborDist){ bestNeighborDist = d; bestNeighbor = n; }
@@ -1701,9 +1729,13 @@ function generateFieldTessellation(outposts, desiredFields){
 
     if(bestNeighbor){
       const color = target === mainPt ? '#6e1f1f' : '#3c2c1e';
-      arrowLayer.appendChild(drawBorderArrow(c.px, c.py, bestNeighbor.px, bestNeighbor.py, color, 1, 0.6, 11));
+      arrowD[color] = (arrowD[color] || '') + arrowPathD(c.px, c.py, bestNeighbor.px, bestNeighbor.py, 11);
     }
   });
+  // all arrows of one colour are a single path (same shape as drawBorderArrow, already rotated and placed)
+  let arrowHtml = '';
+  for(const color in arrowD) arrowHtml += `<path d="${arrowD[color]}" fill="${color}" opacity="0.6" stroke-linejoin="round"/>`;
+  arrowLayer.innerHTML = arrowHtml;
 
   const fieldNumber = numerable.length;
   svg.insertBefore(fieldsLayer, svg.querySelector('.castles-layer') || null);
