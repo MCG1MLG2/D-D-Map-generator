@@ -320,16 +320,40 @@
     { name:'Oliv',     key:'playerColorOlive',    accent:'#5c6023', bright:'#9aa04a' },
     { name:'Obsidian', key:'playerColorObsidian', accent:'#2b2b33', bright:'#6a6a78' },
     { name:'Weinrot',  key:'playerColorWine',     accent:'#5e1a2f', bright:'#a8475f' },
-    { name:'Smaragd',  key:'playerColorEmerald',  accent:'#1d5c45', bright:'#3fae83' }
+    { name:'Smaragd',  key:'playerColorEmerald',  accent:'#1d5c45', bright:'#3fae83' },
+    { name:'Rosa', key:'playerColorRose', accent:'#8a3a5c', bright:'#d17aa0' },
+    { name:'Bronze', key:'playerColorBronze', accent:'#6e4a2a', bright:'#a8794a' },
+    { name:'Indigo', key:'playerColorIndigo', accent:'#2d3a7c', bright:'#6574c4' },
+    { name:'Königsblau', key:'playerColorRoyal', accent:'#1c3f94', bright:'#4f7be0' },
+    { name:'Kupfer', key:'playerColorCopper', accent:'#8a4a2e', bright:'#d98560' },
+    { name:'Ocker', key:'playerColorOchre', accent:'#8a6a12', bright:'#d6b23c' },
+    { name:'Flieder', key:'playerColorLilac', accent:'#6a5a8e', bright:'#a899d1' },
+    { name:'Petrol', key:'playerColorPetrol', accent:'#17505c', bright:'#3d9db0' },
+    { name:'Kastanie', key:'playerColorChestnut', accent:'#5a2e1a', bright:'#94593a' },
+    { name:'Schiefer', key:'playerColorSlate', accent:'#3a4a5a', bright:'#7a93ad' },
+    { name:'Magenta', key:'playerColorMagenta', accent:'#8a1f6a', bright:'#d65aa8' },
+    { name:'Scharlach', key:'playerColorScarlet', accent:'#b02a1c', bright:'#e8604d' }
   ];
   let sel = PALETTE[0];
-  PALETTE.forEach((p, i) => {
-    const d = document.createElement('div');
+  // nur die Anzeige-Reihenfolge ist nach Farbton sortiert; PALETTE selbst nie umsortieren (Index steckt im Teilen-Link)
+  function hueKey(hex){
+    const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255);
+    const max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2, d = max - min;
+    let h = 0;
+    if(d){ h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4; h *= 60; if(h < 0) h += 360; }
+    return { h, l, neutral: (d ? d / (1 - Math.abs(2 * l - 1)) : 0) < 0.2 };
+  }
+  PALETTE.map((p, i) => ({ i, k: hueKey(p.accent) })).sort((x, y) => {
+    if(x.k.neutral !== y.k.neutral) return x.k.neutral ? 1 : -1;
+    return x.k.neutral ? x.k.l - y.k.l : x.k.h - y.k.h || x.k.l - y.k.l;
+  }).forEach(({ i }) => {
+    const p = PALETTE[i], d = document.createElement('div');
     d.className = 'swatch' + (i === 0 ? ' active' : ''); d.dataset.idx = i; d.title = p.name;
     d.style.background = `radial-gradient(circle at 35% 30%, ${p.bright}, ${p.accent} 75%)`;
     d.addEventListener('click', () => { selectColor(i); render(); });
     $('swatches').appendChild(d);
   });
+
   function selectColor(i){
     if(!PALETTE[i]) return;
     sel = PALETTE[i];
