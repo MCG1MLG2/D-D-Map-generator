@@ -5,6 +5,9 @@
  * - Wird die Sprache auf einer Seite geändert, wird sie gespeichert (localStorage 'kartenwerkstatt_lang',
  *   derselbe Schlüssel wie auf index.html) und gilt danach auf allen Seiten.
  * - Ein Teilen-Link mit eigener Sprache (z. B. #h=…) hat Vorrang und wird nicht überschrieben.
+ * - Ist noch keine Sprache gespeichert, wird die Browsersprache erkannt (navigator.languages,
+ *   erst der volle Code wie "zh-tw", dann der Basiscode wie "fr"), sonst bleibt es bei der Standardsprache der Seite.
+ *   Die erkannte Sprache wird nicht gespeichert, nur eine bewusste Auswahl.
  * - Ist die Seite in mehreren Tabs offen, ziehen die anderen Tabs sofort nach.
  */
 (function () {
@@ -18,6 +21,16 @@
   function save(code) {
     try { localStorage.setItem(KEY, code); } catch (e) {}
   }
+  function detect() {
+    var list = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || 'en'];
+    for (var i = 0; i < list.length; i++) {
+      var code = String(list[i]).toLowerCase();
+      if (LANGUAGES[code]) return code;
+      var base = code.split('-')[0];
+      if (LANGUAGES[base]) return base;
+    }
+    return null;
+  }
   function apply(code) {
     if (!code || !LANGUAGES[code] || select.value === code) return;
     select.value = code;
@@ -26,7 +39,7 @@
   }
 
   var fromLink = /[#&][A-Za-z]+=/.test(location.hash);
-  if (!fromLink) apply(load());
+  if (!fromLink) apply(load() || detect());
 
   select.addEventListener('change', function () { save(select.value); });
 
