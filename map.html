@@ -256,6 +256,14 @@
   svg#mapSvg.placing-castle{ cursor:crosshair; }
   .brush-row{ display:flex; align-items:center; gap:8px; margin:6px 0 8px; font-size:.9rem; }
   .brush-row input[type=range]{ flex:1; min-width:80px; accent-color:var(--gold); }
+  #labelText{ width:100%; margin:2px 0 8px; }
+  #labelText.flash{ border-color:#c45a4a; }
+  .label-chips{ display:flex; flex-wrap:wrap; gap:6px; margin:4px 0 8px; }
+  .label-chip{ display:inline-flex; align-items:stretch; border:1px solid #4a3c28; border-radius:3px; background:#0f0c09; overflow:hidden; }
+  .label-chip button{ font-family:'EB Garamond', serif; font-size:.9rem; color:var(--parchment); background:transparent; border:none; padding:3px 8px; cursor:pointer; }
+  .label-chip button:hover{ color:var(--gold-bright); }
+  .label-chip .chip-x{ border-left:1px solid #4a3c28; padding:3px 7px; color:#d98a8a; }
+  .label-chip.active{ border-color:var(--gold); background:rgba(182,144,63,.22); }
   #brushCursor{ position:fixed; pointer-events:none; border:2px dashed rgba(217,181,106,.95);
     background:rgba(255,255,255,.12); border-radius:50%; z-index:9999; display:none; transform:translate(-50%, -50%); }
 
@@ -619,6 +627,21 @@
             <span id="cellBrushVal">1</span>
           </div>
           <button type="button" class="castle-reset" id="cellResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <h3 data-i18n="grpLabels">Beschriftungen</h3>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblCustomLabels">Beschriftungen setzen</span>
+          <input type="checkbox" id="customLabels">
+        </div>
+        <div class="castle-placer" id="labelPicker" hidden>
+          <div class="placer-hint" data-i18n="labelHint">Name eingeben, Art wählen, dann auf die Karte klicken</div>
+          <input type="text" id="labelText" maxlength="40" data-i18n-placeholder="labelPlaceholder" placeholder="Name …">
+          <div class="castle-buttons" id="labelKinds"></div>
+          <div class="label-chips" id="labelChips"></div>
+          <button type="button" class="castle-reset" id="labelResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
         </div>
       </div>
 
@@ -1831,6 +1854,77 @@ function merchantNumberList(){
 }
 
 // ---------- Markers: action fields + merchant field ----------
+// ---------- Beschriftungen (names on the map, in the look of the hero sheet) ----------
+// kinds: castle (plaque below the castle), village (small tag below a field), region (large letter-spaced name)
+function labelPos(e, numMap){
+  if(e.kind === 'castle'){
+    const c = lastCastleCells[e.ref];
+    return c ? { x: c.px, y: c.py + (e.ref === 0 ? 46 : 33) } : null;
+  }
+  if(e.kind === 'village'){
+    const c = numMap().get(e.ref);
+    return c ? { x: c.px, y: c.py + 23 } : null;
+  }
+  return { x: e.ref[0] / 1000 * W, y: e.ref[1] / 1000 * H };
+}
+function renderLabels(){
+  const old = document.getElementById('labelsLayer');
+  if(old) old.remove();
+  const P = TERRAIN.labels;
+  if(!P || !P.on() || !P.list.length) return;
+  const g = el('g', { id: 'labelsLayer', 'pointer-events': 'none' });
+  svg.appendChild(g);                       // must be in the document so the text can be measured
+  const defs = el('defs', {});
+  const grad = el('linearGradient', { id: 'lblPlaque', x1: 0, y1: 0, x2: 0, y2: 1 });
+  grad.appendChild(el('stop', { offset: '0%', 'stop-color': '#efe3c3' }));
+  grad.appendChild(el('stop', { offset: '100%', 'stop-color': '#d6c493' }));
+  const rule = el('linearGradient', { id: 'lblRule', x1: 0, y1: 0, x2: 1, y2: 0 });
+  rule.appendChild(el('stop', { offset: '0%', 'stop-color': '#a8823a', 'stop-opacity': 0 }));
+  rule.appendChild(el('stop', { offset: '50%', 'stop-color': '#a8823a', 'stop-opacity': 1 }));
+  rule.appendChild(el('stop', { offset: '100%', 'stop-color': '#a8823a', 'stop-opacity': 0 }));
+  defs.appendChild(grad); defs.appendChild(rule); g.appendChild(defs);
+
+  let numberMap = null;
+  const numMap = () => {
+    if(!numberMap){ numberMap = new Map(); lastCells.forEach(c => { if(c.number) numberMap.set(c.number, c); }); }
+    return numberMap;
+  };
+  const font = "'Cinzel', serif";
+  const measure = (t, fallback) => { try{ const b = t.getBBox(); return b.width > 0 ? b.width : fallback; }catch(err){ return fallback; } };
+
+  P.list.forEach(e => {
+    const pos = labelPos(e, numMap);
+    if(!pos) return;
+    const x = pos.x, y = pos.y;
+    if(e.kind === 'region'){
+      const size = 21;
+      const t = el('text', { x, y: y + size * 0.35, 'text-anchor': 'middle', 'font-family': font, 'font-size': size, 'font-weight': 700,
+        'letter-spacing': 4, fill: '#2c2013', opacity: 0.86, stroke: '#efe3c3', 'stroke-width': 3.6, 'stroke-linejoin': 'round', 'paint-order': 'stroke' });
+      t.textContent = e.text;
+      g.appendChild(t);
+      const w = measure(t, e.text.length * size * 0.9);
+      g.insertBefore(el('rect', { x: x - w * 0.42, y: y + size * 0.78, width: w * 0.84, height: 1.4, fill: 'url(#lblRule)' }), t);
+      return;
+    }
+    const castle = e.kind === 'castle';
+    const size = castle ? 13 : 10.5, padX = castle ? 13 : 8, padY = castle ? 6 : 4;
+    const t = el('text', { x, y: y + size * 0.35, 'text-anchor': 'middle', 'font-family': font, 'font-size': size, 'font-weight': castle ? 700 : 600, fill: '#2c2013' });
+    t.textContent = e.text;
+    g.appendChild(t);
+    const w = measure(t, e.text.length * size * 0.72) + padX * 2, h = size + padY * 2;
+    const bx = x - w / 2, by = y - h / 2;
+    const put = n => g.insertBefore(n, t);
+    put(el('rect', { x: bx + 1.5, y: by + 2.2, width: w, height: h, rx: 3, fill: '#000', opacity: 0.28 }));
+    put(el('rect', { x: bx, y: by, width: w, height: h, rx: 3, fill: 'url(#lblPlaque)', stroke: '#8a7142', 'stroke-width': 1.3 }));
+    if(castle){
+      put(el('rect', { x: bx + 2.6, y: by + 2.6, width: w - 5.2, height: h - 5.2, rx: 1.5, fill: 'none', stroke: '#b6903f', 'stroke-width': 0.9, opacity: 0.8 }));
+      put(el('circle', { cx: bx - 1, cy: y, r: 2.6, fill: '#d9b56a', stroke: '#241a08', 'stroke-width': 0.8 }));
+      put(el('circle', { cx: bx + w + 1, cy: y, r: 2.6, fill: '#d9b56a', stroke: '#241a08', 'stroke-width': 0.8 }));
+    }
+  });
+}
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => renderLabels());
+
 function renderMarkers(){
   if(markersLayerRef){ markersLayerRef.remove(); markersLayerRef = null; }
 
@@ -1915,6 +2009,7 @@ function renderMarkers(){
 
   svg.appendChild(layer);
   markersLayerRef = layer;
+  renderLabels();
 }
 
 // ---------- Main generation ----------
@@ -2475,6 +2570,146 @@ TERRAIN.harbor = makeTerrainPicker('harbor', {
   fromSetting: x => (Number.isInteger(x) && x >= 1 && x <= 46655) ? x : null
 });
 
+// labels: names for castles, villages (any field) and regions; a click places them, a chip selects one to move or rename
+const LABEL_KINDS = ['castle', 'village', 'region'];
+const LABEL_ICONS = { castle: '🏰', village: '🏘️', region: '🗺️' };
+const LABEL_TITLES = { castle: ['labelKindCastle', 'Burg'], village: ['labelKindVillage', 'Dorf'], region: ['labelKindRegion', 'Region'] };
+const LABEL_MAX = 60;
+TERRAIN.labels = (() => {
+  const $ = id => document.getElementById(id);
+  const P = {
+    key: 'labels', list: [], placing: null,        // placing: null | a kind (new label) | index (move that label)
+    on(){ return $('customLabels').checked; },
+    active(){ return P.on() && P.placing !== null; },
+    clearMode(){ if(P.placing !== null){ P.placing = null; P.update(); } },
+    pick(k){
+      P.placing = (P.placing === k) ? null : k;
+      if(typeof P.placing === 'number') $('labelText').value = P.list[P.placing].text;
+      else if(P.placing !== null) $('labelText').value = '';
+      if(P.placing !== null){
+        placingCastle = null; placingMerchant = null; placingAction = null; placingVillage = null;
+        updateCastlePlacer(); updateMerchantPicker(); updateActionPicker(); updateVillagePicker();
+        clearTerrainPickers(P);
+      }
+      P.update();
+    },
+    update(){
+      const on = P.on();
+      $('labelPicker').hidden = !on;
+      if(!on){ P.placing = null; updatePickUI(); return; }
+      const kinds = $('labelKinds');
+      kinds.innerHTML = '';
+      LABEL_KINDS.forEach(k => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'castle-btn' + (P.placing === k ? ' active' : '');
+        b.textContent = LABEL_ICONS[k];
+        b.title = t(LABEL_TITLES[k][0]) || LABEL_TITLES[k][1];
+        b.addEventListener('click', () => P.pick(k));
+        kinds.appendChild(b);
+      });
+      const chips = $('labelChips');
+      chips.innerHTML = '';
+      P.list.forEach((e, i) => {
+        const chip = document.createElement('span');
+        chip.className = 'label-chip' + (P.placing === i ? ' active' : '');
+        const name = document.createElement('button');
+        name.type = 'button';
+        name.textContent = LABEL_ICONS[e.kind] + ' ' + e.text;
+        name.addEventListener('click', () => P.pick(i));
+        const x = document.createElement('button');
+        x.type = 'button';
+        x.className = 'chip-x';
+        x.textContent = '✕';
+        x.addEventListener('click', () => {
+          P.list.splice(i, 1);
+          if(typeof P.placing === 'number') P.placing = null;
+          renderLabels(); P.update();
+        });
+        chip.appendChild(name); chip.appendChild(x);
+        chips.appendChild(chip);
+      });
+      updatePickUI();
+    },
+    handleClick(fx, fy){
+      if(!P.active()) return false;
+      const x = fx * W, y = fy * H;
+      const moving = typeof P.placing === 'number';
+      const kind = moving ? P.list[P.placing].kind : P.placing;
+      const text = $('labelText').value.trim();
+      if(!moving && !text){                          // a name is needed first
+        const inp = $('labelText');
+        inp.classList.add('flash'); inp.focus();
+        setTimeout(() => inp.classList.remove('flash'), 900);
+        return true;
+      }
+      let ref;
+      if(kind === 'castle'){
+        let best = -1, bd = Infinity;
+        lastCastleCells.forEach((c, i) => { const d = (c.px - x) * (c.px - x) + (c.py - y) * (c.py - y); if(d < bd){ bd = d; best = i; } });
+        if(best < 0) return true;
+        ref = best;
+      } else if(kind === 'village'){
+        const c = cellAtMapPoint(x, y);
+        if(!c) return true;
+        ref = c.number;
+      } else {
+        ref = [Math.round(fx * 1000), Math.round(fy * 1000)];
+      }
+      if(moving){
+        P.list[P.placing].ref = ref;
+        P.placing = null;
+      } else {
+        if(P.list.length >= LABEL_MAX) return true;
+        P.list.push({ kind, text, ref });
+      }
+      renderLabels();
+      P.update();
+      return true;
+    },
+    toSettings(){
+      return { flag: $('customLabels').checked, list: P.list.map(e => e.kind === 'region' ? [2, e.ref[0], e.ref[1], e.text] : [e.kind === 'castle' ? 0 : 1, e.ref, e.text]) };
+    },
+    applyState(s){
+      const list = [];
+      (Array.isArray(s.labelList) ? s.labelList : []).forEach(e => {
+        if(!Array.isArray(e) || list.length >= LABEL_MAX) return;
+        if(e[0] === 2 && e.length === 4 && Number.isFinite(e[1]) && Number.isFinite(e[2]) && typeof e[3] === 'string') list.push({ kind: 'region', text: e[3].slice(0, 40), ref: [e[1], e[2]] });
+        else if((e[0] === 0 || e[0] === 1) && e.length === 3 && Number.isInteger(e[1]) && e[1] >= 0 && typeof e[2] === 'string') list.push({ kind: e[0] === 0 ? 'castle' : 'village', text: e[2].slice(0, 40), ref: e[1] });
+      });
+      P.list = list;
+      $('customLabels').checked = !!s.customLabels;
+      P.placing = null;
+    }
+  };
+  $('customLabels').addEventListener('change', () => {
+    P.placing = null;
+    if(P.on()){
+      placingCastle = null; placingMerchant = null; placingAction = null; placingVillage = null;
+      updateCastlePlacer(); updateMerchantPicker(); updateActionPicker(); updateVillagePicker();
+      clearTerrainPickers(P);
+    }
+    renderLabels();
+    P.update();
+  });
+  // typing renames the selected label right away
+  $('labelText').addEventListener('input', () => {
+    if(typeof P.placing === 'number' && P.list[P.placing]){
+      const v = $('labelText').value.trim();
+      if(v){ P.list[P.placing].text = v; renderLabels(); P.update(); }
+    }
+  });
+  $('labelResetBtn').addEventListener('click', () => {
+    P.list = [];
+    P.placing = null;
+    $('labelText').value = '';
+    renderLabels();
+    P.update();
+  });
+  TERRAIN_PICKERS.push(P);
+  return P;
+})();
+
 // the sea is a band along a map edge: a click chooses the nearest edge (at most 3, so one edge stays dry for the rivers)
 TERRAIN.sea = makeTerrainPicker('sea', {
   max: 3, unique: true,
@@ -2826,22 +3061,24 @@ function downloadPNG(){
 }
 
 document.getElementById('generateBtn').addEventListener('click', () => generateMap());
-// settings groups can be folded by clicking their heading (remembered in this browser)
+// settings groups can be folded by clicking their heading (remembered in this browser, per group name)
 (function(){
-  const KEY = 'mapGroupsCollapsed';
+  const KEY = 'mapGroupsCollapsedBy';
   let saved = [];
   try{ saved = JSON.parse(localStorage.getItem(KEY) || '[]'); }catch(e){ saved = []; }
+  if(!Array.isArray(saved)) saved = [];
+  const nameOf = g => g.querySelector('h3').getAttribute('data-i18n') || '';
   const save = () => {
     const list = [];
-    document.querySelectorAll('#settingsBody .control-group').forEach((g, i) => { if(g.classList.contains('collapsed')) list.push(i); });
+    document.querySelectorAll('#settingsBody .control-group').forEach(g => { if(g.classList.contains('collapsed')) list.push(nameOf(g)); });
     try{ localStorage.setItem(KEY, JSON.stringify(list)); }catch(e){}
   };
-  document.querySelectorAll('#settingsBody .control-group').forEach((g, i) => {
+  document.querySelectorAll('#settingsBody .control-group').forEach(g => {
     const h = g.querySelector('h3');
     if(!h) return;
     h.setAttribute('role', 'button');
     h.tabIndex = 0;
-    if(Array.isArray(saved) && saved.includes(i)) g.classList.add('collapsed');
+    if(saved.includes(nameOf(g))) g.classList.add('collapsed');
     h.setAttribute('aria-expanded', String(!g.classList.contains('collapsed')));
     const toggle = () => {
       g.classList.toggle('collapsed');
@@ -2902,7 +3139,9 @@ function collectSettings(){
     customBridge: TERRAIN.bridge.toSettings().flag,
     bridgeList: TERRAIN.bridge.toSettings().list,
     customHarbor: TERRAIN.harbor.toSettings().flag,
-    harborList: TERRAIN.harbor.toSettings().list
+    harborList: TERRAIN.harbor.toSettings().list,
+    customLabels: TERRAIN.labels.toSettings().flag,
+    labelList: TERRAIN.labels.toSettings().list
   };
 }
 
@@ -3036,6 +3275,18 @@ function encodeCompactSettings(s){
     }
     return out;
   };
+  // 22: labels: flag + the list as JSON in UTF-8, base64url (names can contain any characters)
+  const encLabels = () => {
+    if(!present('customLabels', 'labelList')) return null;
+    let out = flagOf('customLabels', 'labelList');
+    if(s.labelList.length){
+      for(const e of s.labelList){
+        if(!Array.isArray(e) || !(e.length === 3 || e.length === 4) || typeof e[e.length - 1] !== 'string') throw new Error('x');
+      }
+      out += btoa(unescape(encodeURIComponent(JSON.stringify(s.labelList)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+    return out;
+  };
   let tail;
   try{
     tail = [encCastles(), encCastleNumbers(),
@@ -3044,7 +3295,8 @@ function encodeCompactSettings(s){
       encPos('customDesert', 'desertList'), encPos('customForest', 'forestList'), encPos('customMountain', 'mountainList'),
       encEdges('customSea', 'seaList'), encCells(), encPos('customBridge', 'bridgeList'),
       s.numberOrder === 'spalten' ? '1' : null,      // part 20: numbering by columns
-      encNums('customHarbor', 'harborList')];        // part 21: harbours (field numbers like villages)
+      encNums('customHarbor', 'harborList'),         // part 21: harbours (field numbers like villages)
+      encLabels()];                                  // part 22: names on the map
   } catch(e){ return null; }
   let last = tail.length - 1;
   while(last >= 0 && tail[last] === null) last--;
@@ -3055,7 +3307,7 @@ function encodeCompactSettings(s){
 function decodeCompactSettings(raw){
   const bad = () => new Error('invalid share code');
   const p = raw.split('.');
-  if(p.length < 8 || p.length > 21 || p[0] !== '2') throw bad();
+  if(p.length < 8 || p.length > 22 || p[0] !== '2') throw bad();
   const b36 = str => {
     if(!/^-?[0-9a-z]+$/.test(str)) throw bad();
     const n = parseInt(str, 36);
@@ -3106,6 +3358,17 @@ function decodeCompactSettings(raw){
   s.customBridge = false; s.bridgeList = [];
   s.numberOrder = (p.length >= 20 && p[19] === '1') ? 'spalten' : 'zeilen';
   s.customHarbor = false; s.harborList = [];
+  s.customLabels = false; s.labelList = [];
+  if(p.length >= 22){
+    if(!/^[01][A-Za-z0-9_-]*$/.test(p[21])) throw bad();
+    s.customLabels = p[21][0] === '1';
+    if(p[21].length > 1){
+      let b = p[21].slice(1).replace(/-/g, '+').replace(/_/g, '/');
+      while(b.length % 4) b += '=';
+      try{ s.labelList = JSON.parse(decodeURIComponent(escape(atob(b)))); }catch(err){ throw bad(); }
+      if(!Array.isArray(s.labelList)) throw bad();
+    }
+  }
   if(p.length >= 21){
     if(!/^[01]([0-9a-z]{3})*$/.test(p[20])) throw bad();
     s.customHarbor = p[20][0] === '1';

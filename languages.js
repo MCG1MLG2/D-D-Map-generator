@@ -442,7 +442,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "كعكة عسل",
     "shopItem_bakery_2": "فطيرة تفاح",
     "shopExportBtn": "حفظ كـ PNG",
-    "shopSealCap": "التاجر"
+    "shopSealCap": "التاجر",
+    "textboxLblShowSection2": "إظهار منطقة النص الثانية",
+    "textboxLblSection2Title": "العنوان (منطقة النص 2)",
+    "textboxLblSection2Body": "النص (منطقة النص 2)"
   },
   "bg": {
     "nativeName": "Български",
@@ -863,7 +866,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Меден сладкиш",
     "shopItem_bakery_2": "Ябълков пастет",
     "shopExportBtn": "Запази като PNG",
-    "shopSealCap": "Търговец"
+    "shopSealCap": "Търговец",
+    "textboxLblShowSection2": "Показване на втора текстова област",
+    "textboxLblSection2Title": "Заглавие (текстова област 2)",
+    "textboxLblSection2Body": "Текст (текстова област 2)"
   },
   "bn": {
     "nativeName": "বাংলা",
@@ -1284,7 +1290,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "মধুর কেক",
     "shopItem_bakery_2": "আপেল পেস্ট্রি",
     "shopExportBtn": "PNG হিসেবে সংরক্ষণ করুন",
-    "shopSealCap": "বণিক"
+    "shopSealCap": "বণিক",
+    "textboxLblShowSection2": "দ্বিতীয় লেখার অংশ দেখান",
+    "textboxLblSection2Title": "শিরোনাম (লেখার অংশ ২)",
+    "textboxLblSection2Body": "লেখা (লেখার অংশ ২)"
   },
   "ca": {
     "nativeName": "Català",
@@ -1705,7 +1714,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Pastís de mel",
     "shopItem_bakery_2": "Panadó de poma",
     "shopExportBtn": "Desa com a PNG",
-    "shopSealCap": "Mercader"
+    "shopSealCap": "Mercader",
+    "textboxLblShowSection2": "Mostra la segona àrea de text",
+    "textboxLblSection2Title": "Títol (àrea de text 2)",
+    "textboxLblSection2Body": "Text (àrea de text 2)"
   },
   "cs": {
     "nativeName": "Čeština",
@@ -2126,7 +2138,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Medový koláč",
     "shopItem_bakery_2": "Jablečný záviněk",
     "shopExportBtn": "Uložit jako PNG",
-    "shopSealCap": "Obchodník"
+    "shopSealCap": "Obchodník",
+    "textboxLblShowSection2": "Zobrazit druhou textovou oblast",
+    "textboxLblSection2Title": "Nadpis (textová oblast 2)",
+    "textboxLblSection2Body": "Text (textová oblast 2)"
   },
   "da": {
     "nativeName": "Dansk",
@@ -2547,7 +2562,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Honningkage",
     "shopItem_bakery_2": "Æbleturnover",
     "shopExportBtn": "Gem som PNG",
-    "shopSealCap": "Handlende"
+    "shopSealCap": "Handlende",
+    "textboxLblShowSection2": "Vis andet tekstområde",
+    "textboxLblSection2Title": "Overskrift (tekstområde 2)",
+    "textboxLblSection2Body": "Tekst (tekstområde 2)"
   },
   "de": {
     "nativeName": "Deutsch",
@@ -2968,7 +2986,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Honigkuchen",
     "shopItem_bakery_2": "Apfeltasche",
     "shopExportBtn": "Als PNG speichern",
-    "shopSealCap": "Händler"
+    "shopSealCap": "Händler",
+    "textboxLblShowSection2": "Zweiten Textbereich anzeigen",
+    "textboxLblSection2Title": "Überschrift (Textbereich 2)",
+    "textboxLblSection2Body": "Text (Textbereich 2)"
   },
   "el": {
     "nativeName": "Ελληνικά",
@@ -3389,7 +3410,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Κέικ μελιού",
     "shopItem_bakery_2": "Μηλόπιτα",
     "shopExportBtn": "Αποθήκευση ως PNG",
-    "shopSealCap": "Έμπορος"
+    "shopSealCap": "Έμπορος",
+    "textboxLblShowSection2": "Εμφάνιση δεύτερης περιοχής κειμένου",
+    "textboxLblSection2Title": "Επικεφαλίδα (περιοχή κειμένου 2)",
+    "textboxLblSection2Body": "Κείμενο (περιοχή κειμένου 2)"
   },
   "en": {
     "nativeName": "English",
@@ -3810,7 +3834,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Honey Cake",
     "shopItem_bakery_2": "Apple Turnover",
     "shopExportBtn": "Save as PNG",
-    "shopSealCap": "Merchant"
+    "shopSealCap": "Merchant",
+    "textboxLblShowSection2": "Show second text area",
+    "textboxLblSection2Title": "Heading (text area 2)",
+    "textboxLblSection2Body": "Text (text area 2)"
   },
   "es": {
     "nativeName": "Español",
@@ -4231,7 +4258,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Pastel de miel",
     "shopItem_bakery_2": "Empanadilla de manzana",
     "shopExportBtn": "Guardar como PNG",
-    "shopSealCap": "Comerciante"
+    "shopSealCap": "Comerciante",
+    "textboxLblShowSection2": "Mostrar la segunda área de texto",
+    "textboxLblSection2Title": "Título (área de texto 2)",
+    "textboxLblSection2Body": "Texto (área de texto 2)"
   },
   "et": {
     "nativeName": "Eesti",
@@ -4652,7 +4682,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Meekook",
     "shopItem_bakery_2": "Õunataskud",
     "shopExportBtn": "Salvesta PNG-na",
-    "shopSealCap": "Kaupmees"
+    "shopSealCap": "Kaupmees",
+    "textboxLblShowSection2": "Näita teist tekstiala",
+    "textboxLblSection2Title": "Pealkiri (tekstiala 2)",
+    "textboxLblSection2Body": "Tekst (tekstiala 2)"
   },
   "eu": {
     "nativeName": "Euskara",
@@ -5073,7 +5106,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Eztizko pastela",
     "shopItem_bakery_2": "Sagar-enpanada",
     "shopExportBtn": "Gorde PNG gisa",
-    "shopSealCap": "Merkataria"
+    "shopSealCap": "Merkataria",
+    "textboxLblShowSection2": "Erakutsi bigarren testu-eremua",
+    "textboxLblSection2Title": "Izenburua (2. testu-eremua)",
+    "textboxLblSection2Body": "Testua (2. testu-eremua)"
   },
   "fa": {
     "nativeName": "فارسی",
@@ -5494,7 +5530,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "کیک عسلی",
     "shopItem_bakery_2": "پیراشکی سیب",
     "shopExportBtn": "ذخیره به‌صورت PNG",
-    "shopSealCap": "تاجر"
+    "shopSealCap": "تاجر",
+    "textboxLblShowSection2": "نمایش بخش دوم متن",
+    "textboxLblSection2Title": "عنوان (بخش متن ۲)",
+    "textboxLblSection2Body": "متن (بخش متن ۲)"
   },
   "fi": {
     "nativeName": "Suomi",
@@ -5915,7 +5954,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Hunajakakku",
     "shopItem_bakery_2": "Omenapiirakka",
     "shopExportBtn": "Tallenna PNG-muodossa",
-    "shopSealCap": "Kauppias"
+    "shopSealCap": "Kauppias",
+    "textboxLblShowSection2": "Näytä toinen tekstialue",
+    "textboxLblSection2Title": "Otsikko (tekstialue 2)",
+    "textboxLblSection2Body": "Teksti (tekstialue 2)"
   },
   "fr": {
     "nativeName": "Français",
@@ -6336,7 +6378,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Gâteau au miel",
     "shopItem_bakery_2": "Chausson aux pommes",
     "shopExportBtn": "Enregistrer en PNG",
-    "shopSealCap": "Marchand"
+    "shopSealCap": "Marchand",
+    "textboxLblShowSection2": "Afficher la deuxième zone de texte",
+    "textboxLblSection2Title": "Titre (zone de texte 2)",
+    "textboxLblSection2Body": "Texte (zone de texte 2)"
   },
   "ga": {
     "nativeName": "Gaeilge",
@@ -6757,7 +6802,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Cáca mil",
     "shopItem_bakery_2": "Taos úll",
     "shopExportBtn": "Sábháil mar PNG",
-    "shopSealCap": "Ceannaí"
+    "shopSealCap": "Ceannaí",
+    "textboxLblShowSection2": "Taispeáin an dara limistéar téacs",
+    "textboxLblSection2Title": "Ceannteideal (limistéar téacs 2)",
+    "textboxLblSection2Body": "Téacs (limistéar téacs 2)"
   },
   "hi": {
     "nativeName": "हिन्दी",
@@ -7178,7 +7226,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "शहद केक",
     "shopItem_bakery_2": "सेब का समोसा",
     "shopExportBtn": "PNG के रूप में सहेजें",
-    "shopSealCap": "व्यापारी"
+    "shopSealCap": "व्यापारी",
+    "textboxLblShowSection2": "दूसरा पाठ क्षेत्र दिखाएं",
+    "textboxLblSection2Title": "शीर्षक (पाठ क्षेत्र 2)",
+    "textboxLblSection2Body": "पाठ (पाठ क्षेत्र 2)"
   },
   "hr": {
     "nativeName": "Hrvatski",
@@ -7599,7 +7650,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Medenjak",
     "shopItem_bakery_2": "Pita od jabuka",
     "shopExportBtn": "Spremi kao PNG",
-    "shopSealCap": "Trgovac"
+    "shopSealCap": "Trgovac",
+    "textboxLblShowSection2": "Prikaži drugo tekstualno područje",
+    "textboxLblSection2Title": "Naslov (tekstualno područje 2)",
+    "textboxLblSection2Body": "Tekst (tekstualno područje 2)"
   },
   "hu": {
     "nativeName": "Magyar",
@@ -8020,7 +8074,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Mézes sütemény",
     "shopItem_bakery_2": "Almás táska",
     "shopExportBtn": "Mentés PNG-ként",
-    "shopSealCap": "Kereskedő"
+    "shopSealCap": "Kereskedő",
+    "textboxLblShowSection2": "Második szövegrész megjelenítése",
+    "textboxLblSection2Title": "Cím (2. szövegrész)",
+    "textboxLblSection2Body": "Szöveg (2. szövegrész)"
   },
   "id": {
     "nativeName": "Bahasa Indonesia",
@@ -8441,7 +8498,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Kue madu",
     "shopItem_bakery_2": "Pastel apel",
     "shopExportBtn": "Simpan sebagai PNG",
-    "shopSealCap": "Pedagang"
+    "shopSealCap": "Pedagang",
+    "textboxLblShowSection2": "Tampilkan area teks kedua",
+    "textboxLblSection2Title": "Judul (area teks 2)",
+    "textboxLblSection2Body": "Teks (area teks 2)"
   },
   "is": {
     "nativeName": "Íslenska",
@@ -8862,7 +8922,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Hunangskaka",
     "shopItem_bakery_2": "Eplakaka",
     "shopExportBtn": "Vista sem PNG",
-    "shopSealCap": "Kaupmaður"
+    "shopSealCap": "Kaupmaður",
+    "textboxLblShowSection2": "Sýna annað textasvæði",
+    "textboxLblSection2Title": "Fyrirsögn (textasvæði 2)",
+    "textboxLblSection2Body": "Texti (textasvæði 2)"
   },
   "it": {
     "nativeName": "Italiano",
@@ -9283,7 +9346,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Torta al miele",
     "shopItem_bakery_2": "Sfogliatella di mele",
     "shopExportBtn": "Salva come PNG",
-    "shopSealCap": "Mercante"
+    "shopSealCap": "Mercante",
+    "textboxLblShowSection2": "Mostra la seconda area di testo",
+    "textboxLblSection2Title": "Titolo (area di testo 2)",
+    "textboxLblSection2Body": "Testo (area di testo 2)"
   },
   "ja": {
     "nativeName": "日本語",
@@ -9704,7 +9770,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "ハニーケーキ",
     "shopItem_bakery_2": "アップルパイ",
     "shopExportBtn": "PNGとして保存",
-    "shopSealCap": "商人"
+    "shopSealCap": "商人",
+    "textboxLblShowSection2": "2つ目のテキスト領域を表示",
+    "textboxLblSection2Title": "見出し（テキスト領域2）",
+    "textboxLblSection2Body": "本文（テキスト領域2）"
   },
   "ko": {
     "nativeName": "한국어",
@@ -10125,7 +10194,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "꿀 케이크",
     "shopItem_bakery_2": "사과 파이",
     "shopExportBtn": "PNG로 저장",
-    "shopSealCap": "상인"
+    "shopSealCap": "상인",
+    "textboxLblShowSection2": "두 번째 텍스트 영역 표시",
+    "textboxLblSection2Title": "제목 (텍스트 영역 2)",
+    "textboxLblSection2Body": "본문 (텍스트 영역 2)"
   },
   "lt": {
     "nativeName": "Lietuvių",
@@ -10546,7 +10618,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Medaus pyragas",
     "shopItem_bakery_2": "Obuolių pyragėlis",
     "shopExportBtn": "Išsaugoti kaip PNG",
-    "shopSealCap": "Prekybininkas"
+    "shopSealCap": "Prekybininkas",
+    "textboxLblShowSection2": "Rodyti antrą teksto sritį",
+    "textboxLblSection2Title": "Antraštė (teksto sritis 2)",
+    "textboxLblSection2Body": "Tekstas (teksto sritis 2)"
   },
   "lv": {
     "nativeName": "Latviešu",
@@ -10967,7 +11042,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Medus kūka",
     "shopItem_bakery_2": "Ābolu pīrādziņš",
     "shopExportBtn": "Saglabāt kā PNG",
-    "shopSealCap": "Tirgotājs"
+    "shopSealCap": "Tirgotājs",
+    "textboxLblShowSection2": "Rādīt otro teksta apgabalu",
+    "textboxLblSection2Title": "Virsraksts (teksta apgabals 2)",
+    "textboxLblSection2Body": "Teksts (teksta apgabals 2)"
   },
   "mr": {
     "nativeName": "मराठी",
@@ -11388,7 +11466,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "मधाचा केक",
     "shopItem_bakery_2": "सफरचंद पेस्ट्री",
     "shopExportBtn": "PNG म्हणून जतन करा",
-    "shopSealCap": "व्यापारी"
+    "shopSealCap": "व्यापारी",
+    "textboxLblShowSection2": "दुसरा मजकूर भाग दाखवा",
+    "textboxLblSection2Title": "शीर्षक (मजकूर भाग २)",
+    "textboxLblSection2Body": "मजकूर (मजकूर भाग २)"
   },
   "mt": {
     "nativeName": "Malti",
@@ -11809,7 +11890,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Kejk tal-għasel",
     "shopItem_bakery_2": "Pastizz tat-tuffieħ",
     "shopExportBtn": "Issejvja bħala PNG",
-    "shopSealCap": "Negozjant"
+    "shopSealCap": "Negozjant",
+    "textboxLblShowSection2": "Uri t-tieni żona tat-test",
+    "textboxLblSection2Title": "Titlu (żona tat-test 2)",
+    "textboxLblSection2Body": "Test (żona tat-test 2)"
   },
   "nl": {
     "nativeName": "Nederlands",
@@ -12230,7 +12314,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Honingkoek",
     "shopItem_bakery_2": "Appelflap",
     "shopExportBtn": "Opslaan als PNG",
-    "shopSealCap": "Handelaar"
+    "shopSealCap": "Handelaar",
+    "textboxLblShowSection2": "Tweede tekstgedeelte tonen",
+    "textboxLblSection2Title": "Kop (tekstgedeelte 2)",
+    "textboxLblSection2Body": "Tekst (tekstgedeelte 2)"
   },
   "no": {
     "nativeName": "Norsk",
@@ -12651,7 +12738,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Honningkake",
     "shopItem_bakery_2": "Eplekake",
     "shopExportBtn": "Lagre som PNG",
-    "shopSealCap": "Kjøpmann"
+    "shopSealCap": "Kjøpmann",
+    "textboxLblShowSection2": "Vis andre tekstområde",
+    "textboxLblSection2Title": "Overskrift (tekstområde 2)",
+    "textboxLblSection2Body": "Tekst (tekstområde 2)"
   },
   "pl": {
     "nativeName": "Polski",
@@ -13072,7 +13162,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Piernik miodowy",
     "shopItem_bakery_2": "Jabłecznik",
     "shopExportBtn": "Zapisz jako PNG",
-    "shopSealCap": "Kupiec"
+    "shopSealCap": "Kupiec",
+    "textboxLblShowSection2": "Pokaż drugi obszar tekstu",
+    "textboxLblSection2Title": "Nagłówek (obszar tekstu 2)",
+    "textboxLblSection2Body": "Tekst (obszar tekstu 2)"
   },
   "pt": {
     "nativeName": "Português",
@@ -13493,7 +13586,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Bolo de mel",
     "shopItem_bakery_2": "Folhado de maçã",
     "shopExportBtn": "Guardar como PNG",
-    "shopSealCap": "Comerciante"
+    "shopSealCap": "Comerciante",
+    "textboxLblShowSection2": "Mostrar a segunda área de texto",
+    "textboxLblSection2Title": "Título (área de texto 2)",
+    "textboxLblSection2Body": "Texto (área de texto 2)"
   },
   "ro": {
     "nativeName": "Română",
@@ -13914,7 +14010,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Prăjitură cu miere",
     "shopItem_bakery_2": "Plăcintă cu mere",
     "shopExportBtn": "Salvează ca PNG",
-    "shopSealCap": "Negustor"
+    "shopSealCap": "Negustor",
+    "textboxLblShowSection2": "Afișează a doua zonă de text",
+    "textboxLblSection2Title": "Titlu (zona de text 2)",
+    "textboxLblSection2Body": "Text (zona de text 2)"
   },
   "ru": {
     "nativeName": "Русский",
@@ -14335,7 +14434,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Медовый пряник",
     "shopItem_bakery_2": "Яблочный пирожок",
     "shopExportBtn": "Сохранить как PNG",
-    "shopSealCap": "Торговец"
+    "shopSealCap": "Торговец",
+    "textboxLblShowSection2": "Показывать вторую текстовую область",
+    "textboxLblSection2Title": "Заголовок (текстовая область 2)",
+    "textboxLblSection2Body": "Текст (текстовая область 2)"
   },
   "sk": {
     "nativeName": "Slovenčina",
@@ -14756,7 +14858,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Medovník",
     "shopItem_bakery_2": "Jablkový záviatok",
     "shopExportBtn": "Uložiť ako PNG",
-    "shopSealCap": "Obchodník"
+    "shopSealCap": "Obchodník",
+    "textboxLblShowSection2": "Zobraziť druhú textovú oblasť",
+    "textboxLblSection2Title": "Nadpis (textová oblasť 2)",
+    "textboxLblSection2Body": "Text (textová oblasť 2)"
   },
   "sl": {
     "nativeName": "Slovenščina",
@@ -15177,7 +15282,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Medeni kolač",
     "shopItem_bakery_2": "Jabolčna štruklja",
     "shopExportBtn": "Shrani kot PNG",
-    "shopSealCap": "Trgovec"
+    "shopSealCap": "Trgovec",
+    "textboxLblShowSection2": "Prikaži drugo besedilno območje",
+    "textboxLblSection2Title": "Naslov (besedilno območje 2)",
+    "textboxLblSection2Body": "Besedilo (besedilno območje 2)"
   },
   "sq": {
     "nativeName": "Shqip",
@@ -15598,7 +15706,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Ëmbëlsirë me mjaltë",
     "shopItem_bakery_2": "Byrek me mollë",
     "shopExportBtn": "Ruaj si PNG",
-    "shopSealCap": "Tregtari"
+    "shopSealCap": "Tregtari",
+    "textboxLblShowSection2": "Shfaq zonën e dytë të tekstit",
+    "textboxLblSection2Title": "Titulli (zona e tekstit 2)",
+    "textboxLblSection2Body": "Teksti (zona e tekstit 2)"
   },
   "sr": {
     "nativeName": "Српски",
@@ -16019,7 +16130,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Медењак",
     "shopItem_bakery_2": "Пита од јабука",
     "shopExportBtn": "Сачувај као PNG",
-    "shopSealCap": "Трговац"
+    "shopSealCap": "Трговац",
+    "textboxLblShowSection2": "Прикажи друго текстуално подручје",
+    "textboxLblSection2Title": "Наслов (текстуално подручје 2)",
+    "textboxLblSection2Body": "Текст (текстуално подручје 2)"
   },
   "sv": {
     "nativeName": "Svenska",
@@ -16440,7 +16554,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Honungskaka",
     "shopItem_bakery_2": "Äppelknyte",
     "shopExportBtn": "Spara som PNG",
-    "shopSealCap": "Handlare"
+    "shopSealCap": "Handlare",
+    "textboxLblShowSection2": "Visa andra textområdet",
+    "textboxLblSection2Title": "Rubrik (textområde 2)",
+    "textboxLblSection2Body": "Text (textområde 2)"
   },
   "sw": {
     "nativeName": "Kiswahili",
@@ -16861,7 +16978,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Keki ya asali",
     "shopItem_bakery_2": "Mkate wa tufaha",
     "shopExportBtn": "Hifadhi kama PNG",
-    "shopSealCap": "Mfanyabiashara"
+    "shopSealCap": "Mfanyabiashara",
+    "textboxLblShowSection2": "Onyesha eneo la pili la maandishi",
+    "textboxLblSection2Title": "Kichwa (eneo la maandishi 2)",
+    "textboxLblSection2Body": "Maandishi (eneo la maandishi 2)"
   },
   "ta": {
     "nativeName": "தமிழ்",
@@ -17282,7 +17402,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "தேன் கேக்",
     "shopItem_bakery_2": "ஆப்பிள் பேஸ்ட்ரி",
     "shopExportBtn": "PNG ஆக சேமி",
-    "shopSealCap": "வணிகர்"
+    "shopSealCap": "வணிகர்",
+    "textboxLblShowSection2": "இரண்டாவது உரைப் பகுதியைக் காட்டு",
+    "textboxLblSection2Title": "தலைப்பு (உரைப் பகுதி 2)",
+    "textboxLblSection2Body": "உரை (உரைப் பகுதி 2)"
   },
   "te": {
     "nativeName": "తెలుగు",
@@ -17703,7 +17826,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "తేనె కేకు",
     "shopItem_bakery_2": "ఆపిల్ పేస్ట్రీ",
     "shopExportBtn": "PNGగా సేవ్ చేయి",
-    "shopSealCap": "వ్యాపారి"
+    "shopSealCap": "వ్యాపారి",
+    "textboxLblShowSection2": "రెండవ వచన భాగాన్ని చూపించు",
+    "textboxLblSection2Title": "శీర్షిక (వచన భాగం 2)",
+    "textboxLblSection2Body": "వచనం (వచన భాగం 2)"
   },
   "th": {
     "nativeName": "ไทย",
@@ -18124,7 +18250,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "เค้กน้ำผึ้ง",
     "shopItem_bakery_2": "พายแอปเปิล",
     "shopExportBtn": "บันทึกเป็น PNG",
-    "shopSealCap": "พ่อค้า"
+    "shopSealCap": "พ่อค้า",
+    "textboxLblShowSection2": "แสดงพื้นที่ข้อความที่สอง",
+    "textboxLblSection2Title": "หัวข้อ (พื้นที่ข้อความ 2)",
+    "textboxLblSection2Body": "ข้อความ (พื้นที่ข้อความ 2)"
   },
   "tr": {
     "nativeName": "Türkçe",
@@ -18545,7 +18674,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Ballı kek",
     "shopItem_bakery_2": "Elmalı turta",
     "shopExportBtn": "PNG Olarak Kaydet",
-    "shopSealCap": "Tüccar"
+    "shopSealCap": "Tüccar",
+    "textboxLblShowSection2": "İkinci metin alanını göster",
+    "textboxLblSection2Title": "Başlık (metin alanı 2)",
+    "textboxLblSection2Body": "Metin (metin alanı 2)"
   },
   "uk": {
     "nativeName": "Українська",
@@ -18966,7 +19098,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Медовик",
     "shopItem_bakery_2": "Яблучний пиріжок",
     "shopExportBtn": "Зберегти як PNG",
-    "shopSealCap": "Торговець"
+    "shopSealCap": "Торговець",
+    "textboxLblShowSection2": "Показувати другу текстову область",
+    "textboxLblSection2Title": "Заголовок (текстова область 2)",
+    "textboxLblSection2Body": "Текст (текстова область 2)"
   },
   "ur": {
     "nativeName": "اردو",
@@ -19387,7 +19522,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "شہد کا کیک",
     "shopItem_bakery_2": "سیب کا پیسٹری",
     "shopExportBtn": "PNG کے طور پر محفوظ کریں",
-    "shopSealCap": "تاجر"
+    "shopSealCap": "تاجر",
+    "textboxLblShowSection2": "دوسرا متنی حصہ دکھائیں",
+    "textboxLblSection2Title": "عنوان (متنی حصہ 2)",
+    "textboxLblSection2Body": "متن (متنی حصہ 2)"
   },
   "vi": {
     "nativeName": "Tiếng Việt",
@@ -19808,7 +19946,10 @@ const LANGUAGES = {
     "shopItem_bakery_1": "Bánh mật ong",
     "shopItem_bakery_2": "Bánh táo",
     "shopExportBtn": "Lưu dưới dạng PNG",
-    "shopSealCap": "Thương nhân"
+    "shopSealCap": "Thương nhân",
+    "textboxLblShowSection2": "Hiện vùng văn bản thứ hai",
+    "textboxLblSection2Title": "Tiêu đề (vùng văn bản 2)",
+    "textboxLblSection2Body": "Nội dung (vùng văn bản 2)"
   },
   "zh": {
     "nativeName": "中文",
@@ -20229,6 +20370,9 @@ const LANGUAGES = {
     "shopItem_bakery_1": "蜂蜜蛋糕",
     "shopItem_bakery_2": "苹果酥饼",
     "shopExportBtn": "保存为 PNG",
-    "shopSealCap": "商人"
+    "shopSealCap": "商人",
+    "textboxLblShowSection2": "显示第二个文本区",
+    "textboxLblSection2Title": "标题（文本区2）",
+    "textboxLblSection2Body": "正文（文本区2）"
   }
 };
