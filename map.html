@@ -124,6 +124,10 @@
     background:linear-gradient(180deg, var(--gold-bright), var(--gold));
     color:#241a08;
   }
+  body[data-map-type="burg"] .kingdom-only{ display:none !important; }
+  body:not([data-map-type="burg"]) .castle-only{ display:none !important; }
+  .type-switch{ margin-bottom:12px; }
+  .type-switch .share-btn{ margin-top:0; }
   .btn-row{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
   .btn-row .share-btn{ margin-top:8px; }
   .seed-field{ margin-top:18px; }
@@ -432,6 +436,11 @@
     <h1 data-i18n="title">Karte des Königreichs</h1>
     <p class="sub" data-i18n="subtitle">Eine handgezeichnete Fantasiekarte: zufällig generiert, mit Bergen, Meer, Wald, Wüste und Fluss – und komplett nach deinen Wünschen einstellbar.</p>
 
+    <div class="btn-row type-switch" id="mapTypeSwitch">
+      <button id="mapTypeKingdom" type="button" class="share-btn active" data-i18n="mapTypeKingdom">👑 Königreich</button>
+      <button id="mapTypeCastle" type="button" class="share-btn" data-i18n="mapTypeCastle">🏰 Burg</button>
+    </div>
+
     <button id="generateBtn" class="export-btn" data-i18n="generateBtn">⚔ Neue Karte erzeugen</button>
     <button id="downloadBtn" class="share-btn" data-i18n="downloadBtn">⬇ Als PNG speichern</button>
     <div class="btn-row">
@@ -455,6 +464,57 @@
     <button id="toggleSettingsBtn" class="share-btn" data-i18n="toggleSettingsBtn">⚙ Einstellungen</button>
 
     <div class="settings-body" id="settingsBody">
+      <div class="control-group castle-only">
+        <h3 data-i18n="grpCastleMap">Burg</h3>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblCastleSize">Größe</span>
+          <select id="castleSize">
+            <option value="0">Klein</option>
+            <option value="1" selected>Mittel</option>
+            <option value="2">Groß</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblCastleTowers">Türme</span>
+          <select id="castleTowers">
+            <option value="4">4 (Ecken)</option>
+            <option value="6" selected>6 (+ lange Seiten)</option>
+            <option value="8">8 (+ alle Seiten)</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblCastleGate">Tor</span>
+          <select id="castleGate">
+            <option value="unten" selected>Unten</option>
+            <option value="oben">Oben</option>
+            <option value="links">Links</option>
+            <option value="rechts">Rechts</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblCastleMoat">Wassergraben</span>
+          <input type="checkbox" id="castleMoat" checked>
+        </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblCastleEdit">Individuell bauen</span>
+          <input type="checkbox" id="customCastleEdit">
+        </div>
+        <div class="castle-placer" id="castleEditPicker" hidden>
+          <div class="placer-hint" data-i18n="castleEditHint">Baustein wählen, dann auf die Burg klicken oder ziehen</div>
+          <div class="castle-buttons" id="castleTools"></div>
+          <div class="brush-row">
+            <span data-i18n="cellBrushLabel">Pinselgröße</span>
+            <input type="range" id="castleBrushSize" min="1" max="4" value="1">
+            <span id="castleBrushVal">1</span>
+          </div>
+          <div class="field-row">
+            <span class="f-label" data-i18n="lblCastleBlank">Mit leerem Gelände beginnen</span>
+            <input type="checkbox" id="castleBlank">
+          </div>
+          <button type="button" class="castle-reset" id="castleEditResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
+        </div>
+      </div>
+
       <div class="control-group">
         <h3 data-i18n="grpBuildings">Gebäude</h3>
         <!-- Hauptburg-Position ist fest (Mitte); Auswahl entfernt. Das versteckte Select bleibt,
@@ -1862,6 +1922,10 @@ function labelPos(e, numMap){
     return c ? { x: c.px, y: c.py + (e.ref === 0 ? 46 : 33) } : null;
   }
   if(e.kind === 'village'){
+    if(mapType === 'burg'){                       // castle map: the label hangs below its tile (ref = tile key)
+      const kx = e.ref % 64, ky = Math.floor(e.ref / 64), ts = castleGrid.ts;
+      return { x: (kx + 0.5) * ts, y: (ky + 0.5) * ts + ts * 0.5 + 9 };
+    }
     const c = numMap().get(e.ref);
     return c ? { x: c.px, y: c.py + 23 } : null;
   }
@@ -2161,7 +2225,7 @@ function customActionsOn(){ return document.getElementById('customActionFields')
 
 // shows/hides the hints and the crosshair for whichever click mode is active
 function updatePickUI(){
-  const active = (customCastlesOn() && placingCastle !== null) || (customMerchantsOn() && placingMerchant !== null) || (customActionsOn() && placingAction !== null) || (customVillagesOn() && placingVillage !== null) || TERRAIN_PICKERS.some(P => P.active());
+  const active = (customCastlesOn() && placingCastle !== null) || (customMerchantsOn() && placingMerchant !== null) || (customActionsOn() && placingAction !== null) || (customVillagesOn() && placingVillage !== null) || TERRAIN_PICKERS.some(P => P.active()) || (castleEdit && castleEdit.active());
   svg.classList.toggle('placing-castle', active);
 }
 
@@ -2575,15 +2639,24 @@ const LABEL_KINDS = ['castle', 'village', 'region'];
 const LABEL_ICONS = { castle: '🏰', village: '🏘️', region: '🗺️' };
 const LABEL_TITLES = { castle: ['labelKindCastle', 'Burg'], village: ['labelKindVillage', 'Dorf'], region: ['labelKindRegion', 'Region'] };
 const LABEL_MAX = 60;
+function labelIcon(kind){ return mapType === 'burg' && kind === 'village' ? '🏷️' : LABEL_ICONS[kind]; }
 TERRAIN.labels = (() => {
   const $ = id => document.getElementById(id);
   const P = {
     key: 'labels', list: [], placing: null,        // placing: null | a kind (new label) | index (move that label)
+    lists: { koenigreich: [], burg: [] }, curType: 'koenigreich',   // every map has its own names
     on(){ return $('customLabels').checked; },
     active(){ return P.on() && P.placing !== null; },
     clearMode(){ if(P.placing !== null){ P.placing = null; P.update(); } },
+    switchTo(type){
+      P.lists[P.curType] = P.list;
+      P.curType = type;
+      P.list = P.lists[type];
+      P.placing = null;
+    },
     pick(k){
       P.placing = (P.placing === k) ? null : k;
+      if(P.placing !== null && castleEdit){ castleEdit.tool = null; }
       if(typeof P.placing === 'number') $('labelText').value = P.list[P.placing].text;
       else if(P.placing !== null) $('labelText').value = '';
       if(P.placing !== null){
@@ -2600,11 +2673,12 @@ TERRAIN.labels = (() => {
       const kinds = $('labelKinds');
       kinds.innerHTML = '';
       LABEL_KINDS.forEach(k => {
+        if(mapType === 'burg' && k === 'castle') return;       // the castle map has no castles to name
         const b = document.createElement('button');
         b.type = 'button';
         b.className = 'castle-btn' + (P.placing === k ? ' active' : '');
-        b.textContent = LABEL_ICONS[k];
-        b.title = t(LABEL_TITLES[k][0]) || LABEL_TITLES[k][1];
+        b.textContent = labelIcon(k);
+        b.title = k === 'village' && mapType === 'burg' ? (t('labelKindField') || 'Feld') : (t(LABEL_TITLES[k][0]) || LABEL_TITLES[k][1]);
         b.addEventListener('click', () => P.pick(k));
         kinds.appendChild(b);
       });
@@ -2615,7 +2689,7 @@ TERRAIN.labels = (() => {
         chip.className = 'label-chip' + (P.placing === i ? ' active' : '');
         const name = document.createElement('button');
         name.type = 'button';
-        name.textContent = LABEL_ICONS[e.kind] + ' ' + e.text;
+        name.textContent = labelIcon(e.kind) + ' ' + e.text;
         name.addEventListener('click', () => P.pick(i));
         const x = document.createElement('button');
         x.type = 'button';
@@ -2644,6 +2718,7 @@ TERRAIN.labels = (() => {
         return true;
       }
       let ref;
+      if(kind === 'castle' && mapType === 'burg') return true;
       if(kind === 'castle'){
         let best = -1, bd = Infinity;
         lastCastleCells.forEach((c, i) => { const d = (c.px - x) * (c.px - x) + (c.py - y) * (c.py - y); if(d < bd){ bd = d; best = i; } });
@@ -2652,7 +2727,7 @@ TERRAIN.labels = (() => {
       } else if(kind === 'village'){
         const c = cellAtMapPoint(x, y);
         if(!c) return true;
-        ref = c.number;
+        ref = mapType === 'burg' ? c.key : c.number;       // castle map: the tile itself, so names stay put when the numbers change
       } else {
         ref = [Math.round(fx * 1000), Math.round(fy * 1000)];
       }
@@ -2667,17 +2742,23 @@ TERRAIN.labels = (() => {
       P.update();
       return true;
     },
-    toSettings(){
-      return { flag: $('customLabels').checked, list: P.list.map(e => e.kind === 'region' ? [2, e.ref[0], e.ref[1], e.text] : [e.kind === 'castle' ? 0 : 1, e.ref, e.text]) };
-    },
-    applyState(s){
+    ser(list){ return list.map(e => e.kind === 'region' ? [2, e.ref[0], e.ref[1], e.text] : [e.kind === 'castle' ? 0 : 1, e.ref, e.text]); },
+    settingsFor(type){ return P.ser(type === P.curType ? P.list : P.lists[type]); },
+    toSettings(){ return { flag: $('customLabels').checked, list: P.settingsFor('koenigreich') }; },
+    parse(arr){
       const list = [];
-      (Array.isArray(s.labelList) ? s.labelList : []).forEach(e => {
+      (Array.isArray(arr) ? arr : []).forEach(e => {
         if(!Array.isArray(e) || list.length >= LABEL_MAX) return;
         if(e[0] === 2 && e.length === 4 && Number.isFinite(e[1]) && Number.isFinite(e[2]) && typeof e[3] === 'string') list.push({ kind: 'region', text: e[3].slice(0, 40), ref: [e[1], e[2]] });
         else if((e[0] === 0 || e[0] === 1) && e.length === 3 && Number.isInteger(e[1]) && e[1] >= 0 && typeof e[2] === 'string') list.push({ kind: e[0] === 0 ? 'castle' : 'village', text: e[2].slice(0, 40), ref: e[1] });
       });
-      P.list = list;
+      return list;
+    },
+    applyState(s){
+      P.lists.koenigreich = P.parse(s.labelList);
+      P.lists.burg = P.parse(s.castleLabelList).filter(e => e.kind !== 'castle');
+      P.curType = mapType;
+      P.list = P.lists[mapType];
       $('customLabels').checked = !!s.customLabels;
       P.placing = null;
     }
@@ -2932,6 +3013,391 @@ function centerMapFrame(){
 }
 window.addEventListener('resize', () => { if(!document.getElementById('fsOverlay').classList.contains('active')) centerMapFrame(); });
 
+let mapType = 'koenigreich';      // 'koenigreich' | 'burg'
+
+// ---------- Burg-Karte (castle floor plan, switchable with the kingdom map) ----------
+// A tile grid: moat, curtain wall with towers and a gatehouse, a courtyard with a few buildings and a well,
+// and a keep whose rooms come from a binary space partition with doors between them. Walkable tiles are
+// numbered like the fields of the kingdom map.
+const CT = { GRASS: 0, WATER: 1, WALL: 2, TOWER: 3, COURT: 4, FLOOR: 5, ROAD: 6, BRIDGE: 7, GATE: 8, DOOR: 9,
+             BWALL: 10, WELL: 11, CARPET: 12, KEEPWALL: 13, GARDEN: 14, BLOCKED: 15 };
+const CT_WALK = [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0];
+const CT_STONE = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1];
+const CT_FILL = { 4: ['#d6c7a0', 0.9], 5: ['#e6d6ae', 0.9], 6: ['#c9a66b', 0.9], 7: ['#a07c4c', 0.92], 8: ['#bfae80', 0.92],
+                  9: ['#a97b45', 0.92], 12: ['#c4695a', 0.85], 14: ['#9fb083', 0.85] };
+const CASTLE_GATES = ['unten', 'oben', 'links', 'rechts'];
+const castleEdits = new Map();            // tile edits by hand: key y*64+x -> tile type (16 = round tower centre)
+let castleGrid = { C: 40, R: 32, ts: 25 };  // size of the last castle grid
+let castleBase = null;                    // the tiles as generated, before the hand edits
+const CASTLE_TOWER_OPTS = ['4', '6', '8'];
+
+function generateCastleMap(seed){
+  const sizeIdx = Math.max(0, Math.min(2, parseInt(document.getElementById('castleSize').value, 10) || 0));
+  const towerOpt = Math.max(0, CASTLE_TOWER_OPTS.indexOf(document.getElementById('castleTowers').value));
+  const moat = document.getElementById('castleMoat').checked;
+  const side = CASTLE_GATES.includes(document.getElementById('castleGate').value) ? document.getElementById('castleGate').value : 'unten';
+
+  const C = [30, 40, 52][sizeIdx];
+  const ts = 1000 / C;
+  const R = Math.floor(800 / ts);
+  castleGrid = { C, R, ts };
+  W = 1000; H = Math.round(R * ts);
+  currentScale = 1;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.style.width = W + 'px';
+  svg.style.height = H + 'px';
+  rngFn = mulberry32((seed ^ 0x5bd1e995) >>> 0);
+  drawBackground();
+
+  const g = [];
+  for(let y = 0; y < R; y++) g.push(new Uint8Array(C));
+  const inb = (x, y) => x >= 0 && y >= 0 && x < C && y < R;
+  const under = new Uint8Array(C * R).fill(255);       // what lay under a tower tile
+  const get = (x, y) => inb(x, y) ? g[y][x] : -1;
+  const put = (x, y, t) => { if(inb(x, y)) g[y][x] = t; };
+  const rect = (xa, ya, xb, yb, t) => { for(let y = ya; y <= yb; y++) for(let x = xa; x <= xb; x++) put(x, y, t); };
+  const all = (xa, ya, xb, yb, fn) => { for(let y = ya; y <= yb; y++) for(let x = xa; x <= xb; x++) if(!fn(x, y)) return false; return true; };
+
+  // ----- moat, curtain wall, courtyard -----
+  const gm = 2, mo = moat ? 2 : 0;
+  const x0 = gm + mo, y0 = gm + mo, x1 = C - 1 - gm - mo, y1 = R - 1 - gm - mo;
+  const xm = Math.floor((x0 + x1) / 2), ym = Math.floor((y0 + y1) / 2);
+  if(moat) rect(x0 - mo, y0 - mo, x1 + mo, y1 + mo, CT.WATER);
+  rect(x0, y0, x1, y1, CT.WALL);
+  rect(x0 + 1, y0 + 1, x1 - 1, y1 - 1, CT.COURT);
+
+  // ----- towers (round, 3x3 tiles) -----
+  const towers = [];
+  const addTower = (tx, ty) => {
+    for(let y = ty - 1; y <= ty + 1; y++) for(let x = tx - 1; x <= tx + 1; x++) if(inb(x, y) && under[y * C + x] === 255) under[y * C + x] = g[y][x];
+    rect(tx - 1, ty - 1, tx + 1, ty + 1, CT.TOWER);
+    towers.push({ x: tx + 0.5, y: ty + 0.5 });
+  };
+  addTower(x0 + 1, y0 + 1); addTower(x1 - 1, y0 + 1); addTower(x0 + 1, y1 - 1); addTower(x1 - 1, y1 - 1);
+  const mids = [];
+  if(towerOpt >= 1){ mids.push(['oben', xm, y0], ['unten', xm, y1]); }
+  if(towerOpt >= 2){ mids.push(['links', x0, ym], ['rechts', x1, ym]); }
+  mids.forEach(m => { if(m[0] !== side) addTower(m[1], m[2]); });
+
+  // ----- gatehouse, bridge, approach road -----
+  const D = { unten: [0, 1], oben: [0, -1], links: [-1, 0], rechts: [1, 0] }[side];
+  const Lt = [Math.abs(D[1]), Math.abs(D[0])];
+  const P = side === 'unten' ? [xm, y1] : side === 'oben' ? [xm, y0] : side === 'links' ? [x0, ym] : [x1, ym];
+  for(let k = -1; k <= 1; k++) put(P[0] + Lt[0] * k, P[1] + Lt[1] * k, CT.GATE);
+  addTower(P[0] + Lt[0] * 3, P[1] + Lt[1] * 3);
+  addTower(P[0] - Lt[0] * 3, P[1] - Lt[1] * 3);
+  for(let s = 1; s <= mo; s++) for(let k = -1; k <= 1; k++) put(P[0] + D[0] * s + Lt[0] * k, P[1] + D[1] * s + Lt[1] * k, CT.BRIDGE);
+  for(let s = mo + 1; inb(P[0] + D[0] * s, P[1] + D[1] * s); s++) put(P[0] + D[0] * s, P[1] + D[1] * s, CT.ROAD);
+
+  // ----- keep -----
+  const ix0 = x0 + 1, iy0 = y0 + 1, ix1 = x1 - 1, iy1 = y1 - 1;
+  const iw = ix1 - ix0 + 1, ih = iy1 - iy0 + 1;
+  let kw = Math.max(9, Math.round(iw * 0.34)), kh = Math.max(8, Math.round(ih * 0.44));
+  kw = Math.min(kw, iw - 6); kh = Math.min(kh, ih - 6);
+  if(kw % 2 === 0) kw++;
+  if(kh % 2 === 0) kh++;
+  let kx0, kx1, ky0, ky1;
+  if(side === 'unten' || side === 'oben'){
+    kx0 = xm - (kw - 1) / 2; kx1 = xm + (kw - 1) / 2;
+    if(side === 'unten'){ ky0 = y0 + 3; ky1 = ky0 + kh - 1; } else { ky1 = y1 - 3; ky0 = ky1 - kh + 1; }
+  } else {
+    ky0 = ym - (kh - 1) / 2; ky1 = ym + (kh - 1) / 2;
+    if(side === 'links'){ kx1 = x1 - 3; kx0 = kx1 - kw + 1; } else { kx0 = x0 + 3; kx1 = kx0 + kw - 1; }
+  }
+  rect(kx0, ky0, kx1, ky1, CT.KEEPWALL);
+  rect(kx0 + 1, ky0 + 1, kx1 - 1, ky1 - 1, CT.FLOOR);
+
+  // rooms: recursive split of the keep interior
+  const rooms = [];
+  const split = (ax0, ay0, ax1, ay1, depth) => {
+    const w = ax1 - ax0 + 1, h = ay1 - ay0 + 1;
+    const canV = w >= 7, canH = h >= 7;
+    if(depth >= 3 || (!canV && !canH) || (depth >= 1 && rand(0, 1) < 0.18)){ rooms.push({ x0: ax0, y0: ay0, x1: ax1, y1: ay1 }); return; }
+    const vertical = canV && (!canH || w >= h * 1.15 || (w >= h * 0.9 && rand(0, 1) < 0.5));
+    if(vertical){
+      const x = randInt(ax0 + 3, ax1 - 3);
+      rect(x, ay0, x, ay1, CT.BWALL);
+      split(ax0, ay0, x - 1, ay1, depth + 1); split(x + 1, ay0, ax1, ay1, depth + 1);
+    } else {
+      const y = randInt(ay0 + 3, ay1 - 3);
+      rect(ax0, y, ax1, y, CT.BWALL);
+      split(ax0, ay0, ax1, y - 1, depth + 1); split(ax0, y + 1, ax1, ay1, depth + 1);
+    }
+  };
+  split(kx0 + 1, ky0 + 1, kx1 - 1, ky1 - 1, 0);
+  const rid = new Map();
+  rooms.forEach((r, i) => { for(let y = r.y0; y <= r.y1; y++) for(let x = r.x0; x <= r.x1; x++) rid.set(y * C + x, i); });
+  // doors between rooms: a random spanning tree (everything connected) plus a few extra loops
+  const pairs = new Map();
+  for(let y = ky0 + 1; y <= ky1 - 1; y++) for(let x = kx0 + 1; x <= kx1 - 1; x++){
+    if(get(x, y) !== CT.BWALL) continue;
+    const cand = [[x - 1, y, x + 1, y], [x, y - 1, x, y + 1]];
+    for(const c of cand){
+      const a = rid.get(c[1] * C + c[0]), b = rid.get(c[3] * C + c[2]);
+      if(a === undefined || b === undefined || a === b) continue;
+      const key = Math.min(a, b) + '-' + Math.max(a, b);
+      if(!pairs.has(key)) pairs.set(key, { a: Math.min(a, b), b: Math.max(a, b), tiles: [] });
+      pairs.get(key).tiles.push([x, y]);
+    }
+  }
+  const parent = rooms.map((_, i) => i);
+  const find = i => { while(parent[i] !== i){ parent[i] = parent[parent[i]]; i = parent[i]; } return i; };
+  const plist = [...pairs.values()];
+  for(let i = plist.length - 1; i > 0; i--){ const j = randInt(0, i); [plist[i], plist[j]] = [plist[j], plist[i]]; }
+  plist.forEach(p => {
+    const ra = find(p.a), rb = find(p.b);
+    if(ra !== rb || rand(0, 1) < 0.25){
+      parent[ra] = rb;
+      const t = p.tiles[randInt(0, p.tiles.length - 1)];
+      put(t[0], t[1], CT.DOOR);
+    }
+  });
+
+  // entrance door on the keep wall that faces the gate (shifted if a room wall is in the way)
+  const wallTile = off => side === 'unten' ? { w: [xm + off, ky1], i: [xm + off, ky1 - 1], o: [xm + off, ky1 + 1] }
+    : side === 'oben' ? { w: [xm + off, ky0], i: [xm + off, ky0 + 1], o: [xm + off, ky0 - 1] }
+    : side === 'links' ? { w: [kx0, ym + off], i: [kx0 + 1, ym + off], o: [kx0 - 1, ym + off] }
+    : { w: [kx1, ym + off], i: [kx1 - 1, ym + off], o: [kx1 + 1, ym + off] };
+  let door = null, doorOff = 0;
+  for(const off of [0, 1, -1, 2, -2, 3, -3]){
+    const w = wallTile(off);
+    if(get(w.i[0], w.i[1]) === CT.FLOOR && get(w.o[0], w.o[1]) === CT.COURT){ door = w; doorOff = off; break; }
+  }
+  if(!door){ door = wallTile(0); }
+  put(door.w[0], door.w[1], CT.DOOR);
+
+  // road from the gate to the keep door
+  const cur = [P[0] - D[0], P[1] - D[1]];
+  const target = (D[0] === 0) ? door.o[1] : door.o[0];
+  let guard = 0;
+  while(guard++ < 200){
+    if(get(cur[0], cur[1]) === CT.COURT) put(cur[0], cur[1], CT.ROAD);
+    const axisCoord = D[0] === 0 ? cur[1] : cur[0];
+    if(axisCoord === target) break;
+    cur[0] -= D[0]; cur[1] -= D[1];
+  }
+  for(let k = 0, step = Math.sign(doorOff); k !== doorOff; k += step){
+    const lx = cur[0] + Lt[0] * (k + step), ly = cur[1] + Lt[1] * (k + step);
+    if(get(lx, ly) === CT.COURT) put(lx, ly, CT.ROAD);
+  }
+  // great hall: the room behind the entrance, with a carpet to a throne
+  const hallIdx = rid.get(door.i[1] * C + door.i[0]);
+  let throne = null;
+  if(hallIdx !== undefined){
+    const hr = rooms[hallIdx];
+    let tx = door.i[0], ty = door.i[1];
+    while(tx >= hr.x0 && tx <= hr.x1 && ty >= hr.y0 && ty <= hr.y1){
+      put(tx, ty, CT.CARPET);
+      throne = { x: tx + 0.5, y: ty + 0.5 };
+      tx -= D[0]; ty -= D[1];
+    }
+  }
+
+  // ----- courtyard buildings, well, garden -----
+  const res = new Set();
+  const reserve = (xa, ya, xb, yb) => { for(let y = ya; y <= yb; y++) for(let x = xa; x <= xb; x++) res.add(y * C + x); };
+  reserve(kx0 - 1, ky0 - 1, kx1 + 1, ky1 + 1);
+  if(D[0] === 0) reserve(xm - 2 + doorOff * 0, Math.min(ky0, ky1, y0), xm + 2, Math.max(ky1, y1));
+  else reserve(Math.min(kx0, x0), ym - 2, Math.max(kx1, x1), ym + 2);
+  const free = (xa, ya, xb, yb) => all(xa, ya, xb, yb, (x, y) => get(x, y) === CT.COURT && !res.has(y * C + x));
+  const buildings = [];
+  const kinds = ['stall', 'smithy', 'barracks', 'chapel', 'store'];
+  const wantB = [3, 5, 8][sizeIdx] + randInt(0, 1);
+  for(let attempt = 0; attempt < 250 && buildings.length < wantB; attempt++){
+    const bw = randInt(4, 5 + sizeIdx), bh = randInt(4, 5);
+    const bx = randInt(ix0 + 1, ix1 - bw), by = randInt(iy0 + 1, iy1 - bh);
+    if(bx + bw - 1 > ix1 - 1 || by + bh - 1 > iy1 - 1) continue;
+    if(!free(bx - 1, by - 1, bx + bw, by + bh)) continue;
+    rect(bx, by, bx + bw - 1, by + bh - 1, CT.BWALL);
+    rect(bx + 1, by + 1, bx + bw - 2, by + bh - 2, CT.FLOOR);
+    const cx = bx + bw / 2, cy = by + bh / 2;
+    const prefer = D[0] === 0 ? (cx < xm ? 'e' : 'w') : (cy < ym ? 's' : 'n');
+    const order = [prefer, 'n', 's', 'w', 'e'];
+    for(const sd of order){
+      let dx, dy;
+      if(sd === 'e'){ dx = bx + bw - 1; dy = randInt(by + 1, by + bh - 2); }
+      else if(sd === 'w'){ dx = bx; dy = randInt(by + 1, by + bh - 2); }
+      else if(sd === 'n'){ dx = randInt(bx + 1, bx + bw - 2); dy = by; }
+      else { dx = randInt(bx + 1, bx + bw - 2); dy = by + bh - 1; }
+      const ox = dx + (sd === 'e' ? 1 : sd === 'w' ? -1 : 0), oy = dy + (sd === 's' ? 1 : sd === 'n' ? -1 : 0);
+      if(get(ox, oy) === CT.COURT || get(ox, oy) === CT.ROAD){ put(dx, dy, CT.DOOR); break; }
+    }
+    reserve(bx - 1, by - 1, bx + bw, by + bh);
+    buildings.push({ kind: kinds[randInt(0, kinds.length - 1)], x: cx, y: cy });
+  }
+  const wells = [];
+  for(let attempt = 0; attempt < 120 && wells.length < 1 + (sizeIdx > 0 ? 1 : 0); attempt++){
+    const wx = randInt(ix0 + 1, ix1 - 1), wy = randInt(iy0 + 1, iy1 - 1);
+    if(!free(wx - 1, wy - 1, wx + 1, wy + 1)) continue;
+    put(wx, wy, CT.WELL); reserve(wx - 1, wy - 1, wx + 1, wy + 1);
+    wells.push({ x: wx + 0.5, y: wy + 0.5 });
+  }
+  for(let attempt = 0, made = 0; attempt < 80 && made < 1 + sizeIdx; attempt++){
+    const gw = randInt(3, 5), gh = randInt(2, 3);
+    const gx = randInt(ix0 + 1, ix1 - gw), gy = randInt(iy0 + 1, iy1 - gh);
+    if(!free(gx - 1, gy - 1, gx + gw, gy + gh)) continue;
+    rect(gx, gy, gx + gw - 1, gy + gh - 1, CT.GARDEN); reserve(gx - 1, gy - 1, gx + gw, gy + gh); made++;
+  }
+
+  // ----- hand edits: an empty plot to start from, and single tiles painted over the generated castle -----
+  const editOn = document.getElementById('customCastleEdit').checked;
+  const blank = editOn && document.getElementById('castleBlank').checked;
+  if(blank){
+    for(let y = 0; y < R; y++) g[y].fill(CT.GRASS);
+    under.fill(255);
+    towers.length = 0; buildings.length = 0; wells.length = 0; rooms.length = 0; throne = null;
+  }
+  castleBase = g.map(row => row.slice());
+  if(editOn){
+    castleEdits.forEach((type, key) => {
+      const ex = key % 64, ey = Math.floor(key / 64);
+      if(!inb(ex, ey)) return;
+      if(type === 16) addTower(ex, ey); else put(ex, ey, type);
+    });
+  }
+  const keepAllWalkable = editOn && (blank || castleEdits.size > 0);
+
+  // ----- only what can be reached from the gate stays walkable (not while building by hand) -----
+  if(!keepAllWalkable){
+  const seen = new Uint8Array(C * R);
+  const queue = [P[1] * C + P[0]];
+  seen[queue[0]] = 1;
+  for(let h = 0; h < queue.length; h++){
+    const cx = queue[h] % C, cy = Math.floor(queue[h] / C);
+    for(const [ax, ay] of [[1, 0], [-1, 0], [0, 1], [0, -1]]){
+      const nx = cx + ax, ny = cy + ay;
+      if(!inb(nx, ny) || seen[ny * C + nx] || !CT_WALK[g[ny][nx]]) continue;
+      seen[ny * C + nx] = 1; queue.push(ny * C + nx);
+    }
+  }
+  for(let y = 0; y < R; y++) for(let x = 0; x < C; x++) if(CT_WALK[g[y][x]] && !seen[y * C + x]) g[y][x] = CT.BLOCKED;
+  }
+
+  // ----- numbering (rows or columns, like the kingdom map) -----
+  const byColumns = document.getElementById('numberOrder').value === 'spalten';
+  const nums = new Map();
+  let total = 0;
+  const tiles = [];                                   // the walkable tiles as fields (names can be placed on them)
+  const addTile = (x, y) => {
+    nums.set(y * C + x, ++total);
+    tiles.push({ idx: y * 64 + x, key: y * 64 + x, px: (x + 0.5) * ts, py: (y + 0.5) * ts, number: total, blocked: false, isBuilding: false, terrain: 'floor' });
+  };
+  if(byColumns){ for(let x = 0; x < C; x++) for(let y = 0; y < R; y++) if(CT_WALK[g[y][x]]) addTile(x, y); }
+  else { for(let y = 0; y < R; y++) for(let x = 0; x < C; x++) if(CT_WALK[g[y][x]]) addTile(x, y); }
+
+  // ----- drawing -----
+  const f = v => Math.round(v * 100) / 100;
+  const wellTiles = [];
+  let courtD = '', grassD = '', waterD = '', stoneD = '', edgeD = '', waveD = '', plankD = '', walkHtml = '', textHtml = '';
+  const isStone = (x, y) => { const t = get(x, y); return t >= 0 && CT_STONE[t] === 1; };
+  const wa = ts * 0.28, wb = ts * 0.16;
+  for(let y = 0; y < R; y++) for(let x = 0; x < C; x++){
+    const t = g[y][x], X = f(x * ts), Y = f(y * ts), S = f(ts + 0.6);
+    const mx = (x + 0.5) * ts, my = (y + 0.5) * ts;
+    if(t === CT.GRASS){ grassD += `M${X} ${Y}h${S}v${S}h${-S}z`; continue; }
+    if(t === CT.WATER){
+      waterD += `M${X} ${Y}h${S}v${S}h${-S}z`;
+      waveD += `M${f(mx - wa)} ${f(my)}Q${f(mx - wa / 2.3)} ${f(my - wb)} ${f(mx)} ${f(my)}Q${f(mx + wa / 1.75)} ${f(my + wb)} ${f(mx + wa)} ${f(my)}`;
+      continue;
+    }
+    if(CT_STONE[t]){
+      stoneD += `M${X} ${Y}h${S}v${S}h${-S}z`;
+      const x2 = f((x + 1) * ts), y2 = f((y + 1) * ts);
+      if(!isStone(x, y - 1) && get(x, y - 1) !== CT.TOWER) edgeD += `M${X} ${Y}H${x2}`;
+      if(!isStone(x, y + 1) && get(x, y + 1) !== CT.TOWER) edgeD += `M${X} ${y2}H${x2}`;
+      if(!isStone(x - 1, y) && get(x - 1, y) !== CT.TOWER) edgeD += `M${X} ${Y}V${y2}`;
+      if(!isStone(x + 1, y) && get(x + 1, y) !== CT.TOWER) edgeD += `M${x2} ${Y}V${y2}`;
+      continue;
+    }
+    if(t === CT.TOWER){                                  // the tower itself is a circle (below); the rest shows what lay under it
+      const u = under[y * C + x];
+      if(u === CT.GRASS) grassD += `M${X} ${Y}h${S}v${S}h${-S}z`;
+      else if(u === CT.WATER) waterD += `M${X} ${Y}h${S}v${S}h${-S}z`;
+      else if(u === CT.WALL) stoneD += `M${X} ${Y}h${S}v${S}h${-S}z`;
+      else courtD += `M${X} ${Y}h${S}v${S}h${-S}z`;
+      continue;
+    }
+    if(t === CT.WELL){ wellTiles.push({ x: x + 0.5, y: y + 0.5 }); continue; }
+    if(CT_WALK[t]){
+      const [fill, op] = CT_FILL[t];
+      walkHtml += `<rect x="${X}" y="${Y}" width="${f(ts)}" height="${f(ts)}" fill="${fill}" opacity="${op}"/>`;
+      if(t === CT.BRIDGE) plankD += D[0] === 0 ? `M${X} ${f(my)}h${f(ts)}` : `M${f(mx)} ${Y}v${f(ts)}`;
+      textHtml += `<text x="${f(mx)}" y="${f(my + ts * 0.11)}">${nums.get(y * C + x)}</text>`;
+    }
+  }
+  const out = svg;
+  const layer = el('g', { id: 'castleLayer' });
+  const fs = Math.max(6, Math.min(9, ts * 0.32));
+  let html = '';
+  html += `<path d="${grassD}" fill="#c3cb9f" opacity="0.55"/>`;
+  html += `<path d="${waterD}" fill="#6f8e94" opacity="0.85"/>`;
+  html += `<path d="${waveD}" fill="none" stroke="#dfeef0" stroke-width="1" opacity="0.6"/>`;
+  html += `<path d="${courtD}" fill="#d6c7a0" opacity="0.9"/>`;
+  html += `<path d="${stoneD}" fill="#8a8173"/>`;
+  html += `<g stroke="#5a4530" stroke-width="1">${walkHtml}</g>`;
+  html += `<path d="${plankD}" fill="none" stroke="#5f4526" stroke-width="1" opacity="0.7"/>`;
+  html += `<path d="${edgeD}" fill="none" stroke="#2f2a24" stroke-width="1.7" stroke-linecap="square"/>`;
+  // portcullis across the gate passage
+  const gx = (P[0] + 0.5) * ts, gy = (P[1] + 0.5) * ts;
+  if(!blank && get(P[0], P[1]) === CT.GATE) html += D[0] === 0
+    ? `<path d="M${f(gx - 1.5 * ts)} ${f(gy)}H${f(gx + 1.5 * ts)}" stroke="#2f2a24" stroke-width="2.2" stroke-dasharray="${f(ts * 0.22)} ${f(ts * 0.2)}" fill="none"/>`
+    : `<path d="M${f(gx)} ${f(gy - 1.5 * ts)}V${f(gy + 1.5 * ts)}" stroke="#2f2a24" stroke-width="2.2" stroke-dasharray="${f(ts * 0.22)} ${f(ts * 0.2)}" fill="none"/>`;
+  // round towers
+  towers.forEach(t => {
+    if(get(Math.floor(t.x), Math.floor(t.y)) !== CT.TOWER) return;           // painted over by hand
+    const cx = f(t.x * ts), cy = f(t.y * ts);
+    html += `<circle cx="${cx}" cy="${cy}" r="${f(ts * 1.58)}" fill="#8a8173" stroke="#2f2a24" stroke-width="1.8"/>`
+      + `<circle cx="${cx}" cy="${cy}" r="${f(ts * 1.27)}" fill="none" stroke="#2f2a24" stroke-width="1" stroke-dasharray="${f(ts * 0.2)} ${f(ts * 0.16)}" opacity="0.6"/>`
+      + `<circle cx="${cx}" cy="${cy}" r="${f(ts * 0.85)}" fill="#9a9283" stroke="#5d564b" stroke-width="1"/>`;
+  });
+  // icons
+  const ink = 'stroke="#3c2c1e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.8"';
+  wellTiles.forEach(w => {
+    html += `<circle cx="${f(w.x * ts)}" cy="${f(w.y * ts)}" r="${f(ts * 0.42)}" fill="#8a8173" stroke="#2f2a24" stroke-width="1.5"/>`
+      + `<circle cx="${f(w.x * ts)}" cy="${f(w.y * ts)}" r="${f(ts * 0.24)}" fill="#6f8e94" stroke="#2f2a24" stroke-width="1"/>`;
+  });
+  if(throne && get(Math.floor(throne.x), Math.floor(throne.y)) === CT.CARPET){
+    const tx = f(throne.x * ts), ty = f(throne.y * ts), q = ts * 0.3;
+    html += `<rect x="${f(tx - q)}" y="${f(ty - q)}" width="${f(q * 2)}" height="${f(q * 2)}" rx="2" fill="#d9b56a" stroke="#241a08" stroke-width="1.2"/>`
+      + `<rect x="${f(tx - q * 0.55)}" y="${f(ty - q * 0.55)}" width="${f(q * 1.1)}" height="${f(q * 1.1)}" fill="none" stroke="#241a08" stroke-width="0.9"/>`;
+  }
+  buildings.forEach(b => {
+    if(get(Math.floor(b.x), Math.floor(b.y)) !== CT.FLOOR) return;
+    const bx = b.x * ts, by = b.y * ts, r = ts * 0.34;
+    if(b.kind === 'stall') html += `<path d="M${f(bx - r)} ${f(by + r * 0.7)}A${f(r)} ${f(r)} 0 1 1 ${f(bx + r)} ${f(by + r * 0.7)}" ${ink}/>`;
+    else if(b.kind === 'smithy') html += `<path d="M${f(bx - r)} ${f(by - r * 0.4)}H${f(bx + r)}L${f(bx + r * 0.5)} ${f(by + r * 0.2)}H${f(bx + r * 0.3)}V${f(by + r * 0.7)}H${f(bx - r * 0.3)}V${f(by + r * 0.2)}H${f(bx - r * 0.5)}Z" ${ink}/>`;
+    else if(b.kind === 'barracks') html += `<path d="M${f(bx - r)} ${f(by - r)}L${f(bx + r)} ${f(by + r)}M${f(bx + r)} ${f(by - r)}L${f(bx - r)} ${f(by + r)}" ${ink}/>`;
+    else if(b.kind === 'chapel') html += `<path d="M${f(bx)} ${f(by - r)}V${f(by + r)}M${f(bx - r * 0.65)} ${f(by - r * 0.3)}H${f(bx + r * 0.65)}" ${ink}/>`;
+    else html += `<path d="M${f(bx - r)} ${f(by - r * 0.2)}h${f(r * 0.9)}v${f(r * 0.9)}h${f(-r * 0.9)}ZM${f(bx + r * 0.1)} ${f(by - r * 0.7)}h${f(r * 0.9)}v${f(r * 0.9)}h${f(-r * 0.9)}Z" ${ink}/>`;
+  });
+  rooms.forEach((r, i) => {
+    if(i === hallIdx || (r.x1 - r.x0 + 1) * (r.y1 - r.y0 + 1) < 9) return;
+    const rx = (r.x0 + r.x1 + 1) / 2 * ts, ry = (r.y0 + r.y1 + 1) / 2 * ts, q = ts * 0.3;
+    const kind = randInt(0, 2);
+    if(get(Math.floor(rx / ts), Math.floor(ry / ts)) !== CT.FLOOR) return;
+    if(kind === 0) html += `<rect x="${f(rx - q * 0.8)}" y="${f(ry - q)}" width="${f(q * 1.6)}" height="${f(q * 2)}" rx="1.5" ${ink}/><path d="M${f(rx - q * 0.8)} ${f(ry - q * 0.4)}h${f(q * 1.6)}" ${ink}/>`;
+    else if(kind === 1) html += `<circle cx="${f(rx)}" cy="${f(ry)}" r="${f(q)}" ${ink}/>`;
+    else html += `<rect x="${f(rx - q)}" y="${f(ry - q * 0.6)}" width="${f(q * 2)}" height="${f(q * 1.2)}" rx="1.5" ${ink}/><path d="M${f(rx - q)} ${f(ry)}h${f(q * 2)}" ${ink}/>`;
+  });
+  // flag on the keep
+  const fx = (kx0 + 0.5) * ts, fy = (ky0 + 0.5) * ts;
+  if(!blank && get(kx0, ky0) === CT.KEEPWALL) html += `<path d="M${f(fx)} ${f(fy)}V${f(fy - ts * 1.3)}" stroke="#2f2a24" stroke-width="1.6" fill="none"/><path d="M${f(fx)} ${f(fy - ts * 1.3)}L${f(fx + ts * 0.9)} ${f(fy - ts * 1.0)}L${f(fx)} ${f(fy - ts * 0.7)}Z" fill="#9b2f2a" stroke="#4a1512" stroke-width="0.8"/>`;
+  html += `<g text-anchor="middle" font-family="'Cinzel', serif" font-size="${f(fs)}" fill="#3c2c1e" opacity="0.75" dominant-baseline="middle">${textHtml}</g>`;
+  layer.innerHTML = html;
+  out.appendChild(layer);
+
+  drawCompass();
+  lastCells = tiles; lastCastleCells = []; lastFieldTotal = total;
+  if(castleEdit) castleEdit.update();
+  TERRAIN.labels.update();
+  renderLabels();
+  document.getElementById('seedLabel').textContent =
+    (t('mapTypeCastle') || 'Burg') + ' #' + currentSeed + ' · ' + total + ' ' + LANGUAGES[currentLang].fieldsWord;
+  updatePickUI();
+  const centerKey = 'burg|' + currentSeed + '|' + W + '|' + H;
+  if(centerKey !== lastCenterKey){ lastCenterKey = centerKey; centerMapFrame(); }
+}
+
 function generateMap(explicitSeed){
   clear();
 
@@ -2944,6 +3410,7 @@ function generateMap(explicitSeed){
   currentSeed = seed;
   rngFn = mulberry32(seed);
   document.getElementById('seedInput').value = seed;
+  if(mapType === 'burg'){ generateCastleMap(seed); return; }
 
   const fieldInput = document.getElementById('fieldCountInput');
   let desiredFields = parseInt(fieldInput.value, 10);
@@ -3090,6 +3557,157 @@ document.getElementById('generateBtn').addEventListener('click', () => generateM
   });
 })();
 
+// ---------- switch between the kingdom map and the castle map ----------
+(function(){
+  // everything that only makes sense for the kingdom map
+  document.querySelectorAll('#settingsBody .control-group').forEach(g => {
+    const key = g.querySelector('h3').getAttribute('data-i18n');
+    if(key !== 'grpMap' && key !== 'grpCastleMap' && key !== 'grpLabels') g.classList.add('kingdom-only');
+  });
+  ['fieldCountInput', 'showFlowArrows'].forEach(id => { const row = document.getElementById(id).closest('.field-row'); if(row) row.classList.add('kingdom-only'); });
+  ['castleSize', 'castleTowers', 'castleGate', 'castleMoat'].forEach(id => {
+    document.getElementById(id).addEventListener('change', () => generateMap(currentSeed));
+  });
+  document.getElementById('mapTypeKingdom').addEventListener('click', () => setMapType('koenigreich', true));
+  document.getElementById('mapTypeCastle').addEventListener('click', () => setMapType('burg', true));
+})();
+// ---------- building the castle by hand: pick a tile type, then click or drag over the plan ----------
+const CASTLE_TOOLS = [
+  { id: 'wall', icon: '🧱', type: CT.WALL, key: 'castleToolWall', de: 'Mauer' },
+  { id: 'court', icon: '🟫', type: CT.COURT, key: 'castleToolCourt', de: 'Hof' },
+  { id: 'floor', icon: '🟨', type: CT.FLOOR, key: 'castleToolFloor', de: 'Raum' },
+  { id: 'door', icon: '🚪', type: CT.DOOR, key: 'castleToolDoor', de: 'Tür' },
+  { id: 'road', icon: '🛤️', type: CT.ROAD, key: 'castleToolRoad', de: 'Weg' },
+  { id: 'bridge', icon: '🌉', type: CT.BRIDGE, key: 'castleToolBridge', de: 'Brücke' },
+  { id: 'water', icon: '🌊', type: CT.WATER, key: 'castleToolWater', de: 'Wasser' },
+  { id: 'grass', icon: '🌿', type: CT.GRASS, key: 'castleToolGrass', de: 'Gras' },
+  { id: 'garden', icon: '🌱', type: CT.GARDEN, key: 'castleToolGarden', de: 'Garten' },
+  { id: 'carpet', icon: '🟥', type: CT.CARPET, key: 'castleToolCarpet', de: 'Teppich' },
+  { id: 'well', icon: '⛲', type: CT.WELL, key: 'castleToolWell', de: 'Brunnen' },
+  { id: 'tower', icon: '🗼', type: 16, key: 'castleToolTower', de: 'Turm' },
+  { id: 'erase', icon: '✕', type: -1, key: 'castleToolErase', de: 'Radierer' }
+];
+var castleEdit = {
+  tool: null,
+  pending: false,
+  on(){ return mapType === 'burg' && document.getElementById('customCastleEdit').checked; },
+  active(){ return castleEdit.on() && castleEdit.tool !== null; },
+  brush(){ return Math.max(1, Math.min(4, parseInt(document.getElementById('castleBrushSize').value, 10) || 1)); },
+  update(){
+    const on = castleEdit.on();
+    document.getElementById('castleEditPicker').hidden = !document.getElementById('customCastleEdit').checked;
+    if(!on) castleEdit.tool = null;
+    const wrap = document.getElementById('castleTools');
+    wrap.innerHTML = '';
+    CASTLE_TOOLS.forEach(tl => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'castle-btn' + (castleEdit.tool === tl.id ? ' active' : '');
+      b.textContent = tl.icon;
+      b.title = t(tl.key) || tl.de;
+      b.addEventListener('click', () => { castleEdit.tool = (castleEdit.tool === tl.id) ? null : tl.id; if(castleEdit.tool) clearTerrainPickers(); castleEdit.update(); });
+      wrap.appendChild(b);
+    });
+    svg.style.touchAction = castleEdit.active() ? 'none' : '';
+    if(!castleEdit.active()) document.getElementById('brushCursor').style.display = 'none';
+    updatePickUI();
+  },
+  // paints the tiles under the brush; returns true if anything changed
+  paint(fx, fy){
+    const { C, R, ts } = castleGrid;
+    const tx = Math.floor(fx * W / ts), ty = Math.floor(fy * H / ts);
+    if(tx < 0 || ty < 0 || tx >= C || ty >= R) return false;
+    const tool = CASTLE_TOOLS.find(x => x.id === castleEdit.tool);
+    if(!tool) return false;
+    const key = (x, y) => y * 64 + x;
+    let changed = false;
+    if(tool.type === 16){
+      const k = key(tx, ty);
+      if(castleEdits.get(k) !== 16){ castleEdits.set(k, 16); changed = true; }
+      return changed;
+    }
+    const n = castleEdit.brush(), start = -Math.floor((n - 1) / 2);
+    for(let dy = 0; dy < n; dy++) for(let dx = 0; dx < n; dx++){
+      const x = tx + start + dx, y = ty + start + dy;
+      if(x < 0 || y < 0 || x >= C || y >= R) continue;
+      const k = key(x, y);
+      if(tool.type === -1){
+        if(castleEdits.delete(k)) changed = true;
+        // a hand-placed round tower goes away with any of its nine tiles
+        castleEdits.forEach((ty2, k2) => { if(ty2 === 16 && Math.abs(k2 % 64 - x) <= 1 && Math.abs(Math.floor(k2 / 64) - y) <= 1){ castleEdits.delete(k2); changed = true; } });
+      } else if(castleBase && castleBase[y][x] === tool.type){
+        if(castleEdits.delete(k)) changed = true;          // same as generated: no edit needed
+      } else if(castleEdits.get(k) !== tool.type){
+        castleEdits.set(k, tool.type); changed = true;
+      }
+    }
+    return changed;
+  },
+  regen(){
+    if(castleEdit.pending) return;
+    castleEdit.pending = true;
+    requestAnimationFrame(() => { castleEdit.pending = false; generateMap(currentSeed); });
+  }
+};
+(function(){
+  const $ = id => document.getElementById(id);
+  let down = false;
+  const relPos = e => {
+    const r = svg.getBoundingClientRect();
+    if(!r.width || !r.height) return null;
+    return { fx: (e.clientX - r.left) / r.width, fy: (e.clientY - r.top) / r.height, scale: r.width / W };
+  };
+  const moveCursor = e => {
+    const cur = $('brushCursor');
+    if(!castleEdit.active()) return;                 // the kingdom brush manages the circle itself
+    const pos = relPos(e);
+    if(!pos) return;
+    const d = Math.max(10, castleEdit.brush() * castleGrid.ts * pos.scale);
+    cur.style.width = cur.style.height = d + 'px';
+    cur.style.left = e.clientX + 'px';
+    cur.style.top = e.clientY + 'px';
+    cur.style.display = 'block';
+  };
+  svg.addEventListener('pointerdown', e => {
+    if(!castleEdit.active() || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    const pos = relPos(e);
+    if(!pos) return;
+    down = true;
+    try{ svg.setPointerCapture(e.pointerId); }catch(err){}
+    moveCursor(e);
+    if(castleEdit.paint(pos.fx, pos.fy)) castleEdit.regen();
+    e.preventDefault();
+  });
+  svg.addEventListener('pointermove', e => {
+    moveCursor(e);
+    if(!down || !castleEdit.active()) return;
+    const pos = relPos(e);
+    if(pos && castleEdit.paint(pos.fx, pos.fy)) castleEdit.regen();
+  });
+  const stop = () => { down = false; };
+  svg.addEventListener('pointerup', stop);
+  svg.addEventListener('pointercancel', stop);
+  svg.addEventListener('pointerleave', () => { if(!down && castleEdit.active()) $('brushCursor').style.display = 'none'; });
+  $('customCastleEdit').addEventListener('change', () => { castleEdit.tool = null; generateMap(currentSeed); });
+  $('castleBlank').addEventListener('change', () => generateMap(currentSeed));
+  $('castleBrushSize').addEventListener('input', () => { $('castleBrushVal').textContent = String(castleEdit.brush()); });
+  $('castleEditResetBtn').addEventListener('click', () => { castleEdits.clear(); castleEdit.tool = null; generateMap(currentSeed); });
+})();
+
+function setMapType(type, regenerate){
+  if(typeof castleEdit !== 'undefined' && castleEdit) castleEdit.tool = null;
+  mapType = type === 'burg' ? 'burg' : 'koenigreich';
+  if(TERRAIN.labels) TERRAIN.labels.switchTo(mapType);
+  document.body.dataset.mapType = mapType;
+  document.getElementById('mapTypeKingdom').classList.toggle('active', mapType !== 'burg');
+  document.getElementById('mapTypeCastle').classList.toggle('active', mapType === 'burg');
+  if(regenerate){
+    placingCastle = null; placingMerchant = null; placingAction = null; placingVillage = null;
+    TERRAIN_PICKERS.forEach(P => { P.placing = null; });
+    generateMap(currentSeed);
+  }
+}
+
 document.getElementById('toggleSettingsBtn').addEventListener('click', () => {
   document.getElementById('settingsBody').classList.toggle('collapsed');
 });
@@ -3141,7 +3759,16 @@ function collectSettings(){
     customHarbor: TERRAIN.harbor.toSettings().flag,
     harborList: TERRAIN.harbor.toSettings().list,
     customLabels: TERRAIN.labels.toSettings().flag,
-    labelList: TERRAIN.labels.toSettings().list
+    labelList: TERRAIN.labels.toSettings().list,
+    castleLabelList: TERRAIN.labels.settingsFor('burg'),
+    mapType,
+    castleSize: document.getElementById('castleSize').value,
+    castleTowers: document.getElementById('castleTowers').value,
+    castleMoat: document.getElementById('castleMoat').checked,
+    castleGate: document.getElementById('castleGate').value,
+    castleEdit: document.getElementById('customCastleEdit').checked,
+    castleBlank: document.getElementById('castleBlank').checked,
+    castleEdits: [...castleEdits]
   };
 }
 
@@ -3287,6 +3914,42 @@ function encodeCompactSettings(s){
     }
     return out;
   };
+  // 23: castle map: map type (1 = castle) + size (0-2) + towers (0-2) + moat (0/1) + gate side (0-3)
+  const encCastleMap = () => {
+    const size = ['0', '1', '2'].indexOf(String(s.castleSize === undefined ? '1' : s.castleSize));
+    const towers = CASTLE_TOWER_OPTS.indexOf(String(s.castleTowers === undefined ? '6' : s.castleTowers));
+    const moat = s.castleMoat === undefined ? true : !!s.castleMoat;
+    const gate = CASTLE_GATES.indexOf(s.castleGate === undefined ? 'unten' : s.castleGate);
+    const isDefault = size === 1 && towers === 1 && moat && gate === 0;
+    if(s.mapType !== 'burg' && isDefault) return null;
+    if(size < 0 || towers < 0 || gate < 0) throw new Error('x');
+    return (s.mapType === 'burg' ? '1' : '0') + size + towers + (moat ? '1' : '0') + gate;
+  };
+  // 24: castle built by hand: edit flag + blank flag, then runs of equal tiles (key 3 + length 2 + type 1 characters)
+  const encCastleEdits = () => {
+    const edits = Array.isArray(s.castleEdits) ? s.castleEdits : [];
+    if(!s.castleEdit && !s.castleBlank && !edits.length) return null;
+    const sorted = edits.slice().sort((a, b) => a[0] - b[0]);
+    let out = (s.castleEdit ? '1' : '0') + (s.castleBlank ? '1' : '0');
+    for(let i = 0; i < sorted.length;){
+      const k = sorted[i][0], ty = sorted[i][1];
+      if(!Number.isInteger(k) || k < 0 || k > 46655 || !Number.isInteger(ty) || ty < 0 || ty > 16) throw new Error('x');
+      let len = 1;
+      while(i + len < sorted.length && sorted[i + len][0] === k + len && sorted[i + len][1] === ty && len < 1295) len++;
+      out += k.toString(36).padStart(3, '0') + len.toString(36).padStart(2, '0') + ty.toString(36);
+      i += len;
+    }
+    return out;
+  };
+  // 25: names on the castle map: the list as JSON in UTF-8, base64url (no flag; the on/off switch is part 22)
+  const encCastleLabels = () => {
+    const list = Array.isArray(s.castleLabelList) ? s.castleLabelList : [];
+    if(!list.length) return null;
+    for(const e of list){
+      if(!Array.isArray(e) || !(e.length === 3 || e.length === 4) || typeof e[e.length - 1] !== 'string') throw new Error('x');
+    }
+    return btoa(unescape(encodeURIComponent(JSON.stringify(list)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  };
   let tail;
   try{
     tail = [encCastles(), encCastleNumbers(),
@@ -3296,7 +3959,10 @@ function encodeCompactSettings(s){
       encEdges('customSea', 'seaList'), encCells(), encPos('customBridge', 'bridgeList'),
       s.numberOrder === 'spalten' ? '1' : null,      // part 20: numbering by columns
       encNums('customHarbor', 'harborList'),         // part 21: harbours (field numbers like villages)
-      encLabels()];                                  // part 22: names on the map
+      encLabels(),                                   // part 22: names on the map
+      encCastleMap(),                                // part 23: map type and castle map options
+      encCastleEdits(),                              // part 24: castle built by hand
+      encCastleLabels()];                            // part 25: names on the castle map
   } catch(e){ return null; }
   let last = tail.length - 1;
   while(last >= 0 && tail[last] === null) last--;
@@ -3307,7 +3973,7 @@ function encodeCompactSettings(s){
 function decodeCompactSettings(raw){
   const bad = () => new Error('invalid share code');
   const p = raw.split('.');
-  if(p.length < 8 || p.length > 22 || p[0] !== '2') throw bad();
+  if(p.length < 8 || p.length > 25 || p[0] !== '2') throw bad();
   const b36 = str => {
     if(!/^-?[0-9a-z]+$/.test(str)) throw bad();
     const n = parseInt(str, 36);
@@ -3359,6 +4025,34 @@ function decodeCompactSettings(raw){
   s.numberOrder = (p.length >= 20 && p[19] === '1') ? 'spalten' : 'zeilen';
   s.customHarbor = false; s.harborList = [];
   s.customLabels = false; s.labelList = [];
+  s.mapType = 'koenigreich'; s.castleSize = '1'; s.castleTowers = '6'; s.castleMoat = true; s.castleGate = 'unten';
+  s.castleEdit = false; s.castleBlank = false; s.castleEdits = [];
+  s.castleLabelList = [];
+  if(p.length >= 25){
+    if(!/^[A-Za-z0-9_-]+$/.test(p[24])) throw bad();
+    let b = p[24].replace(/-/g, '+').replace(/_/g, '/');
+    while(b.length % 4) b += '=';
+    try{ s.castleLabelList = JSON.parse(decodeURIComponent(escape(atob(b)))); }catch(err){ throw bad(); }
+    if(!Array.isArray(s.castleLabelList)) throw bad();
+  }
+  if(p.length >= 24){
+    if(!/^[01][01]([0-9a-z]{6})*$/.test(p[23])) throw bad();
+    s.castleEdit = p[23][0] === '1';
+    s.castleBlank = p[23][1] === '1';
+    for(let k = 2; k < p[23].length; k += 6){
+      const key = parseInt(p[23].slice(k, k + 3), 36), len = parseInt(p[23].slice(k + 3, k + 5), 36), ty = parseInt(p[23][k + 5], 36);
+      if(len < 1 || ty > 16 || s.castleEdits.length + len > 6000) throw bad();
+      for(let j = 0; j < len; j++) s.castleEdits.push([key + j, ty]);
+    }
+  }
+  if(p.length >= 23){
+    if(!/^[01][0-2][0-2][01][0-3]$/.test(p[22])) throw bad();
+    s.mapType = p[22][0] === '1' ? 'burg' : 'koenigreich';
+    s.castleSize = p[22][1];
+    s.castleTowers = CASTLE_TOWER_OPTS[+p[22][2]];
+    s.castleMoat = p[22][3] === '1';
+    s.castleGate = CASTLE_GATES[+p[22][4]];
+  }
   if(p.length >= 22){
     if(!/^[01][A-Za-z0-9_-]*$/.test(p[21])) throw bad();
     s.customLabels = p[21][0] === '1';
@@ -3492,6 +4186,17 @@ function applySettings(s){
   const setChecked = (id, v) => { if(v !== undefined){ document.getElementById(id).checked = v; } };
 
   setVal('fieldCountInput', s.fieldCount);
+  setVal('castleSize', s.castleSize !== undefined ? s.castleSize : '1');
+  setVal('castleTowers', s.castleTowers !== undefined ? s.castleTowers : '6');
+  setChecked('castleMoat', s.castleMoat !== undefined ? !!s.castleMoat : true);
+  setVal('castleGate', s.castleGate !== undefined ? s.castleGate : 'unten');
+  castleEdits.clear();
+  (Array.isArray(s.castleEdits) ? s.castleEdits : []).forEach(e => {
+    if(Array.isArray(e) && e.length === 2 && Number.isInteger(e[0]) && Number.isInteger(e[1]) && e[1] >= 0 && e[1] <= 16) castleEdits.set(e[0], e[1]);
+  });
+  setChecked('customCastleEdit', !!s.castleEdit);
+  setChecked('castleBlank', !!s.castleBlank);
+  setMapType(s.mapType, false);
   // castlePosition ist fest auf 'mitte' (Auswahl entfernt), alte Links ändern sie nicht
   setChecked('disableOutposts', s.disableOutposts);
   setVal('outpostCount', s.outpostCount);
