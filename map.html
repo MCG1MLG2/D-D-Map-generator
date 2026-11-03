@@ -513,6 +513,15 @@
           </div>
           <button type="button" class="castle-reset" id="castleEditResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
         </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblCastlePeople">Händler &amp; Personen setzen</span>
+          <input type="checkbox" id="customPeople">
+        </div>
+        <div class="castle-placer" id="peoplePicker" hidden>
+          <div class="placer-hint" data-i18n="peopleHint">Figur wählen, dann auf ein Feld der Burg klicken</div>
+          <div class="castle-buttons" id="peopleButtons"></div>
+          <button type="button" class="castle-reset" id="peopleResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
+        </div>
       </div>
 
       <div class="control-group">
@@ -1926,6 +1935,7 @@ function labelPos(e, numMap){
       const kx = e.ref % 64, ky = Math.floor(e.ref / 64), ts = castleGrid.ts;
       return { x: (kx + 0.5) * ts, y: (ky + 0.5) * ts + ts * 0.5 + 9 };
     }
+    if(Array.isArray(e.ref)) return { x: e.ref[0] / 1000 * W, y: e.ref[1] / 1000 * H + 23 };      // a field without a number (water, mountain, ...)
     const c = numMap().get(e.ref);
     return c ? { x: c.px, y: c.py + 23 } : null;
   }
@@ -2725,9 +2735,17 @@ TERRAIN.labels = (() => {
         if(best < 0) return true;
         ref = best;
       } else if(kind === 'village'){
-        const c = cellAtMapPoint(x, y);
-        if(!c) return true;
-        ref = mapType === 'burg' ? c.key : c.number;       // castle map: the tile itself, so names stay put when the numbers change
+        if(mapType === 'burg'){                             // castle map: every tile (walls, water, towers, ...), by position so names stay put
+          const { C, R, ts } = castleGrid;
+          const tx = Math.floor(x / ts), ty = Math.floor(y / ts);
+          if(tx < 0 || ty < 0 || tx >= C || ty >= R) return true;
+          ref = ty * 64 + tx;
+        } else {                                            // kingdom: every field; numbered ones by number, the others by position
+          let c = null, bd = Infinity;
+          for(const cell of lastCells){ const d = (cell.px - x) * (cell.px - x) + (cell.py - y) * (cell.py - y); if(d < bd){ bd = d; c = cell; } }
+          if(!c) return true;
+          ref = c.number ? c.number : [Math.round(c.px / W * 1000), Math.round(c.py / H * 1000)];
+        }
       } else {
         ref = [Math.round(fx * 1000), Math.round(fy * 1000)];
       }
@@ -2751,6 +2769,7 @@ TERRAIN.labels = (() => {
         if(!Array.isArray(e) || list.length >= LABEL_MAX) return;
         if(e[0] === 2 && e.length === 4 && Number.isFinite(e[1]) && Number.isFinite(e[2]) && typeof e[3] === 'string') list.push({ kind: 'region', text: e[3].slice(0, 40), ref: [e[1], e[2]] });
         else if((e[0] === 0 || e[0] === 1) && e.length === 3 && Number.isInteger(e[1]) && e[1] >= 0 && typeof e[2] === 'string') list.push({ kind: e[0] === 0 ? 'castle' : 'village', text: e[2].slice(0, 40), ref: e[1] });
+        else if(e[0] === 1 && e.length === 3 && Array.isArray(e[1]) && e[1].length === 2 && e[1].every(Number.isFinite) && typeof e[2] === 'string') list.push({ kind: 'village', text: e[2].slice(0, 40), ref: [e[1][0], e[1][1]] });
       });
       return list;
     },
@@ -3383,6 +3402,12 @@ function generateCastleMap(seed){
   const fx = (kx0 + 0.5) * ts, fy = (ky0 + 0.5) * ts;
   if(!blank && get(kx0, ky0) === CT.KEEPWALL) html += `<path d="M${f(fx)} ${f(fy)}V${f(fy - ts * 1.3)}" stroke="#2f2a24" stroke-width="1.6" fill="none"/><path d="M${f(fx)} ${f(fy - ts * 1.3)}L${f(fx + ts * 0.9)} ${f(fy - ts * 1.0)}L${f(fx)} ${f(fy - ts * 0.7)}Z" fill="#9b2f2a" stroke="#4a1512" stroke-width="0.8"/>`;
   html += `<g text-anchor="middle" font-family="'Cinzel', serif" font-size="${f(fs)}" fill="#3c2c1e" opacity="0.75" dominant-baseline="middle">${textHtml}</g>`;
+  if(TERRAIN.people.on()){                           // merchants and people placed by hand sit on top of the tiles
+    TERRAIN.people.list.forEach(e => {
+      const px = e.key % 64, py = Math.floor(e.key / 64);
+      if(px < C && py < R) html += personIconSvg(e.kind, (px + 0.5) * ts, (py + 0.5) * ts, ts * 0.46);
+    });
+  }
   layer.innerHTML = html;
   out.appendChild(layer);
 
@@ -3390,6 +3415,7 @@ function generateCastleMap(seed){
   lastCells = tiles; lastCastleCells = []; lastFieldTotal = total;
   if(castleEdit) castleEdit.update();
   TERRAIN.labels.update();
+  TERRAIN.people.update();
   renderLabels();
   document.getElementById('seedLabel').textContent =
     (t('mapTypeCastle') || 'Burg') + ' #' + currentSeed + ' · ' + total + ' ' + LANGUAGES[currentLang].fieldsWord;
@@ -3571,6 +3597,96 @@ document.getElementById('generateBtn').addEventListener('click', () => generateM
   document.getElementById('mapTypeKingdom').addEventListener('click', () => setMapType('koenigreich', true));
   document.getElementById('mapTypeCastle').addEventListener('click', () => setMapType('burg', true));
 })();
+// ---------- merchants and people on the castle map: icons placed on tiles ----------
+const CASTLE_PEOPLE = ['merchant', 'guard', 'noble', 'craftsman', 'priest', 'person'];
+const PEOPLE_ICONS = { merchant: '💰', guard: '🛡️', noble: '👑', craftsman: '🔨', priest: '⛪', person: '🧑' };
+const PEOPLE_TITLES = { merchant: ['castlePersonMerchant', 'Händler'], guard: ['castlePersonGuard', 'Wache'], noble: ['castlePersonNoble', 'Adliger'],
+  craftsman: ['castlePersonCraftsman', 'Handwerker'], priest: ['castlePersonPriest', 'Priester'], person: ['castlePersonPerson', 'Person'] };
+// a parchment medallion (gold for the merchant) with a simple pictogram, centred at (cx, cy), radius r
+function personIconSvg(kind, cx, cy, r){
+  const f = v => Math.round(v * 100) / 100;
+  const X = v => f(cx + v * r), Y = v => f(cy + v * r);
+  const ink = `stroke="#2c2013" stroke-width="${f(Math.max(1.1, r * 0.11))}" stroke-linecap="round" stroke-linejoin="round" fill="none"`;
+  let svgIcon = `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(r)}" fill="${kind === 'merchant' ? '#d9b56a' : '#ecdcb0'}" stroke="#5a3e12" stroke-width="1.6"/>`;
+  if(kind === 'merchant'){            // coin pouch
+    svgIcon += `<path d="M${X(-0.34)} ${Y(-0.1)}Q${X(-0.62)} ${Y(0.55)} ${X(0)} ${Y(0.6)}Q${X(0.62)} ${Y(0.55)} ${X(0.34)} ${Y(-0.1)}Z" fill="#6e4a1a" stroke="#2c2013" stroke-width="1.1"/>`
+      + `<path d="M${X(-0.3)} ${Y(-0.1)}L${X(-0.4)} ${Y(-0.42)}L${X(-0.12)} ${Y(-0.25)}L${X(0)} ${Y(-0.5)}L${X(0.12)} ${Y(-0.25)}L${X(0.4)} ${Y(-0.42)}L${X(0.3)} ${Y(-0.1)}Z" fill="#6e4a1a" stroke="#2c2013" stroke-width="1.1"/>`
+      + `<circle cx="${X(0)}" cy="${Y(0.28)}" r="${f(r * 0.17)}" fill="#e8c76a" stroke="#2c2013" stroke-width="0.9"/>`;
+  } else if(kind === 'guard'){        // shield
+    svgIcon += `<path d="M${X(-0.45)} ${Y(-0.5)}H${X(0.45)}V${Y(0.1)}Q${X(0.45)} ${Y(0.55)} ${X(0)} ${Y(0.72)}Q${X(-0.45)} ${Y(0.55)} ${X(-0.45)} ${Y(0.1)}Z" ${ink}/><path d="M${X(0)} ${Y(-0.5)}V${Y(0.72)}" ${ink}/>`;
+  } else if(kind === 'noble'){        // crown
+    svgIcon += `<path d="M${X(-0.55)} ${Y(0.38)}L${X(-0.55)} ${Y(-0.32)}L${X(-0.2)} ${Y(0.02)}L${X(0)} ${Y(-0.46)}L${X(0.2)} ${Y(0.02)}L${X(0.55)} ${Y(-0.32)}L${X(0.55)} ${Y(0.38)}Z" ${ink}/><path d="M${X(-0.55)} ${Y(0.2)}H${X(0.55)}" ${ink}/>`;
+  } else if(kind === 'craftsman'){    // hammer
+    svgIcon += `<path d="M${X(-0.42)} ${Y(0.55)}L${X(0.12)} ${Y(-0.2)}" ${ink}/><path d="M${X(-0.05)} ${Y(-0.5)}H${X(0.55)}V${Y(-0.1)}H${X(0.1)}Z" ${ink}/>`;
+  } else if(kind === 'priest'){       // cross
+    svgIcon += `<path d="M${X(0)} ${Y(-0.58)}V${Y(0.58)}M${X(-0.36)} ${Y(-0.18)}H${X(0.36)}" ${ink}/>`;
+  } else {                            // person
+    svgIcon += `<circle cx="${X(0)}" cy="${Y(-0.26)}" r="${f(r * 0.24)}" ${ink}/><path d="M${X(-0.46)} ${Y(0.6)}Q${X(-0.46)} ${Y(0.1)} ${X(0)} ${Y(0.1)}Q${X(0.46)} ${Y(0.1)} ${X(0.46)} ${Y(0.6)}" ${ink}/>`;
+  }
+  return svgIcon;
+}
+TERRAIN.people = (() => {
+  const $ = id => document.getElementById(id);
+  const P = {
+    key: 'people', list: [], placing: null,            // placing: null | a figure | 'erase'
+    on(){ return mapType === 'burg' && $('customPeople').checked; },
+    active(){ return P.on() && P.placing !== null; },
+    clearMode(){ if(P.placing !== null){ P.placing = null; P.update(); } },
+    pick(k){
+      P.placing = (P.placing === k) ? null : k;
+      if(P.placing !== null){
+        if(castleEdit) castleEdit.tool = null;
+        placingCastle = null; placingMerchant = null; placingAction = null; placingVillage = null;
+        clearTerrainPickers(P);
+        if(castleEdit) castleEdit.update();
+      }
+      P.update();
+    },
+    update(){
+      $('peoplePicker').hidden = !$('customPeople').checked;
+      if(!P.on()) P.placing = null;
+      const wrap = $('peopleButtons');
+      wrap.innerHTML = '';
+      CASTLE_PEOPLE.concat(['erase']).forEach(k => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'castle-btn' + (P.placing === k ? ' active' : '');
+        b.textContent = k === 'erase' ? '✕' : PEOPLE_ICONS[k];
+        b.title = k === 'erase' ? (t('actionRemoveBtn') || 'Entfernen') : (t(PEOPLE_TITLES[k][0]) || PEOPLE_TITLES[k][1]);
+        b.addEventListener('click', () => P.pick(k));
+        wrap.appendChild(b);
+      });
+      updatePickUI();
+    },
+    handleClick(fx, fy){
+      if(!P.active()) return false;
+      const { C, R, ts } = castleGrid;
+      const tx = Math.floor(fx * W / ts), ty = Math.floor(fy * H / ts);
+      if(tx < 0 || ty < 0 || tx >= C || ty >= R) return true;
+      const key = ty * 64 + tx;
+      const i = P.list.findIndex(e => e.key === key);
+      if(P.placing === 'erase'){ if(i >= 0) P.list.splice(i, 1); else return true; }
+      else if(i >= 0){ if(P.list[i].kind === P.placing) P.list.splice(i, 1); else P.list[i].kind = P.placing; }   // same figure again = remove
+      else { if(P.list.length >= 200) return true; P.list.push({ kind: P.placing, key }); }
+      generateMap(currentSeed);
+      return true;
+    },
+    toSettings(){ return { flag: $('customPeople').checked, list: P.list.map(e => [e.key, CASTLE_PEOPLE.indexOf(e.kind)]) }; },
+    applyState(s){
+      P.list = [];
+      (Array.isArray(s.castlePeople) ? s.castlePeople : []).forEach(e => {
+        if(Array.isArray(e) && e.length === 2 && Number.isInteger(e[0]) && e[0] >= 0 && CASTLE_PEOPLE[e[1]] && P.list.length < 200) P.list.push({ kind: CASTLE_PEOPLE[e[1]], key: e[0] });
+      });
+      $('customPeople').checked = !!s.customPeople;
+      P.placing = null;
+    }
+  };
+  $('customPeople').addEventListener('change', () => { P.placing = null; if(P.on()) clearTerrainPickers(P); generateMap(currentSeed); });
+  $('peopleResetBtn').addEventListener('click', () => { P.list = []; P.placing = null; generateMap(currentSeed); });
+  TERRAIN_PICKERS.push(P);
+  return P;
+})();
+
 // ---------- building the castle by hand: pick a tile type, then click or drag over the plan ----------
 const CASTLE_TOOLS = [
   { id: 'wall', icon: '🧱', type: CT.WALL, key: 'castleToolWall', de: 'Mauer' },
@@ -3761,6 +3877,8 @@ function collectSettings(){
     customLabels: TERRAIN.labels.toSettings().flag,
     labelList: TERRAIN.labels.toSettings().list,
     castleLabelList: TERRAIN.labels.settingsFor('burg'),
+    customPeople: TERRAIN.people.toSettings().flag,
+    castlePeople: TERRAIN.people.toSettings().list,
     mapType,
     castleSize: document.getElementById('castleSize').value,
     castleTowers: document.getElementById('castleTowers').value,
@@ -3950,6 +4068,17 @@ function encodeCompactSettings(s){
     }
     return btoa(unescape(encodeURIComponent(JSON.stringify(list)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   };
+  // 26: merchants and people on the castle map: flag + 4 characters each (tile key 3, figure 1)
+  const encPeople = () => {
+    const list = Array.isArray(s.castlePeople) ? s.castlePeople : [];
+    if(!s.customPeople && !list.length) return null;
+    let out = s.customPeople ? '1' : '0';
+    for(const e of list){
+      if(!Array.isArray(e) || e.length !== 2 || !Number.isInteger(e[0]) || e[0] < 0 || e[0] > 46655 || !Number.isInteger(e[1]) || e[1] < 0 || e[1] > 5) throw new Error('x');
+      out += e[0].toString(36).padStart(3, '0') + e[1];
+    }
+    return out;
+  };
   let tail;
   try{
     tail = [encCastles(), encCastleNumbers(),
@@ -3962,7 +4091,8 @@ function encodeCompactSettings(s){
       encLabels(),                                   // part 22: names on the map
       encCastleMap(),                                // part 23: map type and castle map options
       encCastleEdits(),                              // part 24: castle built by hand
-      encCastleLabels()];                            // part 25: names on the castle map
+      encCastleLabels(),                             // part 25: names on the castle map
+      encPeople()];                                  // part 26: merchants and people on the castle map
   } catch(e){ return null; }
   let last = tail.length - 1;
   while(last >= 0 && tail[last] === null) last--;
@@ -3973,7 +4103,7 @@ function encodeCompactSettings(s){
 function decodeCompactSettings(raw){
   const bad = () => new Error('invalid share code');
   const p = raw.split('.');
-  if(p.length < 8 || p.length > 25 || p[0] !== '2') throw bad();
+  if(p.length < 8 || p.length > 26 || p[0] !== '2') throw bad();
   const b36 = str => {
     if(!/^-?[0-9a-z]+$/.test(str)) throw bad();
     const n = parseInt(str, 36);
@@ -4028,14 +4158,20 @@ function decodeCompactSettings(raw){
   s.mapType = 'koenigreich'; s.castleSize = '1'; s.castleTowers = '6'; s.castleMoat = true; s.castleGate = 'unten';
   s.castleEdit = false; s.castleBlank = false; s.castleEdits = [];
   s.castleLabelList = [];
-  if(p.length >= 25){
+  s.customPeople = false; s.castlePeople = [];
+  if(p.length >= 26){
+    if(!/^[01]([0-9a-z]{3}[0-5])*$/.test(p[25])) throw bad();
+    s.customPeople = p[25][0] === '1';
+    for(let k = 1; k < p[25].length; k += 4) s.castlePeople.push([parseInt(p[25].slice(k, k + 3), 36), +p[25][k + 3]]);
+  }
+  if(p.length >= 25 && p[24] !== '0'){          // '0' = placeholder for an absent part
     if(!/^[A-Za-z0-9_-]+$/.test(p[24])) throw bad();
     let b = p[24].replace(/-/g, '+').replace(/_/g, '/');
     while(b.length % 4) b += '=';
     try{ s.castleLabelList = JSON.parse(decodeURIComponent(escape(atob(b)))); }catch(err){ throw bad(); }
     if(!Array.isArray(s.castleLabelList)) throw bad();
   }
-  if(p.length >= 24){
+  if(p.length >= 24 && p[23] !== '0'){
     if(!/^[01][01]([0-9a-z]{6})*$/.test(p[23])) throw bad();
     s.castleEdit = p[23][0] === '1';
     s.castleBlank = p[23][1] === '1';
@@ -4045,7 +4181,7 @@ function decodeCompactSettings(raw){
       for(let j = 0; j < len; j++) s.castleEdits.push([key + j, ty]);
     }
   }
-  if(p.length >= 23){
+  if(p.length >= 23 && p[22] !== '0'){          // '0' = placeholder for an absent part
     if(!/^[01][0-2][0-2][01][0-3]$/.test(p[22])) throw bad();
     s.mapType = p[22][0] === '1' ? 'burg' : 'koenigreich';
     s.castleSize = p[22][1];
