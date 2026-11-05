@@ -514,12 +514,13 @@
           <button type="button" class="castle-reset" id="castleEditResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
         </div>
         <div class="field-row">
-          <span class="f-label" data-i18n="lblCastlePeople">Händler &amp; Personen setzen</span>
+          <span class="f-label" data-i18n="lblCastlePeople">Händler, Personen &amp; Symbole setzen</span>
           <input type="checkbox" id="customPeople">
         </div>
         <div class="castle-placer" id="peoplePicker" hidden>
-          <div class="placer-hint" data-i18n="peopleHint">Figur wählen, dann auf ein Feld der Burg klicken</div>
+          <div class="placer-hint" data-i18n="peopleHint">Figur oder Symbol wählen, dann auf ein Feld der Burg klicken</div>
           <div class="castle-buttons" id="peopleButtons"></div>
+          <div class="castle-buttons" id="symbolButtons"></div>
           <button type="button" class="castle-reset" id="peopleResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
         </div>
       </div>
@@ -3405,7 +3406,7 @@ function generateCastleMap(seed){
   if(TERRAIN.people.on()){                           // merchants and people placed by hand sit on top of the tiles
     TERRAIN.people.list.forEach(e => {
       const px = e.key % 64, py = Math.floor(e.key / 64);
-      if(px < C && py < R) html += personIconSvg(e.kind, (px + 0.5) * ts, (py + 0.5) * ts, ts * 0.46);
+      if(px < C && py < R) html += CASTLE_SYMBOLS.includes(e.kind) ? castleSymbolSvg(e.kind, (px + 0.5) * ts, (py + 0.5) * ts, ts) : personIconSvg(e.kind, (px + 0.5) * ts, (py + 0.5) * ts, ts * 0.46);
     });
   }
   layer.innerHTML = html;
@@ -3599,6 +3600,34 @@ document.getElementById('generateBtn').addEventListener('click', () => generateM
 })();
 // ---------- merchants and people on the castle map: icons placed on tiles ----------
 const CASTLE_PEOPLE = ['merchant', 'guard', 'noble', 'craftsman', 'priest', 'person'];
+// the symbols the castle plan draws by itself (flag, throne, building and furniture signs, gate grate), now also placeable
+const CASTLE_SYMBOLS = ['flag', 'throne', 'stall', 'smithy', 'barracks', 'chapel', 'store', 'bed', 'table', 'chest', 'portcullis'];
+const CASTLE_FIGURES = CASTLE_PEOPLE.concat(CASTLE_SYMBOLS);
+const SYMBOL_ICONS = { flag: '🚩', throne: '🪑', stall: '🐴', smithy: '⚒️', barracks: '⚔️', chapel: '✝️', store: '📦', bed: '🛏️', table: '🍽️', chest: '🧰', portcullis: '⛓️' };
+const SYMBOL_TITLES = { flag: ['castleSymFlag', 'Flagge'], throne: ['castleSymThrone', 'Thron'], stall: ['castleSymStall', 'Stall'], smithy: ['castleSymSmithy', 'Schmiede'],
+  barracks: ['castleSymBarracks', 'Kaserne'], chapel: ['castleSymChapel', 'Kapelle'], store: ['castleSymStore', 'Lager'], bed: ['castleSymBed', 'Bett'],
+  table: ['castleSymTable', 'Tisch'], chest: ['castleSymChest', 'Truhe'], portcullis: ['castleSymGate', 'Fallgitter'] };
+// the same pictograms as the generated castle uses, centred at (cx, cy) on a tile of size ts
+function castleSymbolSvg(kind, cx, cy, ts){
+  const f = v => Math.round(v * 100) / 100;
+  const ink = 'stroke="#3c2c1e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.8"';
+  const r = ts * 0.34, q = ts * 0.3;
+  if(kind === 'flag'){
+    const by = cy + ts * 0.4;
+    return `<path d="M${f(cx)} ${f(by)}V${f(by - ts * 1.3)}" stroke="#2f2a24" stroke-width="1.6" fill="none"/><path d="M${f(cx)} ${f(by - ts * 1.3)}L${f(cx + ts * 0.9)} ${f(by - ts * 1.0)}L${f(cx)} ${f(by - ts * 0.7)}Z" fill="#9b2f2a" stroke="#4a1512" stroke-width="0.8"/>`;
+  }
+  if(kind === 'throne') return `<rect x="${f(cx - q)}" y="${f(cy - q)}" width="${f(q * 2)}" height="${f(q * 2)}" rx="2" fill="#d9b56a" stroke="#241a08" stroke-width="1.2"/><rect x="${f(cx - q * 0.55)}" y="${f(cy - q * 0.55)}" width="${f(q * 1.1)}" height="${f(q * 1.1)}" fill="none" stroke="#241a08" stroke-width="0.9"/>`;
+  if(kind === 'stall') return `<path d="M${f(cx - r)} ${f(cy + r * 0.7)}A${f(r)} ${f(r)} 0 1 1 ${f(cx + r)} ${f(cy + r * 0.7)}" ${ink}/>`;
+  if(kind === 'smithy') return `<path d="M${f(cx - r)} ${f(cy - r * 0.4)}H${f(cx + r)}L${f(cx + r * 0.5)} ${f(cy + r * 0.2)}H${f(cx + r * 0.3)}V${f(cy + r * 0.7)}H${f(cx - r * 0.3)}V${f(cy + r * 0.2)}H${f(cx - r * 0.5)}Z" ${ink}/>`;
+  if(kind === 'barracks') return `<path d="M${f(cx - r)} ${f(cy - r)}L${f(cx + r)} ${f(cy + r)}M${f(cx + r)} ${f(cy - r)}L${f(cx - r)} ${f(cy + r)}" ${ink}/>`;
+  if(kind === 'chapel') return `<path d="M${f(cx)} ${f(cy - r)}V${f(cy + r)}M${f(cx - r * 0.65)} ${f(cy - r * 0.3)}H${f(cx + r * 0.65)}" ${ink}/>`;
+  if(kind === 'store') return `<path d="M${f(cx - r)} ${f(cy - r * 0.2)}h${f(r * 0.9)}v${f(r * 0.9)}h${f(-r * 0.9)}ZM${f(cx + r * 0.1)} ${f(cy - r * 0.7)}h${f(r * 0.9)}v${f(r * 0.9)}h${f(-r * 0.9)}Z" ${ink}/>`;
+  if(kind === 'bed') return `<rect x="${f(cx - q * 0.8)}" y="${f(cy - q)}" width="${f(q * 1.6)}" height="${f(q * 2)}" rx="1.5" ${ink}/><path d="M${f(cx - q * 0.8)} ${f(cy - q * 0.4)}h${f(q * 1.6)}" ${ink}/>`;
+  if(kind === 'table') return `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(q)}" ${ink}/>`;
+  if(kind === 'chest') return `<rect x="${f(cx - q)}" y="${f(cy - q * 0.6)}" width="${f(q * 2)}" height="${f(q * 1.2)}" rx="1.5" ${ink}/><path d="M${f(cx - q)} ${f(cy)}h${f(q * 2)}" ${ink}/>`;
+  // portcullis: a small grate
+  return `<path d="M${f(cx - q * 0.9)} ${f(cy - q)}V${f(cy + q)}M${f(cx)} ${f(cy - q)}V${f(cy + q)}M${f(cx + q * 0.9)} ${f(cy - q)}V${f(cy + q)}M${f(cx - q * 1.2)} ${f(cy - q * 0.3)}H${f(cx + q * 1.2)}" stroke="#2f2a24" stroke-width="1.8" stroke-linecap="round" fill="none"/>`;
+}
 const PEOPLE_ICONS = { merchant: '💰', guard: '🛡️', noble: '👑', craftsman: '🔨', priest: '⛪', person: '🧑' };
 const PEOPLE_TITLES = { merchant: ['castlePersonMerchant', 'Händler'], guard: ['castlePersonGuard', 'Wache'], noble: ['castlePersonNoble', 'Adliger'],
   craftsman: ['castlePersonCraftsman', 'Handwerker'], priest: ['castlePersonPriest', 'Priester'], person: ['castlePersonPerson', 'Person'] };
@@ -3647,15 +3676,20 @@ TERRAIN.people = (() => {
       if(!P.on()) P.placing = null;
       const wrap = $('peopleButtons');
       wrap.innerHTML = '';
-      CASTLE_PEOPLE.concat(['erase']).forEach(k => {
+      const addBtn = (target, k, icon, title) => {
         const b = document.createElement('button');
         b.type = 'button';
         b.className = 'castle-btn' + (P.placing === k ? ' active' : '');
-        b.textContent = k === 'erase' ? '✕' : PEOPLE_ICONS[k];
-        b.title = k === 'erase' ? (t('actionRemoveBtn') || 'Entfernen') : (t(PEOPLE_TITLES[k][0]) || PEOPLE_TITLES[k][1]);
+        b.textContent = icon;
+        b.title = title;
         b.addEventListener('click', () => P.pick(k));
-        wrap.appendChild(b);
-      });
+        target.appendChild(b);
+      };
+      CASTLE_PEOPLE.forEach(k => addBtn(wrap, k, PEOPLE_ICONS[k], t(PEOPLE_TITLES[k][0]) || PEOPLE_TITLES[k][1]));
+      addBtn(wrap, 'erase', '✕', t('actionRemoveBtn') || 'Entfernen');
+      const sym = $('symbolButtons');
+      sym.innerHTML = '';
+      CASTLE_SYMBOLS.forEach(k => addBtn(sym, k, SYMBOL_ICONS[k], t(SYMBOL_TITLES[k][0]) || SYMBOL_TITLES[k][1]));
       updatePickUI();
     },
     handleClick(fx, fy){
@@ -3671,11 +3705,11 @@ TERRAIN.people = (() => {
       generateMap(currentSeed);
       return true;
     },
-    toSettings(){ return { flag: $('customPeople').checked, list: P.list.map(e => [e.key, CASTLE_PEOPLE.indexOf(e.kind)]) }; },
+    toSettings(){ return { flag: $('customPeople').checked, list: P.list.map(e => [e.key, CASTLE_FIGURES.indexOf(e.kind)]) }; },
     applyState(s){
       P.list = [];
       (Array.isArray(s.castlePeople) ? s.castlePeople : []).forEach(e => {
-        if(Array.isArray(e) && e.length === 2 && Number.isInteger(e[0]) && e[0] >= 0 && CASTLE_PEOPLE[e[1]] && P.list.length < 200) P.list.push({ kind: CASTLE_PEOPLE[e[1]], key: e[0] });
+        if(Array.isArray(e) && e.length === 2 && Number.isInteger(e[0]) && e[0] >= 0 && CASTLE_FIGURES[e[1]] && P.list.length < 200) P.list.push({ kind: CASTLE_FIGURES[e[1]], key: e[0] });
       });
       $('customPeople').checked = !!s.customPeople;
       P.placing = null;
@@ -4074,8 +4108,8 @@ function encodeCompactSettings(s){
     if(!s.customPeople && !list.length) return null;
     let out = s.customPeople ? '1' : '0';
     for(const e of list){
-      if(!Array.isArray(e) || e.length !== 2 || !Number.isInteger(e[0]) || e[0] < 0 || e[0] > 46655 || !Number.isInteger(e[1]) || e[1] < 0 || e[1] > 5) throw new Error('x');
-      out += e[0].toString(36).padStart(3, '0') + e[1];
+      if(!Array.isArray(e) || e.length !== 2 || !Number.isInteger(e[0]) || e[0] < 0 || e[0] > 46655 || !Number.isInteger(e[1]) || e[1] < 0 || e[1] > 35) throw new Error('x');
+      out += e[0].toString(36).padStart(3, '0') + e[1].toString(36);
     }
     return out;
   };
@@ -4160,9 +4194,9 @@ function decodeCompactSettings(raw){
   s.castleLabelList = [];
   s.customPeople = false; s.castlePeople = [];
   if(p.length >= 26){
-    if(!/^[01]([0-9a-z]{3}[0-5])*$/.test(p[25])) throw bad();
+    if(!/^[01]([0-9a-z]{4})*$/.test(p[25])) throw bad();
     s.customPeople = p[25][0] === '1';
-    for(let k = 1; k < p[25].length; k += 4) s.castlePeople.push([parseInt(p[25].slice(k, k + 3), 36), +p[25][k + 3]]);
+    for(let k = 1; k < p[25].length; k += 4) s.castlePeople.push([parseInt(p[25].slice(k, k + 3), 36), parseInt(p[25][k + 3], 36)]);
   }
   if(p.length >= 25 && p[24] !== '0'){          // '0' = placeholder for an absent part
     if(!/^[A-Za-z0-9_-]+$/.test(p[24])) throw bad();
