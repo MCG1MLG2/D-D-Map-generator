@@ -6,7 +6,7 @@
 <title data-i18n="textboxHeading">Textfeld-Generator</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📜</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Caveat:wght@500;700&family=Noto+Sans+Runic&family=Uncial+Antiqua&family=UnifrakturCook:wght@700&family=IM+Fell+English:ital@0;1&family=MedievalSharp&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="languages.js"></script>
 <style>
@@ -64,6 +64,54 @@
   .header{text-align:center;margin:0}
   .header h2{font-family:'Cinzel',serif;font-weight:900;font-size:1.55rem;line-height:1.15;margin:0;color:var(--ink);overflow-wrap:anywhere}
   .rule{height:1px;margin:10px auto;width:70%;background:linear-gradient(90deg,transparent,var(--accent,#7c2020),transparent)}
+  .field select{width:100%;background:#0f0c09;border:1px solid #4a3c28;color:var(--parchment);font-family:'EB Garamond',serif;font-size:1.05rem;padding:9px 11px;border-radius:3px}
+  .field select:focus{outline:none;border-color:var(--gold)}
+  .field select option{background:#0f0c09;color:var(--parchment)}
+  .field select+.btn{margin-top:8px}
+  /* Schriftart-Stile */
+  #card.f-hand .header h2{font-family:'Caveat','Segoe Script',cursive;font-weight:700;font-size:2.1rem;line-height:1.05}
+  #card.f-hand .epithet{font-family:'Caveat','Segoe Script',cursive;font-size:1.3rem;font-style:normal}
+  #card.f-hand .box h3{font-family:'Caveat','Segoe Script',cursive;font-size:1.45rem}
+  #card.f-hand .box p{font-family:'Caveat','Segoe Script',cursive;font-size:1.3rem;line-height:1.3}
+  #card.f-runes .header h2{font-family:'Noto Sans Runic','Segoe UI Historic','Segoe UI Symbol',sans-serif;font-weight:400;font-size:1.35rem;letter-spacing:.06em}
+  #card.f-runes .epithet{font-family:'Noto Sans Runic','Segoe UI Historic','Segoe UI Symbol',sans-serif;font-size:.9rem;font-style:normal;letter-spacing:.05em}
+  #card.f-runes .box h3{font-family:'Noto Sans Runic','Segoe UI Historic','Segoe UI Symbol',sans-serif;font-weight:400;font-size:.95rem;letter-spacing:.05em}
+  #card.f-runes .box p{font-family:'Noto Sans Runic','Segoe UI Historic','Segoe UI Symbol',sans-serif;font-size:.92rem;line-height:1.55;letter-spacing:.04em}
+  /* weitere Schriftarten */
+  #card.f-uncial{--ff:'Uncial Antiqua','Palatino Linotype',serif}
+  #card.f-fraktur{--ff:'UnifrakturCook','Old English Text MT',serif}
+  #card.f-fell{--ff:'IM Fell English','Garamond',serif}
+  #card.f-medieval{--ff:'MedievalSharp','Palatino Linotype',serif}
+  #card:is(.f-uncial,.f-fraktur,.f-fell,.f-medieval) :is(.header h2,.epithet,.box h3,.box p){font-family:var(--ff)}
+  #card.f-uncial .header h2{font-weight:400;font-size:1.35rem}
+  #card.f-uncial .epithet{font-style:normal;font-size:.9rem}
+  #card.f-uncial .box h3{font-weight:400;font-size:.95rem}
+  #card.f-uncial .box p{font-size:.9rem;line-height:1.5}
+  #card.f-fraktur .header h2{font-weight:700;font-size:2rem}
+  #card.f-fraktur .epithet{font-style:normal;font-size:1.1rem}
+  #card.f-fraktur .box h3{font-weight:700;font-size:1.2rem}
+  #card.f-fraktur .box p{font-size:1.1rem;line-height:1.35}
+  #card.f-fell .header h2{font-weight:400;font-size:1.8rem}
+  #card.f-fell .box h3{font-weight:400;font-size:1.05rem}
+  #card.f-fell .box p{font-size:1.05rem}
+  #card.f-medieval .header h2{font-weight:400;font-size:1.55rem}
+  #card.f-medieval .epithet{font-style:normal}
+  #card.f-medieval .box h3{font-weight:400}
+  #card.f-medieval .box p{font-size:.98rem}
+  /* Pergament: vergilbt (dunklerer Rand) */
+  #card.aged{background:radial-gradient(ellipse at 50% 50%,transparent 45%,rgba(95,60,20,.32) 100%),linear-gradient(155deg,var(--accent-20,rgba(168,130,58,.2)),transparent 65%),radial-gradient(circle at 15% 10%,rgba(255,255,255,.06),transparent 40%),linear-gradient(155deg,var(--tint-1,#d9c28f) 0%,var(--tint-2,#cdb27a) 60%,var(--tint-3,#bf9f68) 100%)}
+  /* Wachssiegel */
+  .wax-row{display:flex;justify-content:flex-end;margin-top:10px}
+  .wax{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--accent-bright,#b34d4d),var(--accent,#7c2020) 62%,var(--accent-60,#4a1313) 100%);border:2px solid var(--accent-60,#4a1313);display:flex;align-items:center;justify-content:center;font-family:'Cinzel Decorative',serif;font-size:1.4rem;color:rgba(255,235,200,.88);text-shadow:0 -1px 1px rgba(0,0,0,.45);box-shadow:0 4px 8px rgba(0,0,0,.4)}
+  #card.f-runes .wax{font-family:'Noto Sans Runic','Segoe UI Historic','Segoe UI Symbol',sans-serif;font-size:1.3rem}
+  .control-group{margin-bottom:6px}
+  .group-title{display:flex;align-items:center;justify-content:space-between;margin:6px 0 16px;padding:8px 0;font-family:'Cinzel',serif;font-size:.95rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-bright);border-bottom:1px solid rgba(182,144,63,.45);cursor:pointer;user-select:none}
+  .group-title::after{content:'▾';font-size:.9rem;color:var(--gold)}
+  .group-title:hover{color:#fff3cf}
+  .group-title:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:2px}
+  .control-group.collapsed .group-title{margin-bottom:12px}
+  .control-group.collapsed .group-title::after{content:'▸'}
+  .control-group.collapsed .group-body{display:none}
   .fmt-row{display:flex;gap:8px;margin-bottom:8px}
   .fmt-btn{width:38px;height:34px;font-family:'EB Garamond',serif;font-size:1.1rem;background:#0f0c09;border:1px solid #4a3c28;color:var(--gold-bright);border-radius:3px;cursor:pointer;padding:0}
   .fmt-btn:hover{border-color:var(--gold);background:rgba(182,144,63,.12)}
@@ -103,12 +151,29 @@
     <h1 data-i18n="textboxHeading">Textfeld-Generator</h1>
     <p class="sub" data-i18n="textboxSubtitle">Schreibe einen Text mit Überschrift</p>
 
+    <div class="control-group"><h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="textboxGrpTemplate">Vorlage</h3><div class="group-body">
+    <div class="field"><label for="tTemplate" data-i18n="textboxLblTemplate">Vorlage</label>
+      <select id="tTemplate">
+        <option value="quest" data-i18n="textboxTplQuest">Questauftrag</option>
+        <option value="letter" data-i18n="textboxTplLetter">Brief</option>
+        <option value="rumors" data-i18n="textboxTplRumors">Gerüchte</option>
+        <option value="sign" data-i18n="textboxTplSign">Schild am Stadttor</option>
+      </select>
+      <button type="button" class="btn" id="tInsertBtn" data-i18n="textboxInsertBtn">Einfügen</button>
+    </div>
+
+    </div></div>
+
+    <div class="control-group"><h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="textboxGrpHeader">Kopf</h3><div class="group-body">
     <div class="field"><label class="toggle-row"><input type="checkbox" id="tTitleOn" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowTitle">Überschrift anzeigen</span></label></div>
     <div class="field" id="titleField"><label for="tTitle" data-i18n="textboxLblTitle">Überschrift</label><input type="text" id="tTitle" value="Die alte Schenke" maxlength="60"></div>
     <div class="field"><label class="toggle-row"><input type="checkbox" id="tSubOn" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowSub">Untertitel anzeigen</span></label></div>
     <div class="field" id="subField"><label for="tSub" data-i18n="textboxLblSubtitle">Untertitel</label><input type="text" id="tSub" value="Erster Abend in der Stadt" maxlength="60"></div>
     <div class="field"><label class="toggle-row"><input type="checkbox" id="tNumOn" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowNumber">Zahl anzeigen</span></label></div>
     <div class="field" id="numField"><label for="tNum" data-i18n="textboxLblNumber">Zahl</label><input type="number" id="tNum" value="1" min="0" max="999"></div>
+    </div></div>
+
+    <div class="control-group"><h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="textboxGrpText1">Text</h3><div class="group-body">
     <div class="field"><label class="toggle-row"><input type="checkbox" id="tBodyOn" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowText">Text anzeigen</span></label></div>
     <div class="field" id="bodyField"><label for="tBody" data-i18n="textboxLblBody">Text</label>
       <div class="fmt-row">
@@ -117,6 +182,9 @@
         <button type="button" class="fmt-btn" data-mark="__" title="Ctrl+U"><u>U</u></button>
         <button type="button" class="fmt-btn" data-mark="~~"><s>S</s></button>
       </div><textarea id="tBody" rows="8" maxlength="3000">Hinter dem Stadttor liegt eine verrauchte Schenke. Am Tresen sitzt ein einsamer Zwerg und starrt in seinen Krug.</textarea></div>
+    </div></div>
+
+    <div class="control-group"><h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="textboxGrpText2">Zweiter Textbereich</h3><div class="group-body">
     <div class="field"><label class="toggle-row"><input type="checkbox" id="t2On" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowSection2">Zweiten Textbereich anzeigen</span></label></div>
     <div id="sec2Field">
       <div class="field"><label for="t2Title" data-i18n="textboxLblSection2Title">Überschrift (Textbereich 2)</label><input type="text" id="t2Title" value="Gerüchte am Tresen" maxlength="60"></div>
@@ -129,8 +197,29 @@
         </div>
         <textarea id="t2Body" rows="6" maxlength="3000">Der Wirt flüstert von einem verschwundenen Händler und einer Karte, die im Keller versteckt sein soll.</textarea></div>
     </div>
+    </div></div>
+
+    <div class="control-group"><h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="textboxGrpStyle">Stil &amp; Farbe</h3><div class="group-body">
     <div class="field"><label data-i18n="playerLblAccentColor">Akzentfarbe</label><div class="swatches" id="swatches"></div></div>
 
+    <div class="field"><label for="tFont" data-i18n="textboxLblFont">Schriftart</label>
+      <select id="tFont">
+        <option value="normal" data-i18n="textboxFontNormal">Standard</option>
+        <option value="hand" data-i18n="textboxFontHand">Handschrift</option>
+        <option value="runes" data-i18n="textboxFontRunes">Runen</option>
+        <option value="uncial" data-i18n="textboxFontUncial">Unziale</option>
+        <option value="fraktur" data-i18n="textboxFontFraktur">Fraktur</option>
+        <option value="fell" data-i18n="textboxFontOldPrint">Alter Druck</option>
+        <option value="medieval" data-i18n="textboxFontMedieval">Mittelalter</option>
+      </select></div>
+    <div class="field"><label for="tPaper" data-i18n="textboxLblPaper">Pergament</label>
+      <select id="tPaper">
+        <option value="normal" data-i18n="textboxPaperNormal">Standard</option>
+        <option value="aged" data-i18n="textboxPaperAged">Vergilbt</option>
+      </select></div>
+    <div class="field"><label class="toggle-row"><input type="checkbox" id="tWax"><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblWax">Wachssiegel anzeigen</span></label></div>
+
+    </div></div>
     <button class="btn main" id="exportBtn" data-i18n="playerExportBtn">Als PNG speichern</button>
     <button class="btn" id="shareToggleBtn" data-i18n="shareToggleBtn">🔗 Teilen</button>
     <div class="share-panel collapsed" id="sharePanel">
@@ -149,6 +238,7 @@
       <div class="rule" id="ruleOut"></div>
       <div class="box" id="bodyBox"><p id="bodyOut"></p></div>
       <div class="box" id="box2"><h3 id="t2Out"></h3><p id="body2Out"></p></div>
+      <div class="wax-row" id="waxRow"><div class="wax" id="waxOut">✦</div></div>
     </div>
   </div>
 </div>
@@ -258,7 +348,49 @@
     if(m){ e.preventDefault(); wrapSelection(m, id); }
   }));
 
+  // ---------- Runen (Elder Futhark): Buchstaben werden nur in der Anzeige umgewandelt ----------
+  const RUNES = {a:'ᚨ',b:'ᛒ',c:'ᚲ',d:'ᛞ',e:'ᛖ',f:'ᚠ',g:'ᚷ',h:'ᚺ',i:'ᛁ',j:'ᛃ',k:'ᚲ',l:'ᛚ',m:'ᛗ',n:'ᚾ',o:'ᛟ',p:'ᛈ',q:'ᚲ',r:'ᚱ',s:'ᛊ',t:'ᛏ',u:'ᚢ',v:'ᚢ',w:'ᚹ',x:'ᚲᛊ',y:'ᛃ',z:'ᛉ','ä':'ᛖ','ö':'ᛟ','ü':'ᚢ','ß':'ᛊᛊ'};
+  const FONT_VALUES = ['hand', 'runes', 'uncial', 'fraktur', 'fell', 'medieval'];
+  function runify(s){ return Array.from(s).map(ch => RUNES[ch.toLowerCase()] || ch).join(''); }
+
+  // ---------- Vorlagen (füllen alle Felder und den Stil) ----------
+  const TEMPLATES = {
+    quest:  { title:'Questauftrag', sub:'Gesucht: mutige Abenteurer',
+      body:'**Auftrag:** Befreit das Dorf Eichenfurt von den Wölfen, die seit drei Nächten das Vieh reißen.\n**Ort:** Eichenfurt, einen Tagesmarsch nördlich der Stadt.',
+      title2:'Belohnung', body2:'50 Goldmünzen und die Gastfreundschaft des ganzen Dorfes.',
+      num:true, font:'normal', paper:'aged', wax:false },
+    letter: { title:'Lieber Aldric,', sub:'Aus Silberbach, im Erntemond',
+      body:'ich hoffe, dieser Brief erreicht dich wohlbehalten. Die Straße nach Norden ist nicht mehr sicher, und ich bitte dich, vorsichtig zu sein.\nKomm, sobald du kannst, zur alten Mühle. Ich erwarte dich dort.',
+      title2:'In Treue,', body2:'Mara',
+      num:false, font:'hand', paper:'aged', wax:true },
+    rumors: { title:'Gerüchte am Tresen', sub:'Gehört in der Schenke „Zum Goldenen Krug“',
+      body:'• Der Bürgermeister soll nachts heimlich im Keller des Rathauses graben.\n• Ein Fremder im schwarzen Mantel hat nach dem verlassenen Turm gefragt.\n• In den Bergen heulen seit Tagen keine Wölfe mehr, und das gefällt niemandem.',
+      title2:'Wahr oder falsch?', body2:'*Nur eines dieser Gerüchte ist wahr.*',
+      num:false, font:'normal', paper:'normal', wax:false },
+    sign:   { title:'Willkommen in Eichenfurt', sub:'Tore geöffnet von Sonnenaufgang bis Sonnenuntergang',
+      body:'**Waffen** sind innerhalb der Stadtmauern anzubinden.\nZoll: 1 Silbermünze je Wagen, 2 Kupfermünzen je Reiter.',
+      title2:'Bekanntmachung', body2:'Wer Ärger macht, übernachtet im Turm.',
+      num:false, font:'normal', paper:'aged', wax:false }
+  };
+  $('tInsertBtn').addEventListener('click', () => {
+    const tp = TEMPLATES[$('tTemplate').value];
+    if(!tp) return;
+    $('tTitle').value = tp.title; $('tSub').value = tp.sub; $('tBody').value = tp.body;
+    $('t2Title').value = tp.title2; $('t2Body').value = tp.body2;
+    ['tTitleOn', 'tSubOn', 'tBodyOn', 't2On'].forEach(id => $(id).checked = true);
+    $('tNumOn').checked = tp.num;
+    $('tFont').value = tp.font; $('tPaper').value = tp.paper; $('tWax').checked = tp.wax;
+    render();
+  });
+  document.querySelectorAll('.panel select').forEach(el => el.addEventListener('change', render));
+
   function render(){
+    const fnt = $('tFont').value, aged = $('tPaper').value === 'aged', cardEl = $('card');
+    const R = s => fnt === 'runes' ? runify(s) : s;
+    FONT_VALUES.forEach(v => cardEl.classList.toggle('f-' + v, fnt === v));
+    cardEl.classList.toggle('aged', aged);
+    $('waxRow').style.display = $('tWax').checked ? '' : 'none';
+    $('waxOut').textContent = R((Array.from($('tTitle').value.trim())[0] || '✦').toUpperCase());
     const tOn = $('tTitleOn').checked, sOn = $('tSubOn').checked, on = $('tBodyOn').checked;
     const title = tOn ? $('tTitle').value.trim() : '', sub = sOn ? $('tSub').value.trim() : '', body = on ? $('tBody').value.trim() : '';
     const nOn = $('tNumOn').checked;
@@ -270,17 +402,17 @@
     $('card').classList.toggle('has-num', nOn);
     $('titleField').style.display = tOn ? '' : 'none';
     $('subField').style.display = sOn ? '' : 'none';
-    $('titleOut').textContent = title;
+    $('titleOut').textContent = R(title);
     $('titleOut').style.display = title ? '' : 'none';
-    $('subOut').textContent = sub;
+    $('subOut').textContent = R(sub);
     $('subOut').style.display = sub ? '' : 'none';
     $('headBox').style.display = (title || sub) ? '' : 'none';
-    renderFormatted($('bodyOut'), body);
+    renderFormatted($('bodyOut'), R(body));
     $('bodyBox').style.display = body ? '' : 'none';
     $('bodyField').style.display = on ? '' : 'none';
     const o2 = $('t2On').checked, h2 = o2 ? $('t2Title').value.trim() : '', b2 = o2 ? $('t2Body').value.trim() : '';
-    $('t2Out').textContent = h2; $('t2Out').style.display = h2 ? '' : 'none';
-    renderFormatted($('body2Out'), b2); $('body2Out').style.display = b2 ? '' : 'none';
+    $('t2Out').textContent = R(h2); $('t2Out').style.display = h2 ? '' : 'none';
+    renderFormatted($('body2Out'), R(b2)); $('body2Out').style.display = b2 ? '' : 'none';
     $('box2').style.display = (h2 || b2) ? '' : 'none';
     $('sec2Field').style.display = o2 ? '' : 'none';
     $('ruleOut').style.display = (title || sub) && (body || h2 || b2) ? '' : 'none';
@@ -288,9 +420,9 @@
     const c = $('card'), a = sel.accent, b = sel.bright, dark = '#0a0806';
     c.style.setProperty('--accent', a); c.style.setProperty('--accent-bright', b);
     c.style.setProperty('--accent-20', alpha(a, .2));
-    c.style.setProperty('--tint-1', mix(a, '#e7d9b6', .14));
-    c.style.setProperty('--tint-2', mix(a, '#ded0a6', .16));
-    c.style.setProperty('--tint-3', mix(a, '#d3c092', .18));
+    c.style.setProperty('--tint-1', mix(a, aged ? '#d9c28f' : '#e7d9b6', .14));
+    c.style.setProperty('--tint-2', mix(a, aged ? '#cdb27a' : '#ded0a6', .16));
+    c.style.setProperty('--tint-3', mix(a, aged ? '#bf9f68' : '#d3c092', .18));
     const s = document.body.style;
     s.setProperty('--accent', a); s.setProperty('--accent-60', mix(a, '#000000', .6)); s.setProperty('--accent-55', alpha(a, .55));
     s.setProperty('--bg-base', mix(a, dark, .10)); s.setProperty('--bg-glow-1', mix(b, dark, .22));
@@ -314,7 +446,7 @@
   });
 
   // ---------- Teilen per Link (#g=<base64 JSON>) ----------
-  function collect(){ return { v:1, l:currentLang, h:$('tTitle').value, x:$('tBody').value, ac:PALETTE.indexOf(sel), st:$('tSub').value, bo:$('tBodyOn').checked ? 1 : 0, ho:$('tTitleOn').checked ? 1 : 0, so:$('tSubOn').checked ? 1 : 0, n:$('tNum').value, no:$('tNumOn').checked ? 1 : 0, o2:$('t2On').checked ? 1 : 0, h2:$('t2Title').value, x2:$('t2Body').value }; }
+  function collect(){ return { v:1, l:currentLang, h:$('tTitle').value, x:$('tBody').value, ac:PALETTE.indexOf(sel), st:$('tSub').value, bo:$('tBodyOn').checked ? 1 : 0, ho:$('tTitleOn').checked ? 1 : 0, so:$('tSubOn').checked ? 1 : 0, n:$('tNum').value, no:$('tNumOn').checked ? 1 : 0, o2:$('t2On').checked ? 1 : 0, h2:$('t2Title').value, x2:$('t2Body').value, f:$('tFont').value, pp:$('tPaper').value, wx:$('tWax').checked ? 1 : 0 }; }
   function shareURL(){
     return location.origin + location.pathname + location.search + '#g=' + encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(collect())))));
   }
@@ -327,6 +459,7 @@
     $('tSub').value = s.st || ''; $('tBodyOn').checked = s.bo !== 0; $('tTitleOn').checked = s.ho !== 0; $('tSubOn').checked = s.so !== 0;
     $('tNum').value = s.n !== undefined ? s.n : 1; $('tNumOn').checked = s.no === 1;
     $('t2On').checked = s.o2 === 1; $('t2Title').value = s.h2 || ''; $('t2Body').value = s.x2 || '';
+    $('tFont').value = FONT_VALUES.includes(s.f) ? s.f : 'normal'; $('tPaper').value = s.pp === 'aged' ? 'aged' : 'normal'; $('tWax').checked = s.wx === 1;
     selectColor(s.ac);
     if(s.l && L[s.l]) applyLanguage(s.l); else render();
   }
@@ -378,6 +511,24 @@
     }
     return 'en';
   }
+
+  // einklappbare Gruppen im Panel (Zustand pro Position in localStorage)
+  (function(){
+    const KEY = 'textfeldGroupsCollapsed';
+    let saved = [];
+    try { saved = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch(e) { saved = []; }
+    if(!Array.isArray(saved)) saved = [];
+    const groups = Array.from(document.querySelectorAll('.panel .control-group'));
+    const save = () => { try { localStorage.setItem(KEY, JSON.stringify(groups.map(g => g.classList.contains('collapsed') ? 1 : 0))); } catch(e) {} };
+    groups.forEach((g, i) => {
+      const h = g.querySelector('.group-title');
+      const setState = c => { g.classList.toggle('collapsed', c); h.setAttribute('aria-expanded', c ? 'false' : 'true'); };
+      setState(saved[i] === 1);
+      const toggle = () => { setState(!g.classList.contains('collapsed')); save(); };
+      h.addEventListener('click', toggle);
+      h.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); } });
+    });
+  })();
 
   let restored = false;
   if(location.hash.indexOf('g=') !== -1){ try{ applyShared(location.hash); restored = true; }catch(e){} }

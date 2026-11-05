@@ -46,11 +46,17 @@
   .panel .sub{color:var(--text-muted); font-size:.95rem; margin:0 0 30px; font-style:italic;}
   .field{margin-bottom:20px;}
   .field label{display:block; font-size:.8rem; text-transform:uppercase; letter-spacing:.08em; color:var(--gold); margin-bottom:7px;}
-  .field input[type="text"], .field input[type="number"]{
+  .field input[type="text"], .field input[type="number"], .field textarea, .field select{
     width:100%; background:#0f0c09; border:1px solid #4a3c28; color:var(--parchment);
     font-family:'EB Garamond', serif; font-size:1.05rem; padding:9px 11px; border-radius:3px;
   }
-  .field input:focus{outline:none; border-color:var(--gold);}
+  .field input:focus, .field textarea:focus, .field select:focus{outline:none; border-color:var(--gold);}
+  .field textarea{resize:vertical; min-height:84px; line-height:1.4;}
+  .field input[type="color"]{width:56px; height:38px; padding:2px; background:#0f0c09; border:1px solid var(--gold); border-radius:4px; cursor:pointer;}
+  .color-row{display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
+  .small-btn{font-family:'Cinzel', serif; font-size:.78rem; font-weight:600; color:var(--gold-bright); background:transparent; border:1px solid var(--gold); border-radius:4px; padding:9px 12px; cursor:pointer;}
+  .small-btn:hover{background:rgba(182,144,63,.12);}
+  .hint{font-size:.78rem; color:var(--text-muted); margin:-12px 0 20px; line-height:1.5;}
   .swatches{display:flex; flex-wrap:wrap; gap:10px;}
   .swatch{width:34px; height:34px; border-radius:50%; border:2px solid #000; cursor:pointer;}
   .swatch.active{border-color:var(--parchment); box-shadow:0 0 0 2px var(--gold);}
@@ -162,9 +168,12 @@
     font-family:'Cinzel', serif; font-weight:700; font-size:2.1rem; line-height:1; color:#f3e8c8;
     text-shadow:0 2px 3px rgba(0,0,0,.7);
   }
+  .tile .n{text-align:center; max-width:58px; overflow-wrap:anywhere; hyphens:none;}
   .tile .n.small{font-size:1.6rem;}
-  .tile .rune{position:absolute; right:4px; bottom:4px; width:17px; height:17px; line-height:0;}
-  .tile .rune svg{width:17px; height:17px;}
+  .tile .n.s3{font-size:1.2rem;}
+  .tile .n.s4{font-size:.95rem; line-height:1.1;}
+  .tile .n.s5{font-size:.78rem; line-height:1.1;}
+  .tile .n.s6{font-size:.62rem; line-height:1.1; font-weight:600;}
   .brand{font-family:'Cinzel', serif; font-size:.7rem; letter-spacing:.1em; color:#8a7142; text-transform:uppercase; text-align:center; margin-top:22px;}
 
   /* Sprachauswahl + Zurück */
@@ -226,13 +235,18 @@
       <input type="number" id="dPerCol" value="20" min="1" max="60">
     </div>
     <div class="field">
-      <label for="dMarked" data-i18n="dayLblMarked">Felder mit Symbol (z. B. B, D, E)</label>
-      <input type="text" id="dMarked" value="B, D, E, F, H" maxlength="400">
+      <label for="dCustom" data-i18n="dayLblCustom">Eigene Beschriftung pro Feld</label>
+      <textarea id="dCustom" rows="4" maxlength="800"></textarea>
     </div>
+    <p class="hint" data-i18n="dayHintCustom">Eine Zeile pro Feld, beginnend mit dem ersten Feld (A bzw. 1). Leere Zeile = Standardbeschriftung.</p>
     <div class="field">
-      <label class="toggle-row"><input type="checkbox" id="dSymbols" checked><span class="toggle-switch"></span>
-      <span class="toggle-label" data-i18n="dayToggleSymbols">Symbole anzeigen</span></label>
+      <label for="dFieldColor" data-i18n="dayLblFieldColor">Feldfarbe</label>
+      <div class="color-row">
+        <input type="color" id="dFieldColor" value="#b03a2e">
+        <button type="button" class="small-btn" id="resetColorsBtn" data-i18n="dayResetColors">↺ Alle Feldfarben zurücksetzen</button>
+      </div>
     </div>
+    <p class="hint" data-i18n="dayHintColor">Klick auf ein Feld färbt es mit der gewählten Farbe, erneuter Klick mit derselben Farbe entfernt sie.</p>
     <div class="field">
       <label class="toggle-row"><input type="checkbox" id="dNumbers"><span class="toggle-switch"></span>
       <span class="toggle-label" data-i18n="dayToggleNumbers">Zahlen statt Buchstaben</span></label>
@@ -311,14 +325,18 @@
   const DE = {
     dayHeading:'Tagesstreifen-Generator',
     daySubtitle:'Gestalte einen Streifen mit Buchstabenfeldern für deine Kampagne',
-    dayLblCount:'Anzahl Felder', dayLblPerCol:'Umbruch nach Feldern', dayLblMarked:'Felder mit Symbol (z. B. B, D, E)',
-    dayToggleSymbols:'Symbole anzeigen', dayToggleNumbers:'Zahlen statt Buchstaben',
+    dayLblCount:'Anzahl Felder', dayLblPerCol:'Umbruch nach Feldern',
+    dayToggleNumbers:'Zahlen statt Buchstaben',
     dayToggleBottomUp:'Von unten nach oben (A unten)', dayDefaultTitle:'Tagesstreifen',
     dayToggleReverse:'Rückwärts zählen', dayToggleHorizontal:'Waagerecht statt senkrecht', dayToggleRightToLeft:'Von rechts nach links (A rechts)',
     timeLblTitle:'Titel', timeLblSubtitle:'Untertitel', timeBrand:'Legende der Zeit',
     shareToggleBtn:'🔗 Teilen', copySettingsBtn:'📋 Kopieren', pasteSettingsPrompt:'Link oder Code hier einfügen:',
     applyPasteSettingsBtn:'✓ Anwenden', settingsCopied:'✓ Kopiert', settingsCopyError:'Kopieren nicht möglich',
-    pasteSettingsError:'Ungültiger Link oder Code'
+    pasteSettingsError:'Ungültiger Link oder Code',
+    dayLblCustom:'Eigene Beschriftung pro Feld',
+    dayHintCustom:'Eine Zeile pro Feld, beginnend mit dem ersten Feld (A bzw. 1). Leere Zeile = Standardbeschriftung.',
+    dayLblFieldColor:'Feldfarbe', dayResetColors:'↺ Alle Feldfarben zurücksetzen',
+    dayHintColor:'Klick auf ein Feld färbt es mit der gewählten Farbe, erneuter Klick mit derselben Farbe entfernt sie.'
   };
   const LANGS = (typeof LANGUAGES !== 'undefined') ? LANGUAGES : { en:{} };
   let currentLang = 'en';
@@ -337,14 +355,8 @@
   function mixWithAlpha(hex, a){ const c = hexToRgb(hex); return 'rgba(' + c.join(',') + ',' + a + ')'; }
   function clamp(v, lo, hi){ v = parseInt(v, 10); if(isNaN(v)) v = lo; return Math.max(lo, Math.min(hi, v)); }
 
-  // kleines Rundsymbol (Ring mit vier Punkten) wie bei den Feldern im Vorbild
-  const RUNE_SVG = '<svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.5" fill="none" stroke="#d9b56a" stroke-width="1.8"/>'
-    + '<circle cx="10" cy="10" r="2.2" fill="#d9b56a"/>'
-    + '<g fill="#d9b56a"><circle cx="10" cy="3.2" r="1.1"/><circle cx="10" cy="16.8" r="1.1"/><circle cx="3.2" cy="10" r="1.1"/><circle cx="16.8" cy="10" r="1.1"/></g></svg>';
-
   function render(){
     const count   = clamp(document.getElementById('dCount').value, 1, 60);
-    const symbols = document.getElementById('dSymbols').checked;
     const numbers = document.getElementById('dNumbers').checked;
     const bottomUp= true;   // erstes Feld jeder Spalte/Zeile steht unten bzw. rechts (Schalter entfernt)
     const horiz   = document.getElementById('dHorizontal').checked;
@@ -354,9 +366,10 @@
     document.getElementById('titleOut').textContent = document.getElementById('dTitle').value || t('dayDefaultTitle');
     document.getElementById('subOut').textContent = document.getElementById('dSub').value;
 
-    const marked = new Set(
-      document.getElementById('dMarked').value.toUpperCase().split(/[^A-Z0-9]+/).filter(Boolean)
-    );
+    // eigene Beschriftung: Zeile i gehört zum i-ten Feld (leer = Standardbeschriftung)
+    const custom = document.getElementById('dCustom').value.split(/\r?\n/).map(x => Array.from(x.trim()).slice(0, 12).join(''));
+    const esc = x => x.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const sizeClass = n => n <= 1 ? '' : n === 2 ? ' small' : n === 3 ? ' s3' : n === 4 ? ' s4' : n <= 6 ? ' s5' : ' s6';
 
     // A–Z, danach AA, AB, … (bei 60 Feldern bis BH)
     function letterLabel(i){
@@ -366,7 +379,10 @@
       return s;
     }
     const labels = [];
-    for(let i = 0; i < count; i++) labels.push(numbers ? String(i + 1) : letterLabel(i));
+    for(let i = 0; i < count; i++){
+      const lb = numbers ? String(i + 1) : letterLabel(i);
+      labels.push({ lb: lb, text: custom[i] || lb });
+    }
     const reverse = document.getElementById('dReverse').checked;
 
     // Nach PER_COL Feldern (einstellbar, Standard 20) beginnt eine weitere Spalte bzw. Zeile
@@ -377,9 +393,11 @@
       // "Rückwärts zählen" dreht nur die Richtung innerhalb jeder Spalte/Zeile um
       if(bottomUp !== reverse) chunk.reverse();   // erstes Feld jeder Spalte steht unten
       let h = '<div class="col" style="justify-content:' + (bottomUp ? 'flex-end' : 'flex-start') + '">';
-      chunk.forEach(lb => {
-        h += '<div class="tile" data-lb="' + lb + '"><span class="n' + (lb.length > 1 ? ' small' : '') + '">' + lb + '</span>'
-          + (symbols && marked.has(lb) ? '<span class="rune">' + RUNE_SVG + '</span>' : '')
+      chunk.forEach(f => {
+        const fc = fieldColors[f.lb];   // eigene Farbe dieses Feldes (Hex) oder keine
+        const st = fc ? ' style="--tile-1:' + fc + '; --tile-2:' + mixHex(fc, '#000000', 0.5) + '; --tile-edge:' + mixHex(fc, '#ffffff', 0.55) + '"' : '';
+        h += '<div class="tile" data-lb="' + f.lb + '"' + st + '><span class="n'
+          + sizeClass(Array.from(f.text).length) + '">' + esc(f.text) + '</span>'
           + '</div>';
       });
       cols.push(h + '</div>');
@@ -465,21 +483,20 @@
     swWrap.appendChild(d);
   });
 
-  // Klick auf ein Feld schaltet sein Symbol ein/aus (die Eingabe "Felder mit Symbol" wird mitgeführt)
+  // Einzelne Feldfarben: Standardbeschriftung -> Hex-Farbe
+  let fieldColors = {};
+  // Klick auf ein Feld: in der gewählten Farbe einfärben (gleiche Farbe nochmal = Farbe entfernen)
   document.getElementById('strip').addEventListener('click', e => {
     const tile = e.target.closest('.tile');
     if(!tile) return;
-    const lb = tile.dataset.lb, inp = document.getElementById('dMarked');
-    const list = inp.value.toUpperCase().split(/[^A-Z0-9]+/).filter(Boolean);
-    const i = list.indexOf(lb);
-    if(i >= 0) list.splice(i, 1); else list.push(lb);
-    list.sort((x, y) => x.length - y.length || x.localeCompare(y));
-    inp.value = list.join(', ');
-    document.getElementById('dSymbols').checked = true;   // Symbole sichtbar machen, falls ausgeschaltet
+    const lb = tile.dataset.lb;
+    const col = document.getElementById('dFieldColor').value.toLowerCase();
+    if(fieldColors[lb] === col) delete fieldColors[lb]; else fieldColors[lb] = col;
     render();
   });
+  document.getElementById('resetColorsBtn').addEventListener('click', () => { fieldColors = {}; render(); });
 
-  document.querySelectorAll('.panel input').forEach(el => {
+  document.querySelectorAll('.panel input, .panel textarea, .panel select').forEach(el => {
     el.addEventListener('input', render);
     el.addEventListener('change', render);
   });
@@ -546,12 +563,12 @@
       s: document.getElementById('dSub').value,
       n: clamp(document.getElementById('dCount').value, 1, 60),
       p: clamp(document.getElementById('dPerCol').value, 1, 60),
-      m: document.getElementById('dMarked').value,
-      y: document.getElementById('dSymbols').checked ? 1 : 0,
       z: document.getElementById('dNumbers').checked ? 1 : 0,
       h: document.getElementById('dHorizontal').checked ? 1 : 0,
       r: document.getElementById('dReverse').checked ? 1 : 0,
-      a: PALETTE.indexOf(selectedPalette)
+      a: PALETTE.indexOf(selectedPalette),
+      cl: document.getElementById('dCustom').value,
+      fc: Object.keys(fieldColors).map(k => k + '=' + fieldColors[k].slice(1)).join(';')   // z. B. "A=b03a2e;C=2a5a86"
     };
   }
   function encodeSettings(o){
@@ -563,8 +580,9 @@
     while(b.length % 4) b += '=';
     const o = JSON.parse(decodeURIComponent(escape(atob(b))));
     if(!o || typeof o !== 'object' || o.v !== 1) throw new Error('invalid share code');
-    for(const k of ['t', 's', 'm']) if(typeof o[k] !== 'string') throw new Error('invalid share code');
+    for(const k of ['t', 's']) if(typeof o[k] !== 'string') throw new Error('invalid share code');
     if(!Number.isInteger(o.a) || !PALETTE[o.a]) throw new Error('invalid share code');
+    for(const k of ['cl', 'fc']) if(o[k] !== undefined && typeof o[k] !== 'string') throw new Error('invalid share code');
     return o;
   }
   function applySettings(o){
@@ -572,8 +590,12 @@
     document.getElementById('dSub').value = o.s.slice(0, 80);
     document.getElementById('dCount').value = clamp(o.n, 1, 60);
     document.getElementById('dPerCol').value = clamp(o.p, 1, 60);
-    document.getElementById('dMarked').value = o.m.slice(0, 400);
-    document.getElementById('dSymbols').checked = !!o.y;
+    document.getElementById('dCustom').value = (o.cl || '').slice(0, 800);   // ältere Links ohne diese Felder: leer
+    fieldColors = {};
+    (o.fc || '').split(';').forEach(part => {
+      const m = part.match(/^([A-Z0-9]{1,3})=([0-9a-f]{6})$/);
+      if(m) fieldColors[m[1]] = '#' + m[2];
+    });
     document.getElementById('dNumbers').checked = !!o.z;
     document.getElementById('dHorizontal').checked = !!o.h;
     document.getElementById('dReverse').checked = !!o.r;
