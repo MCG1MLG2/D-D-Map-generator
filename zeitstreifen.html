@@ -162,6 +162,18 @@
   .paste-settings-feedback{font-size:.8rem; color:var(--text-muted); min-height:1em;}
   .paste-settings-feedback.success{color:#7fae6a;}
 
+  .cell[data-h]{cursor:pointer; transition:transform .12s ease;}
+  .cell[data-h]:hover{transform:translateY(-2px); outline:2px solid var(--accent, #a8823a); outline-offset:2px;}
+  .over-picker{display:grid; grid-template-columns:repeat(auto-fill, 40px); gap:6px;}
+  .over-btn{
+    height:36px; background:#0f0c09; border:1px solid #4a3c28; color:var(--parchment); border-radius:4px;
+    font-family:'Cinzel', serif; font-weight:600; font-size:.85rem; cursor:pointer;
+  }
+  .over-btn:hover{border-color:var(--gold);}
+  .over-btn.on{background:var(--crimson); border-color:#b34d4d; color:#f3e8c8;}
+  #tFree:disabled{opacity:.4; cursor:not-allowed;}
+  .bracket-label{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+
   /* Sprachauswahl + Zurück */
   .lang-picker{
     position:fixed; top:20px; right:20px; z-index:20; display:flex; align-items:center; gap:8px;
@@ -225,6 +237,14 @@
     <div class="field">
       <label for="tCost" data-i18n="timeLblCost">Willenspunkte je Überstunde</label>
       <input type="number" id="tCost" value="2" min="1" max="9">
+    </div>
+    <div class="field">
+      <label class="toggle-row"><input type="checkbox" id="tCustomOver"><span class="toggle-switch"></span>
+      <span class="toggle-label" data-i18n="timeToggleCustomOver">Überstunden einzeln auswählen</span></label>
+    </div>
+    <div class="field" id="overPickerField" style="display:none;">
+      <label data-i18n="timeOverPickHint">Tippe auf die Stunden, die Überstunden sein sollen</label>
+      <div class="over-picker" id="overPicker"></div>
     </div>
     <div class="field">
       <label class="toggle-row"><input type="checkbox" id="tSun" checked><span class="toggle-switch"></span>
@@ -299,6 +319,7 @@
     { key:'playerColorScarlet',  accent:'#b02a1c', bright:'#e8604d' }
   ];
   let selectedPalette = PALETTE[0];
+  let overArr = [];   // Einzelauswahl der Überstunden (nur bei aktivem Schalter)
 
   // Deutsche Fallback-Texte, bis die Keys in languages.js eingetragen sind
   const DE = {
@@ -308,6 +329,7 @@
     timeToggleSunrise:'Sonnenaufgang-Feld am Ende anzeigen', timeToggleBrackets:'Klammern unter den Stunden anzeigen',
     timeSunStart:'Start', timeSunrise:'Sonnen­aufgang', timeFreeLabel:'Freie Stunden', timeOverLabel:'Überstunden',
     timeBrand:'Legende der Zeit', timeDefaultTitle:'Tagesleiste',
+    timeToggleCustomOver:'Überstunden einzeln auswählen', timeOverPickHint:'Tippe auf die Stunden, die Überstunden sein sollen',
     shareToggleBtn:'🔗 Teilen', copySettingsBtn:'📋 Kopieren', applyPasteSettingsBtn:'✓ Anwenden',
     pasteSettingsPrompt:'Link oder Code hier einfügen:', settingsCopied:'✓ Kopiert', settingsCopyError:'Kopieren nicht möglich',
     pasteSettingsError:'Ungültiger Link oder Code'
@@ -336,7 +358,7 @@
     + '<path d="M24 8v6M9 20l4 4M39 20l-4 4M4 36h40"/></g>'
     + '<path d="M13 36a11 11 0 0 1 22 0Z" fill="#f3c957" stroke="#3b2a1a" stroke-width="2.5" stroke-linejoin="round"/></svg>';
 
-  function cell(cls, inner){ return '<div class="cell ' + cls + '">' + inner + '</div>'; }
+  function cell(cls, inner, h){ return '<div class="cell ' + cls + '"' + (h ? ' data-h="' + h + '"' : '') + '>' + inner + '</div>'; }
 
   function render(){
     const hours = clamp(document.getElementById('tHours').value, 1, 24);
@@ -349,11 +371,30 @@
     document.getElementById('titleOut').textContent = document.getElementById('tTitle').value || t('timeDefaultTitle');
     document.getElementById('subOut').textContent = document.getElementById('tSub').value;
 
+    // Überstunden: entweder ab "Freie Stunden" oder pro Feld einzeln gewählt
+    const custom = document.getElementById('tCustom'+'Over').checked;
+    if(!custom) overArr = [];
+    else if(!overArr.length) overArr = Array.from({length:24}, (_, k) => k + 1 > free);
+    const isOver = i => custom ? !!overArr[i - 1] : i > free;
+    document.getElementById('tFree').disabled = custom;
+    document.getElementById('overPickerField').style.display = custom ? '' : 'none';
+    if(custom){
+      const pk = document.getElementById('overPicker');
+      pk.innerHTML = '';
+      for(let i = 1; i <= hours; i++){
+        const btn = document.createElement('button');
+        btn.type = 'button'; btn.textContent = i;
+        btn.className = 'over-btn' + (isOver(i) ? ' on' : '');
+        btn.addEventListener('click', () => { overArr[i - 1] = !overArr[i - 1]; render(); });
+        pk.appendChild(btn);
+      }
+    }
+
     let html = '';
     if(sun)  html += cell('special', SUN_SVG + '<span class="cap">' + t('timeSunStart') + '</span>');
     for(let i = 1; i <= hours; i++){
-      const over = i > free;
-      html += cell(over ? 'over' : '', '<span class="n">' + i + '</span>' + (over ? '<span class="cost">−' + cost + '</span>' : ''));
+      const over = isOver(i);
+      html += cell(over ? 'over' : '', '<span class="n">' + i + '</span>' + (over ? '<span class="cost">−' + cost + '</span>' : ''), i);
     }
     if(rise) html += cell('special', RISE_SVG + '<span class="cap">' + t('timeSunrise') + '</span>');
 
@@ -367,10 +408,16 @@
     b.style.gridTemplateColumns = 'repeat(' + cols + ', 72px)';
     const off = sun ? 1 : 0;
     let bh = '';
-    if(free > 0)
-      bh += '<div style="grid-column:' + (off + 1) + ' / span ' + free + '"><div class="bracket"></div><div class="bracket-label">' + t('timeFreeLabel') + '</div></div>';
-    if(hours - free > 0)
-      bh += '<div style="grid-column:' + (off + free + 1) + ' / span ' + (hours - free) + '"><div class="bracket" style="border-color:var(--crimson)"></div><div class="bracket-label over">' + t('timeOverLabel') + '</div></div>';
+    for(let i = 1; i <= hours;){
+      const ov = isOver(i);
+      let j = i;
+      while(j + 1 <= hours && isOver(j + 1) === ov) j++;
+      const len = j - i + 1;
+      bh += '<div style="grid-column:' + (off + i) + ' / span ' + len + '"><div class="bracket"'
+        + (ov ? ' style="border-color:var(--crimson)"' : '') + '></div><div class="bracket-label' + (ov ? ' over' : '') + '">'
+        + (len > 1 ? (ov ? t('timeOverLabel') : t('timeFreeLabel')) : '&nbsp;') + '</div></div>';
+      i = j + 1;
+    }
     b.innerHTML = bh;
 
     // Farben (ohne color-mix, damit html2canvas den Export schafft)
@@ -428,6 +475,17 @@
     el.addEventListener('change', render);
   });
 
+  // Klick auf ein Stundenfeld im Streifen: Überstunde an/aus (schaltet die Einzelauswahl bei Bedarf ein)
+  document.getElementById('strip').addEventListener('click', e => {
+    const c = e.target.closest('.cell[data-h]');
+    if(!c) return;
+    const cb = document.getElementById('tCustomOver');
+    if(!cb.checked){ cb.checked = true; render(); }
+    const i = parseInt(c.dataset.h, 10);
+    overArr[i - 1] = !overArr[i - 1];
+    render();
+  });
+
   document.getElementById('exportBtn').addEventListener('click', () => {
     const status = document.getElementById('exportStatus');
     status.textContent = t('playerExportCreating') || '';
@@ -448,7 +506,7 @@
   // ---------- Teilen: Link / Code kopieren und einfügen ----------
   // Code = Base64 eines kleinen JSON-Objekts; Link = Seite + "#h=" + Code. Beim Laden wird der Hash ausgewertet.
   function collectSettings(){
-    return {
+    const o = {
       v:1, l:currentLang,
       t:document.getElementById('tTitle').value, u:document.getElementById('tSub').value,
       h:clamp(document.getElementById('tHours').value, 1, 24), f:clamp(document.getElementById('tFree').value, 0, 24),
@@ -456,6 +514,11 @@
       s:document.getElementById('tSun').checked, r:document.getElementById('tSunrise').checked,
       b:document.getElementById('tBrackets').checked, a:PALETTE.indexOf(selectedPalette)
     };
+    if(document.getElementById('tCustomOver').checked){
+      const hrs = clamp(document.getElementById('tHours').value, 1, 24);
+      o.o = Array.from({length:hrs}, (_, k) => overArr[k] ? '1' : '0').join('');
+    }
+    return o;
   }
   function encodeSettings(o){
     return btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
@@ -481,6 +544,13 @@
     document.getElementById('tSun').checked = !!o.s;
     document.getElementById('tSunrise').checked = !!o.r;
     document.getElementById('tBrackets').checked = !!o.b;
+    if(typeof o.o === 'string' && /^[01]{1,24}$/.test(o.o)){
+      document.getElementById('tCustomOver').checked = true;
+      overArr = Array.from({length:24}, (_, k) => o.o[k] === '1');
+    } else {
+      document.getElementById('tCustomOver').checked = false;
+      overArr = [];
+    }
     if(Number.isInteger(o.a) && PALETTE[o.a]){
       selectedPalette = PALETTE[o.a];
       swWrap.querySelectorAll('.swatch').forEach(el => el.classList.toggle('active', Number(el.dataset.idx) === o.a));

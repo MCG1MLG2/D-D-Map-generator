@@ -710,6 +710,28 @@
           <div class="placer-hint" data-i18n="labelHint">Name eingeben, Art wählen, dann auf die Karte klicken</div>
           <input type="text" id="labelText" maxlength="40" data-i18n-placeholder="labelPlaceholder" placeholder="Name …">
           <div class="castle-buttons" id="labelKinds"></div>
+          <div class="field-row">
+            <span class="f-label" data-i18n="labelStyleLbl">Stil</span>
+            <select id="labelStyle">
+              <option value="auto" selected>Automatisch</option>
+              <option value="plaque">Plakette</option>
+              <option value="tag">Marke</option>
+              <option value="compact">Kompakt</option>
+              <option value="banner">Banner</option>
+              <option value="scroll">Schriftrolle</option>
+              <option value="wood">Holztafel</option>
+              <option value="plain">Schlicht</option>
+              <option value="grand">Groß gesperrt</option>
+            </select>
+          </div>
+          <div class="field-row">
+            <span class="f-label" data-i18n="labelSizeLbl">Textgröße</span>
+            <select id="labelSize">
+              <option value="0">Klein</option>
+              <option value="1" selected>Normal</option>
+              <option value="2">Groß</option>
+            </select>
+          </div>
           <div class="label-chips" id="labelChips"></div>
           <button type="button" class="castle-reset" id="labelResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
         </div>
@@ -1967,37 +1989,76 @@ function renderLabels(){
   const font = "'Cinzel', serif";
   const measure = (t, fallback) => { try{ const b = t.getBBox(); return b.width > 0 ? b.width : fallback; }catch(err){ return fallback; } };
 
+  const styleOf = e => (e.style && e.style !== 'auto') ? e.style : (e.kind === 'region' ? 'grand' : e.kind === 'castle' ? 'plaque' : 'tag');
+  const sizeMul = [0.8, 1, 1.3];
   P.list.forEach(e => {
     const pos = labelPos(e, numMap);
     if(!pos) return;
-    const x = pos.x, y = pos.y;
-    if(e.kind === 'region'){
-      const size = 21;
-      const t = el('text', { x, y: y + size * 0.35, 'text-anchor': 'middle', 'font-family': font, 'font-size': size, 'font-weight': 700,
-        'letter-spacing': 4, fill: '#2c2013', opacity: 0.86, stroke: '#efe3c3', 'stroke-width': 3.6, 'stroke-linejoin': 'round', 'paint-order': 'stroke' });
+    const x = pos.x, y = pos.y, m = sizeMul[e.size === undefined ? 1 : e.size] || 1, st = styleOf(e);
+    const mkText = (size, weight, fill, extra) => {
+      const t = el('text', Object.assign({ x, y: y + size * 0.35, 'text-anchor': 'middle', 'font-family': font, 'font-size': size, 'font-weight': weight, fill }, extra || {}));
       t.textContent = e.text;
       g.appendChild(t);
+      return t;
+    };
+    if(st === 'grand'){                                    // large letter-spaced name with a gold rule
+      const size = 21 * m;
+      const t = mkText(size, 700, '#2c2013', { 'letter-spacing': 4, opacity: 0.86, stroke: '#efe3c3', 'stroke-width': 3.6, 'stroke-linejoin': 'round', 'paint-order': 'stroke' });
       const w = measure(t, e.text.length * size * 0.9);
       g.insertBefore(el('rect', { x: x - w * 0.42, y: y + size * 0.78, width: w * 0.84, height: 1.4, fill: 'url(#lblRule)' }), t);
       return;
     }
-    const castle = e.kind === 'castle';
-    const size = castle ? 13 : 10.5, padX = castle ? 13 : 8, padY = castle ? 6 : 4;
-    const t = el('text', { x, y: y + size * 0.35, 'text-anchor': 'middle', 'font-family': font, 'font-size': size, 'font-weight': castle ? 700 : 600, fill: '#2c2013' });
-    t.textContent = e.text;
-    g.appendChild(t);
-    const w = measure(t, e.text.length * size * 0.72) + padX * 2, h = size + padY * 2;
-    const bx = x - w / 2, by = y - h / 2;
+    if(st === 'plain'){                                    // plain text with a light halo
+      mkText(12 * m, 700, '#2c2013', { 'letter-spacing': 0.6, stroke: '#efe3c3', 'stroke-width': 3, 'stroke-linejoin': 'round', 'paint-order': 'stroke' });
+      return;
+    }
+    const cfg = { plaque: [13, 700, 13, 6], tag: [10.5, 600, 8, 4], compact: [9, 600, 5, 2.5], banner: [12, 700, 12, 5], scroll: [12, 600, 12, 5], wood: [12, 700, 11, 5] }[st] || [10.5, 600, 8, 4];
+    const size = cfg[0] * m, padX = cfg[2] * m, padY = cfg[3] * m;
+    const t = mkText(size, cfg[1], st === 'banner' ? '#f6ecd0' : st === 'wood' ? '#ecdca8' : '#2c2013');
+    const tw = measure(t, e.text.length * size * 0.72);
+    const h = size + padY * 2;
     const put = n => g.insertBefore(n, t);
-    put(el('rect', { x: bx + 1.5, y: by + 2.2, width: w, height: h, rx: 3, fill: '#000', opacity: 0.28 }));
+    const shadow = (bx, by, w) => put(el('rect', { x: bx + 1.5, y: by + 2.2, width: w, height: h, rx: 3, fill: '#000', opacity: 0.28 }));
+    if(st === 'banner'){
+      const notch = h * 0.32, w = tw + padX * 2 + notch * 1.2, bx = x - w / 2, by = y - h / 2;
+      const pts = (dx, dy) => `${bx + dx},${by + dy} ${bx + w + dx},${by + dy} ${bx + w - notch + dx},${by + h / 2 + dy} ${bx + w + dx},${by + h + dy} ${bx + dx},${by + h + dy} ${bx + notch + dx},${by + h / 2 + dy}`;
+      put(el('polygon', { points: pts(1.5, 2.2), fill: '#000', opacity: 0.28 }));
+      put(el('polygon', { points: pts(0, 0), fill: '#7c2020', stroke: '#d9b56a', 'stroke-width': 1.4, 'stroke-linejoin': 'round' }));
+      put(el('path', { d: `M${bx + notch + 3} ${by + 2.8}H${bx + w - 3}M${bx + notch + 3} ${by + h - 2.8}H${bx + w - 3}`, stroke: '#d9b56a', 'stroke-width': 0.8, opacity: 0.8, fill: 'none' }));
+      return;
+    }
+    if(st === 'scroll'){
+      const ro = h * 0.24, w = tw + padX * 2 + ro * 2, bx = x - w / 2, by = y - h / 2;
+      put(el('rect', { x: bx + 1.5, y: by + 2.2, width: w, height: h, rx: 2, fill: '#000', opacity: 0.25 }));
+      put(el('rect', { x: bx + ro, y: by, width: w - ro * 2, height: h, fill: 'url(#lblPlaque)', stroke: '#8a7142', 'stroke-width': 1.1 }));
+      [bx + ro, bx + w - ro].forEach(cx => {
+        put(el('ellipse', { cx, cy: y, rx: ro, ry: h / 2 + 1.6, fill: '#d6c493', stroke: '#8a7142', 'stroke-width': 1.2 }));
+        put(el('ellipse', { cx, cy: y, rx: ro * 0.42, ry: h * 0.3, fill: 'none', stroke: '#8a7142', 'stroke-width': 0.8, opacity: 0.8 }));
+      });
+      return;
+    }
+    const w = tw + padX * 2, bx = x - w / 2, by = y - h / 2;
+    if(st === 'wood'){
+      shadow(bx, by, w);
+      put(el('rect', { x: bx, y: by, width: w, height: h, rx: 2.5, fill: '#4a3320', stroke: '#241a08', 'stroke-width': 1.4 }));
+      put(el('rect', { x: bx + 2.4, y: by + 2.4, width: w - 4.8, height: h - 4.8, rx: 1.5, fill: 'none', stroke: '#7a5a36', 'stroke-width': 0.9 }));
+      [[bx + 4.6, by + 4.6], [bx + w - 4.6, by + 4.6], [bx + 4.6, by + h - 4.6], [bx + w - 4.6, by + h - 4.6]].forEach(p => put(el('circle', { cx: p[0], cy: p[1], r: 1.2, fill: '#b6903f' })));
+      return;
+    }
+    if(st === 'compact'){
+      put(el('rect', { x: bx, y: by, width: w, height: h, rx: 2, fill: '#efe3c3', stroke: '#8a7142', 'stroke-width': 0.9 }));
+      return;
+    }
+    shadow(bx, by, w);                                      // plaque and tag
     put(el('rect', { x: bx, y: by, width: w, height: h, rx: 3, fill: 'url(#lblPlaque)', stroke: '#8a7142', 'stroke-width': 1.3 }));
-    if(castle){
+    if(st === 'plaque'){
       put(el('rect', { x: bx + 2.6, y: by + 2.6, width: w - 5.2, height: h - 5.2, rx: 1.5, fill: 'none', stroke: '#b6903f', 'stroke-width': 0.9, opacity: 0.8 }));
       put(el('circle', { cx: bx - 1, cy: y, r: 2.6, fill: '#d9b56a', stroke: '#241a08', 'stroke-width': 0.8 }));
       put(el('circle', { cx: bx + w + 1, cy: y, r: 2.6, fill: '#d9b56a', stroke: '#241a08', 'stroke-width': 0.8 }));
     }
   });
 }
+
 if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => renderLabels());
 
 function renderMarkers(){
@@ -2650,6 +2711,7 @@ const LABEL_KINDS = ['castle', 'village', 'region'];
 const LABEL_ICONS = { castle: '🏰', village: '🏘️', region: '🗺️' };
 const LABEL_TITLES = { castle: ['labelKindCastle', 'Burg'], village: ['labelKindVillage', 'Dorf'], region: ['labelKindRegion', 'Region'] };
 const LABEL_MAX = 60;
+const LABEL_STYLES = ['auto', 'plaque', 'tag', 'compact', 'banner', 'scroll', 'wood', 'plain', 'grand'];
 function labelIcon(kind){ return mapType === 'burg' && kind === 'village' ? '🏷️' : LABEL_ICONS[kind]; }
 TERRAIN.labels = (() => {
   const $ = id => document.getElementById(id);
@@ -2668,8 +2730,12 @@ TERRAIN.labels = (() => {
     pick(k){
       P.placing = (P.placing === k) ? null : k;
       if(P.placing !== null && castleEdit){ castleEdit.tool = null; }
-      if(typeof P.placing === 'number') $('labelText').value = P.list[P.placing].text;
-      else if(P.placing !== null) $('labelText').value = '';
+      if(typeof P.placing === 'number'){
+        const e = P.list[P.placing];
+        $('labelText').value = e.text;
+        $('labelStyle').value = e.style || 'auto';                      // the chosen label's own look
+        $('labelSize').value = String(e.size === undefined ? 1 : e.size);
+      } else if(P.placing !== null) $('labelText').value = '';
       if(P.placing !== null){
         placingCastle = null; placingMerchant = null; placingAction = null; placingVillage = null;
         updateCastlePlacer(); updateMerchantPicker(); updateActionPicker(); updateVillagePicker();
@@ -2755,22 +2821,40 @@ TERRAIN.labels = (() => {
         P.placing = null;
       } else {
         if(P.list.length >= LABEL_MAX) return true;
-        P.list.push({ kind, text, ref });
+        P.list.push({ kind, text, ref, style: $('labelStyle').value, size: parseInt($('labelSize').value, 10) || 0 });
       }
       renderLabels();
       P.update();
       return true;
     },
-    ser(list){ return list.map(e => e.kind === 'region' ? [2, e.ref[0], e.ref[1], e.text] : [e.kind === 'castle' ? 0 : 1, e.ref, e.text]); },
+    ser(list){
+      return list.map(e => {
+        const custom = (e.style && e.style !== 'auto') || (e.size !== undefined && e.size !== 1);
+        const extra = custom ? [Math.max(0, LABEL_STYLES.indexOf(e.style || 'auto')), e.size === undefined ? 1 : e.size] : [];
+        return (e.kind === 'region' ? [2, e.ref[0], e.ref[1], e.text] : [e.kind === 'castle' ? 0 : 1, e.ref, e.text]).concat(extra);
+      });
+    },
     settingsFor(type){ return P.ser(type === P.curType ? P.list : P.lists[type]); },
     toSettings(){ return { flag: $('customLabels').checked, list: P.settingsFor('koenigreich') }; },
     parse(arr){
       const list = [];
       (Array.isArray(arr) ? arr : []).forEach(e => {
         if(!Array.isArray(e) || list.length >= LABEL_MAX) return;
-        if(e[0] === 2 && e.length === 4 && Number.isFinite(e[1]) && Number.isFinite(e[2]) && typeof e[3] === 'string') list.push({ kind: 'region', text: e[3].slice(0, 40), ref: [e[1], e[2]] });
-        else if((e[0] === 0 || e[0] === 1) && e.length === 3 && Number.isInteger(e[1]) && e[1] >= 0 && typeof e[2] === 'string') list.push({ kind: e[0] === 0 ? 'castle' : 'village', text: e[2].slice(0, 40), ref: e[1] });
-        else if(e[0] === 1 && e.length === 3 && Array.isArray(e[1]) && e[1].length === 2 && e[1].every(Number.isFinite) && typeof e[2] === 'string') list.push({ kind: 'village', text: e[2].slice(0, 40), ref: [e[1][0], e[1][1]] });
+        const base = e[0] === 2 ? 4 : 3;
+        if(e.length !== base && e.length !== base + 2) return;
+        let style, size;
+        if(e.length === base + 2){
+          style = LABEL_STYLES[e[base]];
+          size = e[base + 1];
+          if(!style || !Number.isInteger(size) || size < 0 || size > 2) return;
+        }
+        let item = null;
+        if(e[0] === 2 && Number.isFinite(e[1]) && Number.isFinite(e[2]) && typeof e[3] === 'string') item = { kind: 'region', text: e[3].slice(0, 40), ref: [e[1], e[2]] };
+        else if((e[0] === 0 || e[0] === 1) && Number.isInteger(e[1]) && e[1] >= 0 && typeof e[2] === 'string') item = { kind: e[0] === 0 ? 'castle' : 'village', text: e[2].slice(0, 40), ref: e[1] };
+        else if(e[0] === 1 && Array.isArray(e[1]) && e[1].length === 2 && e[1].every(Number.isFinite) && typeof e[2] === 'string') item = { kind: 'village', text: e[2].slice(0, 40), ref: [e[1][0], e[1][1]] };
+        if(!item) return;
+        if(style){ item.style = style; item.size = size; }
+        list.push(item);
       });
       return list;
     },
@@ -2800,6 +2884,15 @@ TERRAIN.labels = (() => {
       if(v){ P.list[P.placing].text = v; renderLabels(); P.update(); }
     }
   });
+  const restyle = () => {
+    if(typeof P.placing === 'number' && P.list[P.placing]){
+      P.list[P.placing].style = $('labelStyle').value;
+      P.list[P.placing].size = parseInt($('labelSize').value, 10) || 0;
+      renderLabels();
+    }
+  };
+  $('labelStyle').addEventListener('change', restyle);
+  $('labelSize').addEventListener('change', restyle);
   $('labelResetBtn').addEventListener('click', () => {
     P.list = [];
     P.placing = null;
@@ -4060,7 +4153,7 @@ function encodeCompactSettings(s){
     let out = flagOf('customLabels', 'labelList');
     if(s.labelList.length){
       for(const e of s.labelList){
-        if(!Array.isArray(e) || !(e.length === 3 || e.length === 4) || typeof e[e.length - 1] !== 'string') throw new Error('x');
+        if(!Array.isArray(e) || e.length < 3 || e.length > 6 || typeof e[e[0] === 2 ? 3 : 2] !== 'string') throw new Error('x');
       }
       out += btoa(unescape(encodeURIComponent(JSON.stringify(s.labelList)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     }
@@ -4098,7 +4191,7 @@ function encodeCompactSettings(s){
     const list = Array.isArray(s.castleLabelList) ? s.castleLabelList : [];
     if(!list.length) return null;
     for(const e of list){
-      if(!Array.isArray(e) || !(e.length === 3 || e.length === 4) || typeof e[e.length - 1] !== 'string') throw new Error('x');
+      if(!Array.isArray(e) || e.length < 3 || e.length > 6 || typeof e[e[0] === 2 ? 3 : 2] !== 'string') throw new Error('x');
     }
     return btoa(unescape(encodeURIComponent(JSON.stringify(list)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   };
