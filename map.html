@@ -126,6 +126,8 @@
   }
   body[data-map-type="burg"] .kingdom-only{ display:none !important; }
   body:not([data-map-type="burg"]) .castle-only{ display:none !important; }
+  .panel-actions{ margin-top:24px; }
+  .panel-actions .export-btn{ margin-top:0; }
   .type-switch{ margin-bottom:12px; }
   .type-switch .share-btn{ margin-top:0; }
   .btn-row{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
@@ -442,19 +444,6 @@
     </div>
 
     <button id="generateBtn" class="export-btn" data-i18n="generateBtn">⚔ Neue Karte erzeugen</button>
-    <button id="downloadBtn" class="share-btn" data-i18n="downloadBtn">⬇ Als PNG speichern</button>
-    <div class="btn-row">
-      <button id="fsToggleBtn" class="share-btn" data-i18n="playerFullscreenBtn">⛶ Vollbild anzeigen</button>
-      <button id="shareToggleBtn" class="share-btn" data-i18n="shareToggleBtn" title="Einstellungen teilen">🔗 Teilen</button>
-    </div>
-
-    <div class="share-panel collapsed" id="sharePanel">
-      <button id="copySettingsBtn" class="share-panel-btn" data-i18n="copySettingsBtn">📋 Kopieren</button>
-      <input type="text" id="pasteSettingsInput" data-i18n-placeholder="pasteSettingsPrompt" placeholder="Link oder Code hier einfügen:">
-      <button id="applyPasteSettingsBtn" class="share-panel-btn primary" data-i18n="applyPasteSettingsBtn">✓ Anwenden</button>
-      <span class="paste-settings-feedback" id="pasteSettingsFeedback"></span>
-    </div>
-
     <div class="field seed-field">
       <label for="seedInput" data-i18n="lblSeed">Seed:</label>
       <input type="number" id="seedInput" step="1">
@@ -776,6 +765,20 @@
           <span class="f-label" data-i18n="lblFlowArrows">Richtungspfeile anzeigen</span>
           <input type="checkbox" id="showFlowArrows" checked>
         </div>
+      </div>
+    </div>
+
+    <!-- bottom of the panel, as in player.html: save, share, fullscreen -->
+    <div class="panel-actions">
+      <button id="downloadBtn" class="export-btn" data-i18n="downloadBtn">⬇ Als PNG speichern</button>
+      <button id="shareToggleBtn" class="share-btn" data-i18n="shareToggleBtn" title="Einstellungen teilen">🔗 Teilen</button>
+      <button id="fsToggleBtn" class="share-btn" data-i18n="playerFullscreenBtn">⛶ Vollbild anzeigen</button>
+
+      <div class="share-panel collapsed" id="sharePanel">
+        <button id="copySettingsBtn" class="share-panel-btn" data-i18n="copySettingsBtn">📋 Kopieren</button>
+        <input type="text" id="pasteSettingsInput" data-i18n-placeholder="pasteSettingsPrompt" placeholder="Link oder Code hier einfügen:">
+        <button id="applyPasteSettingsBtn" class="share-panel-btn primary" data-i18n="applyPasteSettingsBtn">✓ Anwenden</button>
+        <span class="paste-settings-feedback" id="pasteSettingsFeedback"></span>
       </div>
     </div>
   </div>

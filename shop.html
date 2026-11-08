@@ -843,14 +843,28 @@ const PALETTE = [
  {name:'Scharlach',key:'playerColorScarlet',accent:'#b02a1c',bright:'#e8604d'}
 ];
 let selectedPalette = PALETTE[1];
-// Ladenarten: nur ans ENDE anhängen. Beispielwaren: [Name, Preis, Münze 0=GM 1=SM 2=KM, Anzahl]
+// Ladenarten: nur ans ENDE anhängen. Warenpool je Art: [Name, Preis, Münze 0=GM 1=SM 2=KM, Symbol (optional)]; def = Startauswahl
 const TYPES = [
- {id:'smith',icon:'⚒️',de:'Schmiede',items:[['Eisenhelm',20,0,2,'helmet'],['Kettenhemd',75,0,1,'chest'],['Kampfgürtel',5,0,6,'belt'],['Eisenhandschuhe',10,0,4,'hand1'],['Panzerbeinlinge',40,0,2,'pants'],['Stiefel',4,0,5,'shoes']]},
- {id:'alchemist',icon:'⚗️',de:'Alchemist',items:[['Heiltrank',50,0,5],['Gegengift',25,0,3],['Säureflasche',25,0,4],['Nachtsichttrank',120,0,1]]},
- {id:'general',icon:'🧺',de:'Gemischtwaren',items:[['Seil (15 m)',1,0,10],['Fackel',1,2,30],['Proviant (1 Tag)',5,1,20],['Rucksack',2,0,5],['Zelt',2,0,3]]},
- {id:'magic',icon:'🔮',de:'Magieladen',items:[['Zauberstab',300,0,2],['Schriftrolle',75,0,6],['Umhang des Schutzes',500,0,1],['Kristallkugel',900,0,1]]},
- {id:'tavern',icon:'🍺',de:'Taverne',items:[['Krug Bier',4,2,50],['Eintopf',3,1,15],['Zimmer (Nacht)',5,1,6],['Starker Met',2,1,12]]},
- {id:'bakery',icon:'🥖',de:'Bäckerei',items:[['Brotlaib',2,2,25],['Honigkuchen',5,2,12],['Apfeltasche',3,2,16]]}
+ {id:'smith',icon:'⚒️',de:'Schmiede',def:[0,2,5,7,9,11],items:[
+  ['Eisenhelm',20,0,'helmet'],['Lederhelm',5,0,'helmet'],['Kettenhemd',75,0,'chest'],['Plattenpanzer',1500,0,'chest'],['Lederrüstung',10,0,'chest'],
+  ['Kampfgürtel',5,0,'belt'],['Werkzeuggürtel',8,0,'belt'],['Eisenhandschuhe',10,0,'hand1'],['Lederhandschuhe',3,0,'hand2'],
+  ['Panzerbeinlinge',40,0,'pants'],['Lederhose',6,0,'pants'],['Stiefel',4,0,'shoes'],['Stahlstiefel',25,0,'shoes'],
+  ['Langschwert',15,0,'item'],['Streitaxt',10,0,'item'],['Dolch',2,0,'item'],['Holzschild',10,1,'item']]},
+ {id:'alchemist',icon:'⚗️',de:'Alchemist',items:[
+  ['Heiltrank',50,0],['Großer Heiltrank',150,0],['Gegengift',25,0],['Säureflasche',25,0],['Nachtsichttrank',120,0],['Unsichtbarkeitstrank',300,0],
+  ['Feuerfläschchen',50,0],['Stärketrank',100,0],['Alchemistenfeuer',50,0],['Schlaftrank',40,0],['Rauchbombe',20,0],['Kräutertinktur',5,1]]},
+ {id:'general',icon:'🧺',de:'Gemischtwaren',items:[
+  ['Seil (15 m)',1,0],['Fackel',1,2],['Proviant (1 Tag)',5,1],['Rucksack',2,0],['Zelt',2,0],['Laterne',5,0],
+  ['Wasserschlauch',2,1],['Kletterhaken',1,0],['Decke',5,1],['Kreide',1,2],['Brecheisen',2,0],['Zunderkästchen',5,1]]},
+ {id:'magic',icon:'🔮',de:'Magieladen',items:[
+  ['Zauberstab',300,0],['Schriftrolle',75,0],['Umhang des Schutzes',500,0],['Kristallkugel',900,0],['Ring der Wärme',400,0],['Zauberbuch',50,0],
+  ['Amulett der Gesundheit',800,0],['Stab der Funken',250,0],['Verzauberter Dolch',350,0],['Glühstein',20,0]]},
+ {id:'tavern',icon:'🍺',de:'Taverne',items:[
+  ['Krug Bier',4,2],['Eintopf',3,1],['Zimmer (Nacht)',5,1],['Starker Met',2,1],['Brotlaib',2,2],['Wein (Krug)',1,1],
+  ['Braten',8,1],['Käseplatte',4,1],['Apfelmost',3,2],['Schnaps',5,1],['Stall (Nacht)',5,2],['Würzbier',6,2]]},
+ {id:'bakery',icon:'🥖',de:'Bäckerei',items:[
+  ['Brotlaib',2,2],['Honigkuchen',5,2],['Apfeltasche',3,2],['Brötchen',1,2],['Zimtschnecke',4,2],['Roggenbrot',3,2],
+  ['Nusszopf',6,2],['Festtagstorte',5,1],['Mürbeteigkekse',2,2],['Kürbisbrot',4,2]]}
 ];
 const CUR = ['GM','SM','KM'];
 const ICONS={"helmet": {"shape": "square", "key": "playerLblHelmet", "de": "Helm", "svg": "<svg viewBox=\"0 0 48 48\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><path d=\"M13 41V21Q13 7 24 7T35 21V41z\" fill=\"#5a4630\" stroke=\"#2f2416\" stroke-width=\"1.5\"/>\n  <rect x=\"13\" y=\"21\" width=\"22\" height=\"4\" fill=\"#1c150d\"/>\n  <rect x=\"22.5\" y=\"8\" width=\"3\" height=\"33\" fill=\"#8a7142\" stroke=\"#2f2416\" stroke-width=\"1\"/>\n  <path d=\"M13 38h22\" stroke=\"#d9c393\" stroke-width=\"1.2\"/>\n  <g fill=\"#1c150d\"><circle cx=\"17\" cy=\"30\" r=\"1.2\"/><circle cx=\"17\" cy=\"34\" r=\"1.2\"/><circle cx=\"31\" cy=\"30\" r=\"1.2\"/><circle cx=\"31\" cy=\"34\" r=\"1.2\"/></g></svg>"}, "chest": {"shape": "square", "key": "playerLblChest", "de": "Brust", "svg": "<svg viewBox=\"0 0 48 48\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><path d=\"M9 13L18 8Q24 13 30 8L39 13L37 22L34 23V40Q24 45 14 40V23L11 22z\" fill=\"#5a4630\" stroke=\"#2f2416\" stroke-width=\"1.5\"/>\n  <path d=\"M24 13V43\" stroke=\"#d9c393\" stroke-width=\"1.4\" fill=\"none\"/>\n  <path d=\"M14 29Q24 33 34 29M14 35Q24 39 34 35\" stroke=\"#d9c393\" stroke-width=\"1.2\" fill=\"none\"/>\n  <g fill=\"#8a7142\" stroke=\"#2f2416\" stroke-width=\"1\"><circle cx=\"13\" cy=\"15.5\" r=\"2\"/><circle cx=\"35\" cy=\"15.5\" r=\"2\"/></g></svg>"}, "belt": {"shape": "belt", "key": "playerLblBelt", "de": "Gürtel", "svg": "<svg viewBox=\"0 0 96 28\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><rect x=\"2\" y=\"6\" width=\"92\" height=\"16\" rx=\"3\" fill=\"#5a4630\" stroke=\"#2f2416\" stroke-width=\"1.5\"/><path d=\"M8 14H34M62 14H88\" stroke=\"#d9c393\" stroke-width=\"1.2\" stroke-dasharray=\"3 3\" fill=\"none\"/><rect x=\"36\" y=\"3\" width=\"24\" height=\"22\" rx=\"2\" fill=\"#8a7142\" stroke=\"#2f2416\" stroke-width=\"1.8\"/><rect x=\"42\" y=\"9\" width=\"12\" height=\"10\" rx=\"1\" fill=\"#5a4630\" stroke=\"#2f2416\" stroke-width=\"1\"/><path d=\"M48 14H64\" stroke=\"#d9c393\" stroke-width=\"1.6\" fill=\"none\"/><g fill=\"#1c150d\"><circle cx=\"72\" cy=\"14\" r=\"1.5\"/><circle cx=\"80\" cy=\"14\" r=\"1.5\"/><circle cx=\"88\" cy=\"14\" r=\"1.5\"/></g></svg>"}, "hand1": {"shape": "circle", "key": "playerLblHand1", "de": "Hand 1", "svg": "<svg viewBox=\"0 0 48 48\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><g><g fill=\"#5a4630\" stroke=\"#2f2416\" stroke-width=\"1.5\">\n  <rect x=\"15\" y=\"12\" width=\"5\" height=\"15\" rx=\"2.5\"/><rect x=\"20\" y=\"9\" width=\"5\" height=\"18\" rx=\"2.5\"/><rect x=\"25\" y=\"9\" width=\"5\" height=\"18\" rx=\"2.5\"/><rect x=\"30\" y=\"12\" width=\"5\" height=\"15\" rx=\"2.5\"/>\n  <path d=\"M15 24h20v10q0 3-3 3H18q-3 0-3-3z\"/>\n  <path d=\"M15 28L8 22q-1.5-1.5 0-3t3 0l6 6z\"/>\n  <rect x=\"13\" y=\"37\" width=\"24\" height=\"7\" rx=\"1.5\" fill=\"#8a7142\"/></g>\n  <g stroke=\"#d9c393\" stroke-width=\"1\" fill=\"none\"><path d=\"M15.5 19h4M20.5 17h4M25.5 17h4M30.5 19h4\"/></g>\n  <g fill=\"#d9c393\"><circle cx=\"17\" cy=\"40.5\" r=\"1\"/><circle cx=\"25\" cy=\"40.5\" r=\"1\"/><circle cx=\"33\" cy=\"40.5\" r=\"1\"/></g></g></svg>"}, "hand2": {"shape": "circle", "key": "playerLblHand2", "de": "Hand 2", "svg": "<svg viewBox=\"0 0 48 48\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><g transform=\"translate(48 0) scale(-1 1)\"><g fill=\"#5a4630\" stroke=\"#2f2416\" stroke-width=\"1.5\">\n  <rect x=\"15\" y=\"12\" width=\"5\" height=\"15\" rx=\"2.5\"/><rect x=\"20\" y=\"9\" width=\"5\" height=\"18\" rx=\"2.5\"/><rect x=\"25\" y=\"9\" width=\"5\" height=\"18\" rx=\"2.5\"/><rect x=\"30\" y=\"12\" width=\"5\" height=\"15\" rx=\"2.5\"/>\n  <path d=\"M15 24h20v10q0 3-3 3H18q-3 0-3-3z\"/>\n  <path d=\"M15 28L8 22q-1.5-1.5 0-3t3 0l6 6z\"/>\n  <rect x=\"13\" y=\"37\" width=\"24\" height=\"7\" rx=\"1.5\" fill=\"#8a7142\"/></g>\n  <g stroke=\"#d9c393\" stroke-width=\"1\" fill=\"none\"><path d=\"M15.5 19h4M20.5 17h4M25.5 17h4M30.5 19h4\"/></g>\n  <g fill=\"#d9c393\"><circle cx=\"17\" cy=\"40.5\" r=\"1\"/><circle cx=\"25\" cy=\"40.5\" r=\"1\"/><circle cx=\"33\" cy=\"40.5\" r=\"1\"/></g></g></svg>"}, "pants": {"shape": "square", "key": "playerLblPants", "de": "Hose", "svg": "<svg viewBox=\"0 0 48 48\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><polygon points=\"12,10 23,10 22,42 14,42\" fill=\"#5a4630\" stroke=\"#2f2416\" stroke-width=\"1.5\"/>\n  <polygon points=\"25,10 36,10 34,42 26,42\" fill=\"#5a4630\" stroke=\"#2f2416\" stroke-width=\"1.5\"/>\n  <g fill=\"#8a7142\" stroke=\"#2f2416\" stroke-width=\"1.2\"><circle cx=\"17.5\" cy=\"25\" r=\"4\"/><circle cx=\"30.5\" cy=\"25\" r=\"4\"/></g>\n  <path d=\"M13.5 35h8M26.5 35h8\" stroke=\"#d9c393\" stroke-width=\"1.2\"/></svg>"}, "shoes": {"shape": "square", "key": "playerLblShoes", "de": "Schuhe", "svg": "<svg viewBox=\"0 0 48 48\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><path d=\"M13 6H27V28Q27 31 31 32.5L42 36Q45 38 41 41H13z\" fill=\"#5a4630\" stroke=\"#2f2416\" stroke-width=\"1.5\"/>\n  <rect x=\"12\" y=\"6\" width=\"16\" height=\"4\" fill=\"#8a7142\" stroke=\"#2f2416\" stroke-width=\"1\"/>\n  <path d=\"M13 16h14M13 22h14\" stroke=\"#d9c393\" stroke-width=\"1.2\"/>\n  <rect x=\"21\" y=\"14.5\" width=\"4\" height=\"3\" fill=\"#d9c393\" stroke=\"#2f2416\" stroke-width=\".8\"/>\n  <rect x=\"12\" y=\"41\" width=\"31\" height=\"3\" rx=\"1\" fill=\"#2f2416\"/></svg>"}};
@@ -929,10 +943,43 @@ function addRow(box,name,price,cur,qty,icon){
   r.addEventListener('input',render);r.addEventListener('change',render);
   box.appendChild(r);
 }
-function fillExamples(sec){
+const DEFQ=[2,1,6,4,2,5,3,2];
+// Preis um etwa -40 % bis +60 % abwandeln, schön runden, bei hohen Werten in die größere Münze wechseln (10 KM = 1 SM, 10 SM = 1 GM)
+function varyPrice(p,c){
+  let v=p*(0.6+Math.random()*1.0);
+  if(v>=500)v=Math.round(v/50)*50;else if(v>=100)v=Math.round(v/10)*10;else if(v>=30)v=Math.round(v/5)*5;else v=Math.round(v);
+  v=Math.max(1,v);
+  while(c>0&&v>=20){v=Math.max(1,Math.round(v/10));c--;}
+  return [v,c];
+}
+function shuffled(a){const r=a.slice();for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+// random=false: feste Standardauswahl (Start der Seite), random=true: zufällige Waren, Preise und Anzahl werden gewürfelt
+function fillExamples(sec,random){
   const box=itemsOf(sec);box.innerHTML='';
   const ty=TYPES[Number($('sType').value)||0];
-  ty.items.forEach((it,i)=>addRow(box,t('shopItem_'+ty.id+'_'+i,it[0]),it[1],it[2],it[3],it[4]||ICON_IDS[i%ICON_IDS.length]));
+  let picks;
+  if(!random){
+    picks=(ty.def||ty.items.slice(0,5).map((_,i)=>i)).map((idx,k)=>({idx,q:DEFQ[k%DEFQ.length]}));
+  }else{
+    const want=4+Math.floor(Math.random()*4);   // 4 bis 7 Waren
+    sec.querySelector('.smode').value=Math.random()<0.5?'stand':'shelf';   // Anzeige zufällig: Rüstungsständer oder Regal
+    const usedIc={};picks=[];
+    shuffled(ty.items.map((_,i)=>i)).forEach(idx=>{
+      if(picks.length>=want)return;
+      const ic=ty.items[idx][3];
+      if(ic&&ic!=='item'){if(usedIc[ic])return;usedIc[ic]=1;}
+      picks.push({idx,q:1+Math.floor(Math.random()*(ic?6:10))});
+    });
+  }
+  const used=picks.map(p=>ty.items[p.idx][3]).filter(Boolean);
+  let free=shuffled(ICON_IDS.filter(i=>!used.includes(i)));
+  picks.forEach((p,k)=>{
+    const it=ty.items[p.idx];
+    let ic=it[3];
+    if(!ic){ic=free.length?free.shift():ICON_IDS[k%ICON_IDS.length];}
+    const pc=random?varyPrice(it[1],it[2]):[it[1],it[2]];
+    addRow(box,t('shopItem_'+ty.id+'_'+p.idx,it[0]),pc[0],pc[1],p.q,ic);
+  });
   render();
 }
 const SECTPL='<div class="sec-head"><span class="sec-n" role="button" tabindex="0" aria-expanded="true"></span><button type="button" class="sec-rm">✕</button></div>'
@@ -941,7 +988,7 @@ const SECTPL='<div class="sec-head"><span class="sec-n" role="button" tabindex="
  +'<div class="irow-head"><span data-i18n="shopColItem">Ware</span><span data-i18n="shopColPrice">Preis</span><span data-i18n="shopColCur">Münze</span><span data-i18n="shopColQty">Anz.</span><span data-i18n="shopColIcon">Symbol</span><span></span></div>'
  +'<div class="items"></div>'
  +'<button type="button" class="share-btn add" data-i18n="shopAddItem">+ Ware hinzufügen</button>'
- +'<button type="button" class="share-btn fill" data-i18n="shopFillItems">🎲 Beispielwaren der Ladenart einsetzen</button>';
+ +'<button type="button" class="share-btn fill" data-i18n="shopFillItems">🎲 Zufällige Waren der Ladenart</button>';
 function renumber(){
   [...secBox.children].forEach((sec,i)=>{const ti=sec.querySelector('.stitle').value.trim();sec.querySelector('.sec-n').textContent=t('shopSectionN','Auslage')+' '+(i+1)+(ti?' – '+ti:'');});
 }
@@ -950,7 +997,7 @@ function addSection(mode){
   const sec=document.createElement('div');sec.className='sec';sec.innerHTML=SECTPL;
   sec.querySelector('.smode').value=mode||'stand';
   sec.querySelector('.add').onclick=()=>{addRow(itemsOf(sec),'','',0,'');render();};
-  sec.querySelector('.fill').onclick=()=>fillExamples(sec);
+  sec.querySelector('.fill').onclick=()=>fillExamples(sec,true);
   sec.querySelector('.sec-rm').onclick=()=>{if(secBox.children.length<=1)return;sec.remove();renumber();render();};
   sec.querySelector('.smode').addEventListener('change',render);
   const sn=sec.querySelector('.sec-n');
