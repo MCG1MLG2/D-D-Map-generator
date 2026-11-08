@@ -69,35 +69,35 @@
   .field select option{background:#0f0c09;color:var(--parchment)}
   .field select+.btn{margin-top:8px}
   /* Schriftart-Stile */
-  #card.f-hand .header h2{font-family:'Caveat','Segoe Script',cursive;font-weight:700;font-size:2.1rem;line-height:1.05}
-  #card.f-hand .epithet{font-family:'Caveat','Segoe Script',cursive;font-size:1.3rem;font-style:normal}
-  #card.f-hand .box h3{font-family:'Caveat','Segoe Script',cursive;font-size:1.45rem}
-  #card.f-hand .box p{font-family:'Caveat','Segoe Script',cursive;font-size:1.3rem;line-height:1.3}
-  #card.f-runes .header h2{font-family:'Noto Sans Runic','Segoe UI Historic','Segoe UI Symbol',sans-serif;font-weight:400;font-size:1.35rem;letter-spacing:.06em}
-  #card.f-runes .epithet{font-family:'Noto Sans Runic','Segoe UI Historic','Segoe UI Symbol',sans-serif;font-size:.9rem;font-style:normal;letter-spacing:.05em}
-  #card.f-runes .box h3{font-family:'Noto Sans Runic','Segoe UI Historic','Segoe UI Symbol',sans-serif;font-weight:400;font-size:.95rem;letter-spacing:.05em}
-  #card.f-runes .box p{font-family:'Noto Sans Runic','Segoe UI Historic','Segoe UI Symbol',sans-serif;font-size:.92rem;line-height:1.55;letter-spacing:.04em}
+  #card .header h2.fx-hand{font-family:'Caveat','Segoe Script',cursive;font-weight:700;font-size:2.1rem;line-height:1.05}
+  #card .epithet.fx-hand{font-family:'Caveat','Segoe Script',cursive;font-size:1.3rem;font-style:normal}
+  #card .box h3.fx-hand{font-family:'Caveat','Segoe Script',cursive;font-size:1.45rem}
+  #card .box p.fx-hand{font-family:'Caveat','Segoe Script',cursive;font-size:1.3rem;line-height:1.3}
+  #card .header h2.fx-runes{font-family:'Noto Sans Runic','Segoe UI Historic','Segoe UI Symbol',sans-serif;font-weight:400;font-size:1.35rem;letter-spacing:.06em}
+  #card .epithet.fx-runes{font-family:'Noto Sans Runic','Segoe UI Historic','Segoe UI Symbol',sans-serif;font-size:.9rem;font-style:normal;letter-spacing:.05em}
+  #card .box h3.fx-runes{font-family:'Noto Sans Runic','Segoe UI Historic','Segoe UI Symbol',sans-serif;font-weight:400;font-size:.95rem;letter-spacing:.05em}
+  #card .box p.fx-runes{font-family:'Noto Sans Runic','Segoe UI Historic','Segoe UI Symbol',sans-serif;font-size:.92rem;line-height:1.55;letter-spacing:.04em}
   /* weitere Schriftarten */
-  #card.f-uncial{--ff:'Uncial Antiqua','Palatino Linotype',serif}
-  #card.f-fraktur{--ff:'UnifrakturCook','Old English Text MT',serif}
-  #card.f-fell{--ff:'IM Fell English','Garamond',serif}
-  #card.f-medieval{--ff:'MedievalSharp','Palatino Linotype',serif}
-  #card:is(.f-uncial,.f-fraktur,.f-fell,.f-medieval) :is(.header h2,.epithet,.box h3,.box p){font-family:var(--ff)}
-  #card.f-uncial .header h2{font-weight:400;font-size:1.35rem}
-  #card.f-uncial .epithet{font-style:normal;font-size:.9rem}
-  #card.f-uncial .box h3{font-weight:400;font-size:.95rem}
-  #card.f-uncial .box p{font-size:.9rem;line-height:1.5}
-  #card.f-fraktur .header h2{font-weight:700;font-size:2rem}
-  #card.f-fraktur .epithet{font-style:normal;font-size:1.1rem}
-  #card.f-fraktur .box h3{font-weight:700;font-size:1.2rem}
-  #card.f-fraktur .box p{font-size:1.1rem;line-height:1.35}
-  #card.f-fell .header h2{font-weight:400;font-size:1.8rem}
-  #card.f-fell .box h3{font-weight:400;font-size:1.05rem}
-  #card.f-fell .box p{font-size:1.05rem}
-  #card.f-medieval .header h2{font-weight:400;font-size:1.55rem}
-  #card.f-medieval .epithet{font-style:normal}
-  #card.f-medieval .box h3{font-weight:400}
-  #card.f-medieval .box p{font-size:.98rem}
+  .fx-uncial{--ff:'Uncial Antiqua','Palatino Linotype',serif}
+  .fx-fraktur{--ff:'UnifrakturCook','Old English Text MT',serif}
+  .fx-fell{--ff:'IM Fell English','Garamond',serif}
+  .fx-medieval{--ff:'MedievalSharp','Palatino Linotype',serif}
+  #card :is(.fx-uncial,.fx-fraktur,.fx-fell,.fx-medieval){font-family:var(--ff)}
+  #card .header h2.fx-uncial{font-weight:400;font-size:1.35rem}
+  #card .epithet.fx-uncial{font-style:normal;font-size:.9rem}
+  #card .box h3.fx-uncial{font-weight:400;font-size:.95rem}
+  #card .box p.fx-uncial{font-size:.9rem;line-height:1.5}
+  #card .header h2.fx-fraktur{font-weight:700;font-size:2rem}
+  #card .epithet.fx-fraktur{font-style:normal;font-size:1.1rem}
+  #card .box h3.fx-fraktur{font-weight:700;font-size:1.2rem}
+  #card .box p.fx-fraktur{font-size:1.1rem;line-height:1.35}
+  #card .header h2.fx-fell{font-weight:400;font-size:1.8rem}
+  #card .box h3.fx-fell{font-weight:400;font-size:1.05rem}
+  #card .box p.fx-fell{font-size:1.05rem}
+  #card .header h2.fx-medieval{font-weight:400;font-size:1.55rem}
+  #card .epithet.fx-medieval{font-style:normal}
+  #card .box h3.fx-medieval{font-weight:400}
+  #card .box p.fx-medieval{font-size:.98rem}
   /* Pergament: vergilbt (dunklerer Rand) */
   /* Pergament-Varianten: Überlagerung (--po); Grundfarben stehen in PAPERS (JS) */
   #card.p-aged{--po:radial-gradient(ellipse at 50% 50%,transparent 45%,rgba(95,60,20,.32) 100%)}
@@ -205,19 +205,18 @@
     </div>
     </div></div>
 
+    <div class="control-group"><h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="textboxGrpFonts">Schriftarten</h3><div class="group-body">
+    <div class="field"><label for="tFont" data-i18n="textboxLblFontAll">Allgemein (alle Texte)</label><select id="tFont"></select></div>
+    <div class="field"><label for="fTitle" data-i18n="textboxLblFontTitle">Überschrift</label><select id="fTitle"></select></div>
+    <div class="field"><label for="fSub" data-i18n="textboxLblFontSub">Untertitel</label><select id="fSub"></select></div>
+    <div class="field"><label for="fBody" data-i18n="textboxLblFontBody">Text</label><select id="fBody"></select></div>
+    <div class="field"><label for="fTitle2" data-i18n="textboxLblFontTitle2">Überschrift 2</label><select id="fTitle2"></select></div>
+    <div class="field"><label for="fBody2" data-i18n="textboxLblFontBody2">Text 2</label><select id="fBody2"></select></div>
+    </div></div>
+
     <div class="control-group"><h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="textboxGrpStyle">Stil &amp; Farbe</h3><div class="group-body">
     <div class="field"><label data-i18n="playerLblAccentColor">Akzentfarbe</label><div class="swatches" id="swatches"></div></div>
 
-    <div class="field"><label for="tFont" data-i18n="textboxLblFont">Schriftart</label>
-      <select id="tFont">
-        <option value="normal" data-i18n="textboxFontNormal">Standard</option>
-        <option value="hand" data-i18n="textboxFontHand">Handschrift</option>
-        <option value="runes" data-i18n="textboxFontRunes">Runen</option>
-        <option value="uncial" data-i18n="textboxFontUncial">Unziale</option>
-        <option value="fraktur" data-i18n="textboxFontFraktur">Fraktur</option>
-        <option value="fell" data-i18n="textboxFontOldPrint">Alter Druck</option>
-        <option value="medieval" data-i18n="textboxFontMedieval">Mittelalter</option>
-      </select></div>
     <div class="field"><label for="tPaper" data-i18n="textboxLblPaper">Pergament</label>
       <select id="tPaper">
         <option value="normal" data-i18n="textboxPaperNormal">Standard</option>
@@ -375,6 +374,16 @@
     stone:   ['#c2beb2', '#b6b2a5', '#a8a498']
   };
   const FONT_VALUES = ['hand', 'runes', 'uncial', 'fraktur', 'fell', 'medieval'];
+  const FONT_LIST = [['normal', 'textboxFontNormal', 'Standard'], ['hand', 'textboxFontHand', 'Handschrift'], ['runes', 'textboxFontRunes', 'Runen'],
+    ['uncial', 'textboxFontUncial', 'Unziale'], ['fraktur', 'textboxFontFraktur', 'Fraktur'], ['fell', 'textboxFontOldPrint', 'Alter Druck'], ['medieval', 'textboxFontMedieval', 'Mittelalter']];
+  // je Textelement eine eigene Schrift (leer = wie "Allgemein"): [Auswahl, Element auf der Karte]
+  const ELEM_FONTS = [['fTitle', 'titleOut'], ['fSub', 'subOut'], ['fBody', 'bodyOut'], ['fTitle2', 't2Out'], ['fBody2', 'body2Out']];
+  ['tFont'].concat(ELEM_FONTS.map(e => e[0])).forEach(id => {
+    const sel = $(id);
+    const add = (v, key, txt) => { const o = document.createElement('option'); o.value = v; o.setAttribute('data-i18n', key); o.textContent = txt; sel.appendChild(o); };
+    if(id !== 'tFont') add('', 'textboxFontInherit', 'Wie allgemein');
+    FONT_LIST.forEach(f => add(f[0], f[1], f[2]));
+  });
   function runify(s){ return Array.from(s).map(ch => RUNES[ch.toLowerCase()] || ch).join(''); }
 
   // ---------- Vorlagen (füllen alle Felder und den Stil) ----------
@@ -403,18 +412,21 @@
     $('t2Title').value = tp.title2; $('t2Body').value = tp.body2;
     ['tTitleOn', 'tSubOn', 'tBodyOn', 't2On'].forEach(id => $(id).checked = true);
     $('tNumOn').checked = tp.num;
-    $('tFont').value = tp.font; $('tPaper').value = tp.paper; $('tWax').checked = tp.wax;
+    $('tFont').value = tp.font; ELEM_FONTS.forEach(e => $(e[0]).value = ''); $('tPaper').value = tp.paper; $('tWax').checked = tp.wax;
     render();
   });
   document.querySelectorAll('.panel select').forEach(el => el.addEventListener('change', render));
 
   function render(){
     const fnt = $('tFont').value, paper = PAPERS[$('tPaper').value] ? $('tPaper').value : 'normal', cardEl = $('card');
-    const R = s => fnt === 'runes' ? runify(s) : s;
-    FONT_VALUES.forEach(v => cardEl.classList.toggle('f-' + v, fnt === v));
+    const F = {};   // wirksame Schrift je Element
+    ELEM_FONTS.forEach(e => { F[e[1]] = $(e[0]).value || fnt; });
+    const R = (s, el) => F[el] === 'runes' ? runify(s) : s;
+    ELEM_FONTS.forEach(e => FONT_VALUES.forEach(v => $(e[1]).classList.toggle('fx-' + v, F[e[1]] === v)));
+    cardEl.classList.toggle('f-runes', F.titleOut === 'runes');   // Siegel folgt der Überschrift
     Object.keys(PAPERS).forEach(k => cardEl.classList.toggle('p-' + k, paper === k));
     $('waxRow').style.display = $('tWax').checked ? '' : 'none';
-    $('waxOut').textContent = R((Array.from($('tTitle').value.trim())[0] || '✦').toUpperCase());
+    $('waxOut').textContent = R((Array.from($('tTitle').value.trim())[0] || '✦').toUpperCase(), 'titleOut');
     const tOn = $('tTitleOn').checked, sOn = $('tSubOn').checked, on = $('tBodyOn').checked;
     const title = tOn ? $('tTitle').value.trim() : '', sub = sOn ? $('tSub').value.trim() : '', body = on ? $('tBody').value.trim() : '';
     const nOn = $('tNumOn').checked;
@@ -426,17 +438,17 @@
     $('card').classList.toggle('has-num', nOn);
     $('titleField').style.display = tOn ? '' : 'none';
     $('subField').style.display = sOn ? '' : 'none';
-    $('titleOut').textContent = R(title);
+    $('titleOut').textContent = R(title, 'titleOut');
     $('titleOut').style.display = title ? '' : 'none';
-    $('subOut').textContent = R(sub);
+    $('subOut').textContent = R(sub, 'subOut');
     $('subOut').style.display = sub ? '' : 'none';
     $('headBox').style.display = (title || sub) ? '' : 'none';
-    renderFormatted($('bodyOut'), R(body));
+    renderFormatted($('bodyOut'), R(body, 'bodyOut'));
     $('bodyBox').style.display = body ? '' : 'none';
     $('bodyField').style.display = on ? '' : 'none';
     const o2 = $('t2On').checked, h2 = o2 ? $('t2Title').value.trim() : '', b2 = o2 ? $('t2Body').value.trim() : '';
-    $('t2Out').textContent = R(h2); $('t2Out').style.display = h2 ? '' : 'none';
-    renderFormatted($('body2Out'), R(b2)); $('body2Out').style.display = b2 ? '' : 'none';
+    $('t2Out').textContent = R(h2, 't2Out'); $('t2Out').style.display = h2 ? '' : 'none';
+    renderFormatted($('body2Out'), R(b2, 'body2Out')); $('body2Out').style.display = b2 ? '' : 'none';
     $('box2').style.display = (h2 || b2) ? '' : 'none';
     $('sec2Field').style.display = o2 ? '' : 'none';
     $('ruleOut').style.display = (title || sub) && (body || h2 || b2) ? '' : 'none';
@@ -470,7 +482,7 @@
   });
 
   // ---------- Teilen per Link (#g=<base64 JSON>) ----------
-  function collect(){ return { v:1, l:currentLang, h:$('tTitle').value, x:$('tBody').value, ac:PALETTE.indexOf(sel), st:$('tSub').value, bo:$('tBodyOn').checked ? 1 : 0, ho:$('tTitleOn').checked ? 1 : 0, so:$('tSubOn').checked ? 1 : 0, n:$('tNum').value, no:$('tNumOn').checked ? 1 : 0, o2:$('t2On').checked ? 1 : 0, h2:$('t2Title').value, x2:$('t2Body').value, f:$('tFont').value, pp:$('tPaper').value, wx:$('tWax').checked ? 1 : 0 }; }
+  function collect(){ return { v:1, l:currentLang, h:$('tTitle').value, x:$('tBody').value, ac:PALETTE.indexOf(sel), st:$('tSub').value, bo:$('tBodyOn').checked ? 1 : 0, ho:$('tTitleOn').checked ? 1 : 0, so:$('tSubOn').checked ? 1 : 0, n:$('tNum').value, no:$('tNumOn').checked ? 1 : 0, o2:$('t2On').checked ? 1 : 0, h2:$('t2Title').value, x2:$('t2Body').value, f:$('tFont').value, fe:ELEM_FONTS.map(e => $(e[0]).value), pp:$('tPaper').value, wx:$('tWax').checked ? 1 : 0 }; }
   function shareURL(){
     return location.origin + location.pathname + location.search + '#g=' + encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(collect())))));
   }
@@ -483,7 +495,8 @@
     $('tSub').value = s.st || ''; $('tBodyOn').checked = s.bo !== 0; $('tTitleOn').checked = s.ho !== 0; $('tSubOn').checked = s.so !== 0;
     $('tNum').value = s.n !== undefined ? s.n : 1; $('tNumOn').checked = s.no === 1;
     $('t2On').checked = s.o2 === 1; $('t2Title').value = s.h2 || ''; $('t2Body').value = s.x2 || '';
-    $('tFont').value = FONT_VALUES.includes(s.f) ? s.f : 'normal'; $('tPaper').value = PAPERS[s.pp] ? s.pp : 'normal'; $('tWax').checked = s.wx === 1;
+    $('tFont').value = FONT_VALUES.includes(s.f) ? s.f : 'normal';
+    ELEM_FONTS.forEach((e, i) => { const v = Array.isArray(s.fe) ? s.fe[i] : ''; $(e[0]).value = (v === 'normal' || FONT_VALUES.includes(v)) ? v : ''; }); $('tPaper').value = PAPERS[s.pp] ? s.pp : 'normal'; $('tWax').checked = s.wx === 1;
     selectColor(s.ac);
     if(s.l && L[s.l]) applyLanguage(s.l); else render();
   }
