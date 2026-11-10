@@ -371,6 +371,8 @@
     align-items:flex-start;
     margin-bottom:18px;
   }
+  .medallion-wrap{ position:relative; flex:0 0 auto; width:96px; height:96px; }
+  .medallion-frame{ position:absolute; left:0; top:0; width:96px; height:96px; pointer-events:none; }
   .medallion{
     flex:0 0 auto;
     width:96px; height:96px;
@@ -669,6 +671,10 @@
   #beltSlot  { left:85px;  top:149px; }
   #pantsSlot { left:102px; top:178px; }
   #shoesSlot { left:102px; top:262px; }
+  #companionSlot { left:176px; top:246px; }   /* bottom right of the equipment area (260 x 330) */
+  .equip-hex{ position:relative; width:84px; height:84px; }
+  .equip-hex svg{ display:block; }
+  .equip-hex-icon{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:40px; line-height:1; }
   .equip-shape{
     display:flex;
     align-items:center;
@@ -832,6 +838,8 @@
     <h1 data-i18n="playerHeading">Heldentafel-Generator</h1>
     <p class="sub" data-i18n="playerSubtitle">Gestalte eine eigene Heldentafel für deine Kampagne</p>
 
+    <button type="button" class="share-btn" id="randomHeroBtn" style="margin:0 0 24px;" data-i18n="playerRandomBtn">🎲 Zufallsheld</button>
+
     <div class="control-group">
       <h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="playerGrpHero">Held</h3>
       <div class="group-body">
@@ -868,7 +876,14 @@
 
     <div class="field">
       <label for="heroBorderColor" data-i18n="playerLblPortraitBorder">Porträtrand</label>
-      <div class="border-row">
+      <select id="heroFrameStyle" style="margin-bottom:10px;" aria-label="Rahmenstil" data-i18n-title="playerLblFrameStyle" title="Rahmenstil">
+        <option value="" data-i18n="playerFrameStyleNone">Schlicht (eigene Farbe)</option>
+        <option value="gold" data-i18n="playerFrameStyleGold">Gold</option>
+        <option value="wood" data-i18n="playerFrameStyleWood">Holz</option>
+        <option value="stone" data-i18n="playerFrameStyleStone">Stein</option>
+        <option value="runes" data-i18n="playerFrameStyleRunes">Runen</option>
+      </select>
+      <div class="border-row" id="borderPlainRow">
         <input type="color" id="heroBorderColor" value="#241a08" data-i18n-title="playerBorderColorTitle" title="Randfarbe">
         <input type="range" id="heroBorderWidth" min="0" max="12" step="1" value="3" data-i18n-title="playerBorderWidthTitle" title="Randdicke">
         <span class="border-width-out" id="heroBorderWidthOut">3 px</span>
@@ -919,6 +934,23 @@
         <option value="warlock" data-i18n="playerClassWarlockName">Hexenmeister</option>
         <option value="necromancer" data-i18n="playerClassNecromancerName">Nekromant</option>
         <option value="alchemist" data-i18n="playerClassAlchemistName">Alchemist</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="heroBackground" data-i18n="playerLblBackground">Hintergrund</label>
+      <select id="heroBackground">
+        <option value="" data-i18n="playerClassNone">— Keine —</option>
+        <option value="mercenary" data-i18n="playerBackgroundMercenaryName">Söldner</option>
+        <option value="scholar" data-i18n="playerBackgroundScholarName">Gelehrter</option>
+        <option value="noble" data-i18n="playerBackgroundNobleName">Adliger</option>
+        <option value="criminal" data-i18n="playerBackgroundCriminalName">Gauner</option>
+        <option value="hermit" data-i18n="playerBackgroundHermitName">Einsiedler</option>
+        <option value="soldier" data-i18n="playerBackgroundSoldierName">Soldat</option>
+        <option value="merchant" data-i18n="playerBackgroundMerchantName">Händler</option>
+        <option value="sailor" data-i18n="playerBackgroundSailorName">Seemann</option>
+        <option value="folkhero" data-i18n="playerBackgroundFolkheroName">Volksheld</option>
+        <option value="acolyte" data-i18n="playerBackgroundAcolyteName">Akolyth</option>
       </select>
     </div>
 
@@ -1052,6 +1084,19 @@
       </label>
     </div>
 
+    <div class="field">
+      <label class="toggle-row">
+        <input type="checkbox" id="showCompanion">
+        <span class="toggle-switch"></span>
+        <span class="toggle-label" data-i18n="playerToggleCompanion">Begleiter / Reittier anzeigen</span>
+      </label>
+    </div>
+
+    <div class="field" id="companionFields" style="display:none;">
+      <label for="companionIcon" data-i18n="playerLblIcon">Symbol (Emoji)</label>
+      <input type="text" id="companionIcon" value="" maxlength="8">
+    </div>
+
       </div>
     </div>
 
@@ -1089,7 +1134,7 @@
       <div class="rule"></div>
 
       <div class="medallion-row">
-        <div class="medallion" id="medallionOut">🐺</div>
+        <div class="medallion-wrap"><div class="medallion" id="medallionOut">🐺</div><svg class="medallion-frame" id="medallionFrame" width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg></div>
         <div class="ability-box">
           <div class="label" data-i18n="playerLblAbility">Sonderfähigkeit</div>
           <p id="abilityOut">Orfen hat im Kampf mindestens Stärkepunkte in Höhe der 10er-Stelle seiner aktuellen Feldzahl.</p>
@@ -1114,6 +1159,14 @@
         <div class="class-text">
           <div class="class-name" id="classNameOut">Magier</div>
           <div class="class-perk-text" id="classPerkOut">Einmal pro Abenteuer ohne Willenspunkte zaubern.</div>
+        </div>
+      </div>
+
+      <div class="class-perk" id="backgroundPerkRow" style="display:none;">
+        <div class="class-icon" id="backgroundIconOut">⚔️</div>
+        <div class="class-text">
+          <div class="class-name" id="backgroundNameOut">Söldner</div>
+          <div class="class-perk-text" id="backgroundPerkOut"></div>
         </div>
       </div>
 
@@ -1147,7 +1200,10 @@
               <ellipse cx="156" cy="312" rx="18" ry="8"/>
             </g>
           </svg>
-                      <div class="equip-slot" id="hand1Slot" style="display:none;" data-i18n-title="playerLblHand1" title="Hand 1">
+                      <div class="equip-slot" id="companionSlot" style="display:none;" data-i18n-title="playerLblCompanion" title="Begleiter / Reittier">
+              <div class="equip-hex"><svg width="84" height="84" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polygon id="companionHex" points="28,2 51,15 51,41 28,54 5,41 5,15" fill="rgba(230,190,90,.5)" stroke="#8a7142" stroke-width="2.5" stroke-linejoin="round"/></svg><span class="equip-hex-icon" id="companionIconOut"></span></div>
+            </div>
+            <div class="equip-slot" id="hand1Slot" style="display:none;" data-i18n-title="playerLblHand1" title="Hand 1">
               <div class="equip-shape circle"><svg width="42" height="42" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-linejoin="round" stroke-linecap="round"><g><g fill="#5a4630" stroke="#2f2416" stroke-width="1.5">
   <rect x="15" y="12" width="5" height="15" rx="2.5"/><rect x="20" y="9" width="5" height="18" rx="2.5"/><rect x="25" y="9" width="5" height="18" rx="2.5"/><rect x="30" y="12" width="5" height="15" rx="2.5"/>
   <path d="M15 24h20v10q0 3-3 3H18q-3 0-3-3z"/>
@@ -1326,6 +1382,59 @@
     }
   }
 
+  // portrait frame styles: drawn as an inline SVG ring over the medallion (html2canvas cannot do clip-path / CSS variables).
+  // NOTE: position in this list is stored in share links - only append new styles at the END (and in the <select>).
+  const FRAME_STYLES = ['', 'gold', 'wood', 'stone', 'runes'];
+  const RUNE_PATHS = [
+    'M-1 3.5V-3.5M-1 -3.5L2 -1.5M-1 -0.5L2 1.5',
+    'M-1.5 3.5V-3.5L1.5 -0.5V3.5',
+    'M-1 -3.5V3.5M-1 -2L2 0L-1 2',
+    'M-1 -3.5V3.5M-1 -3.5L2 -1.5M-1 -0.8L2 1.2',
+    'M-1.5 -3.5V3.5M-1.5 -3.5L1.5 -1.5L-1.5 0.5L1.5 3.5',
+    'M1.5 -3L-1.5 0L1.5 3',
+    'M-1.5 -3L1.5 3M1.5 -3L-1.5 3',
+    'M-1 -3.5V3.5M-1 -3.5L2 -1.5L-1 0.5',
+    'M-1.5 -3.5V3.5M1.5 -3.5V3.5M-1.5 -1L1.5 1',
+    'M0 -3.5V3.5M-1.8 -1L1.8 1'
+  ];
+  function frameMarkup(style, bright){
+    const C = 48, R = 44;
+    const ring = (r, w, stroke, extra) => '<circle cx="48" cy="48" r="' + r + '" fill="none" stroke="' + stroke + '" stroke-width="' + w + '" ' + (extra || '') + '/>';
+    const dots = (n, r, size, fill, opacity) => {
+      let out = '';
+      for(let i = 0; i < n; i++){
+        const a = i * 2 * Math.PI / n - Math.PI / 2;
+        out += '<circle cx="' + (C + r * Math.cos(a)).toFixed(2) + '" cy="' + (C + r * Math.sin(a)).toFixed(2) + '" r="' + size + '" fill="' + fill + '"' + (opacity ? ' opacity="' + opacity + '"' : '') + '/>';
+      }
+      return out;
+    };
+    if(style === 'gold'){
+      return '<defs><linearGradient id="frameGold" gradientUnits="userSpaceOnUse" x1="8" y1="8" x2="88" y2="88">' +
+        '<stop offset="0" stop-color="#f7e7ad"/><stop offset=".35" stop-color="#d9b56a"/><stop offset=".7" stop-color="#b6903f"/><stop offset="1" stop-color="#7a5c22"/></linearGradient></defs>' +
+        ring(R, 8, 'url(#frameGold)') + ring(47.6, 1.2, '#3a2a10') + ring(40.4, 1.2, '#3a2a10') + ring(42, 0.8, '#fff2c4', 'opacity=".7"') + dots(16, R, 1.1, '#fff6d6', .85);
+    }
+    if(style === 'wood'){
+      return '<defs><linearGradient id="frameWood" gradientUnits="userSpaceOnUse" x1="8" y1="8" x2="88" y2="88">' +
+        '<stop offset="0" stop-color="#b98350"/><stop offset=".5" stop-color="#8a5a30"/><stop offset="1" stop-color="#5e3b1c"/></linearGradient></defs>' +
+        ring(R, 8, 'url(#frameWood)') + ring(45.5, 0.8, '#4a2c12', 'stroke-dasharray="9 5" opacity=".55"') + ring(43, 0.8, '#4a2c12', 'stroke-dasharray="4 7" opacity=".5"') +
+        ring(41.6, 0.8, '#d2a36e', 'stroke-dasharray="12 8" opacity=".45"') + ring(47.6, 1.2, '#2d1a0a') + ring(40.4, 1.2, '#2d1a0a') + dots(4, R, 1.7, '#d8b27a') + dots(4, R, 0.7, '#3a2410');
+    }
+    if(style === 'stone'){
+      return ring(R, 8, '#4a463e') + ring(R, 7, '#8d8a80', 'stroke-dasharray="13.2 2" ') +
+        ring(R, 2.4, '#a9a69b', 'stroke-dasharray="6 9.2" opacity=".6"') + ring(47.6, 1.2, '#2b2824') + ring(40.4, 1.2, '#2b2824') +
+        dots(10, 45.5, 0.8, '#5c584f', .7) + dots(9, 42.6, 0.7, '#c4c1b5', .6);
+    }
+    if(style === 'runes'){
+      let glyphs = '';
+      const n = 16;
+      for(let i = 0; i < n; i++){
+        glyphs += '<g transform="rotate(' + (i * 360 / n) + ' 48 48) translate(48 ' + (48 - R) + ')"><path d="' + RUNE_PATHS[i % RUNE_PATHS.length] + '" fill="none" stroke="' + bright + '" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"/></g>';
+      }
+      return ring(R, 9, '#231c2e') + ring(47.8, 1.2, bright, 'opacity=".75"') + ring(40.2, 1.2, bright, 'opacity=".75"') + glyphs;
+    }
+    return '';
+  }
+
   const BORDER_DEFAULT_COLOR = '#241a08';
   const BORDER_DEFAULT_WIDTH = 3;
   let heroImageData = null;       // portrait shown on the card / used for the PNG export
@@ -1430,6 +1539,31 @@
     return v !== undefined ? v : fallback;
   }
 
+  // backgrounds: shown like the class perk. nameDe/perkDe are used until the keys exist in languages.js.
+  // NOTE: new backgrounds must be appended at the END of the <select> list (the share code stores the position).
+  const BACKGROUNDS = {
+    mercenary: { icon:'⚔️', nameKey:'playerBackgroundMercenaryName', perkKey:'playerBackgroundMercenaryPerk',
+      nameDe:'Söldner', perkDe:'Hat 1 zusätzlichen Stärkepunkt.' },
+    scholar:   { icon:'📚', nameKey:'playerBackgroundScholarName', perkKey:'playerBackgroundScholarPerk',
+      nameDe:'Gelehrter', perkDe:'Darf einmal pro Abenteuer ein Rätsel oder eine Falle ohne Wurf lösen.' },
+    noble:     { icon:'👑', nameKey:'playerBackgroundNobleName', perkKey:'playerBackgroundNoblePerk',
+      nameDe:'Adliger', perkDe:'Zahlt im Handel immer 1 Gold weniger.' },
+    criminal:  { icon:'🎭', nameKey:'playerBackgroundCriminalName', perkKey:'playerBackgroundCriminalPerk',
+      nameDe:'Gauner', perkDe:'Kann einmal pro Abenteuer einer Wache oder einem Gegner entkommen.' },
+    hermit:    { icon:'🧘', nameKey:'playerBackgroundHermitName', perkKey:'playerBackgroundHermitPerk',
+      nameDe:'Einsiedler', perkDe:'Hat 2 zusätzliche Willenspunkte.' },
+    soldier:   { icon:'🎖️', nameKey:'playerBackgroundSoldierName', perkKey:'playerBackgroundSoldierPerk',
+      nameDe:'Soldat', perkDe:'Darf einmal pro Kampf erlittenen Schaden um 1 verringern.' },
+    merchant:  { icon:'🪙', nameKey:'playerBackgroundMerchantName', perkKey:'playerBackgroundMerchantPerk',
+      nameDe:'Händler', perkDe:'Erhält beim Verkauf von Gegenständen 1 Gold mehr.' },
+    sailor:    { icon:'⚓', nameKey:'playerBackgroundSailorName', perkKey:'playerBackgroundSailorPerk',
+      nameDe:'Seemann', perkDe:'Kann einmal pro Abenteuer ein Gewässer ohne Brücke überqueren.' },
+    folkhero:  { icon:'🌾', nameKey:'playerBackgroundFolkheroName', perkKey:'playerBackgroundFolkheroPerk',
+      nameDe:'Volksheld', perkDe:'Findet in jeder Siedlung kostenlos Unterkunft und heilt 1 Stärkepunkt.' },
+    acolyte:   { icon:'🕯️', nameKey:'playerBackgroundAcolyteName', perkKey:'playerBackgroundAcolytePerk',
+      nameDe:'Akolyth', perkDe:'Heilt einmal pro Abenteuer 2 Willenspunkte durch ein Gebet.' }
+  };
+
   // equipment slots; bit = position in the share code (never reorder, only append)
   const EQUIP = [
     { toggle:'showHand1',  slot:'hand1Slot',  bit:1 },
@@ -1462,7 +1596,10 @@
     document.getElementById('storyBox').style.display = story ? '' : 'none';
     const medallionOut = document.getElementById('medallionOut');
     const borderW = parseInt(document.getElementById('heroBorderWidth').value, 10);
-    medallionOut.style.borderWidth = (isNaN(borderW) ? BORDER_DEFAULT_WIDTH : borderW) + 'px';
+    const frameStyle = document.getElementById('heroFrameStyle').value;
+    document.getElementById('borderPlainRow').style.display = frameStyle ? 'none' : '';
+    document.getElementById('medallionFrame').innerHTML = frameStyle ? frameMarkup(frameStyle, selectedPalette.bright) : '';
+    medallionOut.style.borderWidth = frameStyle ? '0px' : (isNaN(borderW) ? BORDER_DEFAULT_WIDTH : borderW) + 'px';
     medallionOut.style.borderColor = document.getElementById('heroBorderColor').value || BORDER_DEFAULT_COLOR;
     document.getElementById('heroBorderWidthOut').textContent = (isNaN(borderW) ? BORDER_DEFAULT_WIDTH : borderW) + ' px';
     if(heroImageData){
@@ -1485,6 +1622,23 @@
       document.getElementById('speciesPerkOut').textContent = tf(sp.perkKey, sp.perkDe);
     } else {
       speciesPerkRow.style.display = 'none';
+    }
+
+    const compOn = document.getElementById('showCompanion').checked;
+    document.getElementById('companionFields').style.display = compOn ? '' : 'none';
+    document.getElementById('companionSlot').style.display = compOn ? '' : 'none';
+    document.getElementById('companionIconOut').textContent = document.getElementById('companionIcon').value;
+
+    const bgKey = document.getElementById('heroBackground').value;
+    const bgPerkRow = document.getElementById('backgroundPerkRow');
+    if (bgKey && BACKGROUNDS[bgKey]) {
+      const bg = BACKGROUNDS[bgKey];
+      bgPerkRow.style.display = 'flex';
+      document.getElementById('backgroundIconOut').textContent = bg.icon;
+      document.getElementById('backgroundNameOut').textContent = tf(bg.nameKey, bg.nameDe);
+      document.getElementById('backgroundPerkOut').textContent = tf(bg.perkKey, bg.perkDe);
+    } else {
+      bgPerkRow.style.display = 'none';
     }
 
     const classKey = document.getElementById('heroClass').value;
@@ -1512,6 +1666,7 @@
       document.getElementById(e.slot).style.display = on ? '' : 'none';
       if(on) anyEquip = true;
     });
+    if(compOn) anyEquip = true;
     document.getElementById('equipTrack').style.display = anyEquip ? '' : 'none';
     const footerRow = document.getElementById('footerRow');
     footerRow.classList.toggle('no-equip', !anyEquip);
@@ -1544,6 +1699,10 @@
     card.style.setProperty('--slot-bg', mixWithAlpha(selectedPalette.bright, 0.35));
     card.style.setProperty('--slot-bg-strong', mixWithAlpha(selectedPalette.bright, 0.5));
     card.style.setProperty('--slot-border', mixHex(selectedPalette.accent, '#8a7142', 0.45));
+    // the hexagon is an inline SVG (html2canvas cannot resolve CSS variables or clip-path), so its colours are set directly
+    const hexEl = document.getElementById('companionHex');
+    hexEl.setAttribute('fill', mixWithAlpha(selectedPalette.bright, 0.5));
+    hexEl.setAttribute('stroke', mixHex(selectedPalette.accent, '#8a7142', 0.45));
     card.style.setProperty('--card-tint-1', mixHex(selectedPalette.accent, '#e7d9b6', 0.14));
     card.style.setProperty('--card-tint-2', mixHex(selectedPalette.accent, '#ded0a6', 0.16));
     card.style.setProperty('--card-tint-3', mixHex(selectedPalette.accent, '#d3c092', 0.18));
@@ -1554,6 +1713,93 @@
     el.addEventListener('change', render);
   });
   document.getElementById('heroAbility').addEventListener('input', render);
+
+  // ---------- Zufallsheld ----------
+  // Randomizes everything on the sheet (name, epithet, rank, species, class, background, symbol, ability, story, point counts,
+  // accent colour, portrait frame, equipment, storage, companion). Only an uploaded portrait image and the layout switch stay as they are.
+  const RANDOM_NAMES = ['Orfen','Thalion','Brunhild','Kaelith','Draven','Isolde','Garrick','Mirabel','Fenrik','Sylwen','Torvald','Ysolde',
+    'Baldur','Elara','Korgan','Nimue','Hagen','Liora','Rurik','Selene','Arvid','Tamsin','Gundar','Veyra','Osric','Maeve','Dunstan','Ilvane',
+    'Bjarne','Calista','Egil','Rowena','Haldor','Zephira','Wulfric','Anwen','Marek','Thessaly','Ragnar','Nerys'];
+  const RANDOM_ROLES = ['Wolfskrieger','Schattenläufer','Sternendeuter','Eisenschmied','Wanderprediger','Drachenjäger','Runenleser','Nebelwanderer',
+    'Kräutersammler','Grenzwächter','Sturmrufer','Fährtenleser','Glockengießer','Heilkundiger','Münzsammler','Fackelträger'];
+  const RANDOM_PLACES = ['aus dem Hochgebirge','von den Nebelinseln','aus der Salzmark','vom Rabenfels','aus dem Tiefwald','von der Silberküste',
+    'aus den Aschelanden','vom Mondsee','aus der Steppe der Winde','aus Eisenhafen','von den Dreizacken','aus dem Moorland'];
+  const RANDOM_ABILITIES = [
+    '{name} hat im Kampf mindestens Stärkepunkte in Höhe der 10er-Stelle der aktuellen Feldzahl.',
+    '{name} darf einmal pro Abenteuer 3 Willenspunkte zurückgewinnen.',
+    '{name} darf einmal pro Kampf einen Würfel neu würfeln.',
+    '{name} erhält auf Waldfeldern 1 zusätzlichen Stärkepunkt.',
+    '{name} darf einmal pro Abenteuer ein Feld weiter ziehen.',
+    '{name} heilt am Ende jedes Kampfes 1 Stärkepunkt.',
+    '{name} erkennt Fallen und muss bei Fallenfeldern nicht würfeln.',
+    '{name} darf Gegenstände zum doppelten Preis verkaufen.',
+    '{name} kann einmal pro Abenteuer einen Gegner einschüchtern, sodass er eine Runde aussetzt.'
+  ];
+  const RANDOM_STORY_START = [
+    '{name} wuchs in einem abgelegenen Dorf am Rand des Hochgebirges auf.',
+    '{name} schlug sich als Kind in den Gassen von Eisenhafen durch.',
+    '{name} wurde auf einem Handelsschiff zwischen den Nebelinseln geboren.',
+    '{name} lernte in einem vergessenen Kloster am Mondsee alles über alte Schriften.'
+  ];
+  const RANDOM_STORY_TURN = [
+    'Eine Dürre trieb die Familie in die Fremde.',
+    'Ein Fremder schenkte {name} eines Nachts eine alte Karte.',
+    'Bei einem Überfall ging das Zuhause in Flammen auf.',
+    'Ein rätselhafter Traum rief {name} auf die Straße.'
+  ];
+  const RANDOM_STORY_GOAL = [
+    'Seitdem sucht {name} nach Antworten und nach einem Ort, den man Heimat nennen kann.',
+    'Seitdem zieht {name} umher, um eine alte Schuld zu begleichen.',
+    'Nun will {name} beweisen, dass auch ein Einzelner das Schicksal wenden kann.',
+    'Nun folgt {name} dem Ruf des Abenteuers und hofft auf Ruhm und Gold.'
+  ];
+  const RANDOM_BORDER_COLORS = ['#241a08','#5a1a1a','#1c3a2a','#1a2a4a','#4a2a5c','#6b5a2a','#3a3a3a'];
+  const RANDOM_COMPANIONS = ['🐺','🦅','🐴','🐻','🦉','🐗','🦊','🐍'];
+  const RANDOM_FALLBACK_ICONS = ['🐺','🦅','🐉','🗡️','🏹','🔮','🦁','🦌'];
+  const randomPick = list => list[Math.floor(Math.random() * list.length)];
+  const randomInt = (min, max) => min + Math.floor(Math.random() * (max - min + 1));
+
+  function randomizeHero(){
+    const setField = (id, value) => { document.getElementById(id).value = value; };
+    const setChecked = (id, value) => { document.getElementById(id).checked = value; };
+    const optionValues = id => Array.from(document.getElementById(id).options).map(o => o.value).filter(Boolean);
+    const fill = (text, name) => text.replace(/\{name\}/g, name);
+
+    const name = randomPick(RANDOM_NAMES);
+    setField('heroName', name);
+    setField('heroEpithet', randomPick(RANDOM_ROLES) + ' ' + randomPick(RANDOM_PLACES));
+    setField('heroRank', randomInt(1, 20));
+    const species = randomPick(optionValues('heroSpecies'));
+    setField('heroSpecies', species);
+    const cls = randomPick(optionValues('heroClass'));
+    setField('heroClass', cls);
+    setField('heroBackground', randomPick(optionValues('heroBackground')));
+    setField('heroIcon', SPECIES[species] ? SPECIES[species].icon : (CLASSES[cls] ? CLASSES[cls].icon : randomPick(RANDOM_FALLBACK_ICONS)));
+    document.getElementById('heroAbility').textContent = fill(randomPick(RANDOM_ABILITIES), name);
+    setField('heroStory', fill([randomPick(RANDOM_STORY_START), randomPick(RANDOM_STORY_TURN), randomPick(RANDOM_STORY_GOAL)].join(' '), name));
+
+    setField('strengthCount', randomInt(6, 15));
+    setField('willCount', randomInt(6, 15));
+
+    setField('heroFrameStyle', randomPick(FRAME_STYLES));
+    setField('heroBorderColor', randomPick(RANDOM_BORDER_COLORS));
+    setField('heroBorderWidth', randomInt(1, 8));
+
+    EQUIP.forEach(e => setChecked(e.toggle, Math.random() < 0.6));
+    const withStorage = Math.random() < 0.85;
+    setChecked('showStorage', withStorage);
+    setField('storageCapacity', randomInt(1, 6));
+
+    const withCompanion = Math.random() < 0.35;
+    setChecked('showCompanion', withCompanion);
+    setField('companionIcon', withCompanion ? randomPick(RANDOM_COMPANIONS) : '');
+
+    const accentIdx = Math.floor(Math.random() * PALETTE.length);
+    selectedPalette = PALETTE[accentIdx];
+    document.querySelectorAll('.swatch').forEach(el => el.classList.toggle('active', Number(el.dataset.idx) === accentIdx));
+    render();
+  }
+  document.getElementById('randomHeroBtn').addEventListener('click', randomizeHero);
 
   // collapsible groups in the panel (state per group position in localStorage)
   (function(){
@@ -1619,6 +1865,11 @@
     if(story) s.st = story;
     const species = document.getElementById('heroSpecies').value;
     if(species) s.sp = species;
+    const background = document.getElementById('heroBackground').value;
+    if(background) s.bg = background;
+    const frameStyle = document.getElementById('heroFrameStyle').value;
+    if(frameStyle) s.fs = frameStyle;
+    if(document.getElementById('showCompanion').checked) s.cp = document.getElementById('companionIcon').value;
     const bw = parseInt(document.getElementById('heroBorderWidth').value, 10);
     if(!isNaN(bw) && bw !== BORDER_DEFAULT_WIDTH) s.bw = bw;
     const bc = document.getElementById('heroBorderColor').value.toLowerCase();
@@ -1656,6 +1907,10 @@
   const LEGACY_SPECIES_CLASSES = ['goblin', 'elf', 'dwarf'];
   function shareClassValues(){
     return SHARE_CLASS_VALUES;
+  }
+
+  function shareBackgroundValues(){
+    return Array.from(document.getElementById('heroBackground').options).map(o => o.value);
   }
 
   function shareSpeciesValues(){
@@ -1811,25 +2066,49 @@
       // optional 5th field (story); without a story the code stays identical to the 4-field format
       // 6th field: equipment slots, 7th field: species (position in the species list, 1 character, 0 = none)
       // 8th field: portrait border = width (1 character, base 36, default 3) + optional color (6 hex digits)
+      // 9th field: companion/mount hexagon = symbol (may be empty); the field is only present if the hexagon is shown
+      // 10th field: background (position in the background list, 1 character); if the hexagon is off, the 9th field is the marker \u0001
+      const hasCm = s.cp !== undefined;
+      const hasBg = s.bg !== undefined;
+      // 11th field: portrait frame style (position in FRAME_STYLES, 1 character); if no background is set, the 10th field is "0"
+      const hasFrame = s.fs !== undefined;
+      const hasLate = hasCm || hasBg || hasFrame;
       const fieldList = [s.n, s.e, s.i, s.a];
-      if(s.st !== undefined || s.eq !== undefined || s.sp !== undefined || s.bw !== undefined || s.bc !== undefined){
+      if(s.st !== undefined || s.eq !== undefined || s.sp !== undefined || s.bw !== undefined || s.bc !== undefined || hasLate){
         if(s.st !== undefined && typeof s.st !== 'string') return null;
         fieldList.push(s.st !== undefined ? s.st : '');
-        if(s.eq !== undefined || s.sp !== undefined || s.bw !== undefined || s.bc !== undefined){
+        if(s.eq !== undefined || s.sp !== undefined || s.bw !== undefined || s.bc !== undefined || hasLate){
           if(s.eq !== undefined && (!Number.isInteger(s.eq) || s.eq < 1 || s.eq > 511)) return null;
           fieldList.push(s.eq !== undefined ? s.eq.toString(36) : '0');   // 1 hand 1, 2 helmet, 4 chest, 8 pants, 16 shoes, 32 hand 2, 64 belt, 256 side layout
-          if(s.sp !== undefined || s.bw !== undefined || s.bc !== undefined){
+          if(s.sp !== undefined || s.bw !== undefined || s.bc !== undefined || hasLate){
             let spIdx = 0;
             if(s.sp !== undefined){
               spIdx = shareSpeciesValues().indexOf(s.sp);
               if(spIdx < 1 || spIdx > 35) return null;
             }
             fieldList.push(spIdx.toString(36));
-            if(s.bw !== undefined || s.bc !== undefined){
+            if(s.bw !== undefined || s.bc !== undefined || hasLate){
               const bw = s.bw !== undefined ? s.bw : BORDER_DEFAULT_WIDTH;
               if(!Number.isInteger(bw) || bw < 0 || bw > 12) return null;
               if(s.bc !== undefined && !/^[0-9a-f]{6}$/.test(s.bc)) return null;
               fieldList.push(bw.toString(36) + (s.bc !== undefined ? s.bc : ''));
+              if(hasLate){
+                if(hasCm && typeof s.cp !== 'string') return null;
+                fieldList.push(hasCm ? s.cp : '\u0001');
+                if(hasBg || hasFrame){
+                  let bgIdx = 0;
+                  if(hasBg){
+                    bgIdx = shareBackgroundValues().indexOf(s.bg);
+                    if(bgIdx < 1 || bgIdx > 35) return null;
+                  }
+                  fieldList.push(bgIdx.toString(36));
+                  if(hasFrame){
+                    const frIdx = FRAME_STYLES.indexOf(s.fs);
+                    if(frIdx < 1 || frIdx > 35) return null;
+                    fieldList.push(frIdx.toString(36));
+                  }
+                }
+              }
             }
           }
         }
@@ -1877,7 +2156,7 @@
 
     const joined = (flags & 4) ? alphabetDecode(p[1]) : unescapeShareText(p[1]);
     const fields = joined.split(SHARE_SEP);
-    if(fields.length < 4 || fields.length > 8) throw bad();
+    if(fields.length < 4 || fields.length > 11) throw bad();
 
     const s = {
       v: 3,
@@ -1905,11 +2184,25 @@
       if(spVal === undefined || (spIdx < 1 && fields.length === 7)) throw bad();
       if(spIdx >= 1) s.sp = spVal;
     }
-    if(fields.length === 8){
+    if(fields.length >= 8){
       if(!/^[0-9a-c]([0-9a-f]{6})?$/.test(fields[7])) throw bad();
       const bw = parseInt(fields[7][0], 36);
       if(bw !== BORDER_DEFAULT_WIDTH) s.bw = bw;
       if(fields[7].length === 7) s.bc = fields[7].slice(1);
+    }
+    if(fields.length >= 9 && fields[8] !== '\u0001') s.cp = fields[8];
+    if(fields.length >= 10){
+      if(!/^[0-9a-z]$/.test(fields[9])) throw bad();
+      const bgIdx = parseInt(fields[9], 36);
+      const bgVal = shareBackgroundValues()[bgIdx];
+      if(bgVal === undefined || (bgIdx < 1 && fields.length === 10)) throw bad();
+      if(bgIdx >= 1) s.bg = bgVal;
+    }
+    if(fields.length === 11){
+      if(!/^[0-9a-z]$/.test(fields[10])) throw bad();
+      const frVal = FRAME_STYLES[parseInt(fields[10], 36)];
+      if(frVal === undefined || frVal === '') throw bad();
+      s.fs = frVal;
     }
     if(flags & 8) eq |= 1;     // earlier links: weapon flag (now hand 1)
     if(flags & 16) eq |= 30;   // earlier links: armor flag = all four armor pieces
@@ -1981,6 +2274,11 @@
     EQUIP.forEach(e => setChecked(e.toggle, !!(s.eq & e.bit)));
     setChecked('equipSide', !!(s.eq & 256));
     setVal('storageCapacity', storageCapacity);
+    document.getElementById('heroBackground').value = (s.bg !== undefined && BACKGROUNDS[s.bg]) ? s.bg : '';
+    document.getElementById('heroFrameStyle').value = (s.fs !== undefined && FRAME_STYLES.indexOf(s.fs) > 0) ? s.fs : '';
+    const cpOn = typeof s.cp === 'string';
+    document.getElementById('showCompanion').checked = cpOn;
+    document.getElementById('companionIcon').value = cpOn ? s.cp : '';
     document.getElementById('heroBorderWidth').value = (Number.isInteger(s.bw) && s.bw >= 0 && s.bw <= 12) ? s.bw : BORDER_DEFAULT_WIDTH;
     document.getElementById('heroBorderColor').value = (typeof s.bc === 'string' && /^[0-9a-fA-F]{6}$/.test(s.bc)) ? '#' + s.bc.toLowerCase() : BORDER_DEFAULT_COLOR;
     heroImageData = img || null;

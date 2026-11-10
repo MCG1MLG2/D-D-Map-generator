@@ -29,6 +29,16 @@
   .footer-row{margin-top:22px;padding-top:14px;border-top:1px dashed var(--parchment-shadow)}
   .pouch-slots{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
   .pouch-slot{width:62px;height:62px;background:var(--slot-bg,rgba(230,190,90,.35));border:2px solid var(--slot-border,#8a7142);border-radius:8px}
+  .face-hidden{display:none!important}
+  .box + .box{margin-top:14px}
+  .box.phase{border-color:var(--crimson);background:rgba(124,32,32,.08)}
+  .pip.phase2{border-color:var(--crimson);box-shadow:inset 0 0 0 2px rgba(124,32,32,.5)}
+  .elem-grid{display:grid;grid-template-columns:1fr 150px;gap:10px 12px;align-items:center}
+  .elem-grid label{margin:0}
+  .elem-row{display:flex;flex-wrap:wrap;gap:10px 22px}
+  .elem-grp .chips{display:flex;flex-wrap:wrap;gap:5px}
+  .chip{display:inline-flex;align-items:center;padding:2px 9px;border:1px solid var(--parchment-shadow);border-radius:12px;background:rgba(255,255,255,.35);font-size:.84rem}
+  .box.mb{margin-bottom:18px}
   details.cat{border-top:1px solid #4a3c28;margin-bottom:6px}
   details.cat>summary{display:flex;align-items:center;justify-content:space-between;cursor:pointer;list-style:none;padding:13px 4px;font-family:'Cinzel',serif;font-weight:700;font-size:.95rem;letter-spacing:.06em;color:var(--gold-bright);user-select:none}
   details.cat>summary::-webkit-details-marker{display:none}
@@ -72,13 +82,13 @@
   .stage{display:flex;align-items:center;justify-content:center;padding:50px 30px}
   @media(min-width:901px){
     .stage{align-self:start;position:sticky;top:0;height:100vh;overflow:auto}
-    .stage #card{margin:auto;flex:0 0 auto}
+    .stage #card,.stage #cardBack{margin:auto;flex:0 0 auto}
   }
-  #card{width:520px;min-height:620px;position:relative;padding:34px 38px 30px;color:var(--ink);border-radius:2px;
+  #card,#cardBack{width:520px;min-height:620px;position:relative;padding:34px 38px 30px;color:var(--ink);border-radius:2px;
     background:linear-gradient(155deg,var(--accent-20,rgba(168,130,58,.2)),transparent 65%),radial-gradient(circle at 15% 10%,rgba(255,255,255,.08),transparent 40%),linear-gradient(155deg,var(--tint-1,#e7d9b6) 0%,var(--tint-2,#ded0a6) 60%,var(--tint-3,#d3c092) 100%);
     box-shadow:0 30px 60px -20px rgba(0,0,0,.7),0 0 0 10px #17130f,0 0 0 11px #4a3c28}
-  #card::before{content:"";position:absolute;inset:10px;border:1px solid var(--parchment-shadow);pointer-events:none}
-  #card::after{content:"";position:absolute;inset:15px;border:2px solid var(--accent,#7c2020);opacity:.7;pointer-events:none}
+  #card::before,#cardBack::before{content:"";position:absolute;inset:10px;border:1px solid var(--parchment-shadow);pointer-events:none}
+  #card::after,#cardBack::after{content:"";position:absolute;inset:15px;border:2px solid var(--accent,#7c2020);opacity:.7;pointer-events:none}
   .seal{position:absolute;top:-20px;right:26px;z-index:5;width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--accent-bright,#b34d4d),var(--accent,#7c2020) 70%);border:2px solid #241a08;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 10px rgba(0,0,0,.5)}
   .seal .num{font-family:'Cinzel Decorative',serif;font-size:1.6rem;color:#f3e8c8}
   .seal .cap{position:absolute;bottom:-14px;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)}
@@ -175,8 +185,48 @@
       <summary data-i18n="enemyCat_abilities">Spezies &amp; Fähigkeiten</summary>
       <div class="cat-body">
     <div class="field"><label for="eType" data-i18n="enemyLblType">Spezies</label><select id="eType"></select></div>
+    <button class="btn" id="applyPresetBtn" type="button" style="margin:-8px 0 20px" data-i18n="enemyApplyPreset">⚙ Werte der Spezies übernehmen</button>
     <div class="field"><label for="ePassive" data-i18n="enemyLblPassive">Passive Fähigkeit</label><select id="ePassive"></select></div>
     <div class="field"><label for="eAbility" data-i18n="enemyLblAbility">Spezialangriff</label><textarea id="eAbility" rows="3">Wirft einmal pro Kampf einen Felsbrocken auf ein Ziel in bis zu 3 Feldern Entfernung.</textarea></div>
+      </div>
+    </details>
+    <details class="cat" open data-cat="elements">
+      <summary data-i18n="enemyCat_elements">Schwächen &amp; Resistenzen</summary>
+      <div class="cat-body"><div class="field"><div class="elem-grid" id="elemGrid"></div></div></div>
+    </details>
+    <details class="cat" open data-cat="boss">
+      <summary data-i18n="enemyCat_boss">Boss-Modus</summary>
+      <div class="cat-body">
+    <div class="field"><label class="toggle-row"><input type="checkbox" id="bossOn"><span class="toggle-switch"></span><span class="toggle-label" data-i18n="enemyToggleBoss">Boss-Modus mit Phasen</span></label></div>
+    <div id="bossFields">
+      <div class="field"><label for="bossPct" data-i18n="enemyLblBossPct">Phase 2 ab Lebenspunkten (%)</label><input type="number" id="bossPct" value="50" min="5" max="95"></div>
+      <div class="field"><label for="bossAbility" data-i18n="enemyLblBossAbility">Spezialangriff Phase 2</label><textarea id="bossAbility" rows="3">Verfällt in Raserei und greift in jedem Zug zweimal an.</textarea></div>
+    </div>
+      </div>
+    </details>
+    <details class="cat" open data-cat="minion">
+      <summary data-i18n="enemyCat_minion">Handlanger</summary>
+      <div class="cat-body">
+    <div class="field"><label class="toggle-row"><input type="checkbox" id="minOn"><span class="toggle-switch"></span><span class="toggle-label" data-i18n="enemyToggleMinion">Ruft Handlanger herbei</span></label></div>
+    <div id="minFields">
+      <div class="field row2">
+        <div><label for="minName" data-i18n="enemyLblMinionName">Name</label><input type="text" id="minName" value="Skelettkrieger" maxlength="24"></div>
+        <div><label for="minIcon" data-i18n="playerLblIcon">Symbol (Emoji)</label><input type="text" id="minIcon" value="💀" maxlength="8"></div>
+      </div>
+      <div class="field row2">
+        <div><label for="minHp" data-i18n="enemyLblHp">Lebenspunkte</label><input type="number" id="minHp" value="3" min="1" max="30"></div>
+        <div><label for="minDmg" data-i18n="enemyLblDamage">Schaden</label><input type="number" id="minDmg" value="1" min="0" max="30"></div>
+      </div>
+      <div class="field"><label for="minCount" data-i18n="enemyLblMinionCount">Anzahl pro Beschwörung</label><input type="number" id="minCount" value="2" min="1" max="10"></div>
+    </div>
+      </div>
+    </details>
+    <details class="cat" open data-cat="world">
+      <summary data-i18n="enemyCat_world">Lebensraum &amp; Beschreibung</summary>
+      <div class="cat-body">
+    <div class="field"><label for="eHabitat" data-i18n="enemyLblHabitat">Lebensraum</label><select id="eHabitat"></select></div>
+    <div class="field"><label for="eLocation" data-i18n="enemyLblLocation">Fundort</label><input type="text" id="eLocation" maxlength="60" data-i18n-placeholder="enemyLocationHint" placeholder="z. B. Ruine im Norden"></div>
+    <div class="field"><label for="eDesc" data-i18n="enemyLblDesc">Beschreibung</label><textarea id="eDesc" rows="4" maxlength="600"></textarea></div>
       </div>
     </details>
     <details class="cat" open data-cat="stats">
@@ -217,6 +267,14 @@
       <div class="cat-body">
     <div class="field"><label data-i18n="playerLblAccentColor">Akzentfarbe</label><div class="swatches" id="swatches"></div></div>      </div>
     </details>
+    <details class="cat" open data-cat="back">
+      <summary data-i18n="enemyCat_back">Kartenrückseite (Spielleiter)</summary>
+      <div class="cat-body">
+    <button class="btn" id="flipBtn" type="button" style="margin:0 0 20px">↻ Rückseite zeigen</button>
+    <div class="field"><label for="eLore" data-i18n="enemyLblLore">Lore</label><textarea id="eLore" rows="5" maxlength="900"></textarea></div>
+    <div class="field"><label for="eTactics" data-i18n="enemyLblTactics">Taktik für den Spielleiter</label><textarea id="eTactics" rows="5" maxlength="900"></textarea></div>
+      </div>
+    </details>
 
     <button class="btn main" id="exportBtn" data-i18n="playerExportBtn">Als PNG speichern</button>
     <button class="btn" id="shareToggleBtn" data-i18n="shareToggleBtn">🔗 Teilen</button>
@@ -236,8 +294,11 @@
       <div class="rule"></div>
       <div class="medallion-row">
         <div class="medallion" id="medOut">👹</div>
-        <div class="box ability" id="abBox"><div class="label" data-i18n="enemyLblAbility">Spezialangriff</div><p id="abOut"></p></div>
+        <div class="box ability" id="abBox"><div class="label" id="abLbl" data-i18n="enemyLblAbility">Spezialangriff</div><p id="abOut"></p></div>
       </div>
+      <div class="box phase mb" id="phaseBox" style="display:none"><div class="label" id="phaseLbl"></div><p id="phaseOut"></p></div>
+      <div class="box mb" id="descBox" style="display:none"><div class="label" data-i18n="enemyLblDesc">Beschreibung</div><p id="descOut"></p></div>
+      <div class="box mb" id="habBox" style="display:none"><div class="label" data-i18n="enemyLblHabitat">Lebensraum</div><p id="habOut"></p></div>
       <div class="type-row" id="typeRow" style="display:none">
         <div class="type-icon" id="typeIcon"></div>
         <div><div class="type-name" id="typeName"></div><div class="type-perk" id="typePerk"></div></div>
@@ -246,6 +307,11 @@
         <div class="type-icon" id="passiveIcon"></div>
         <div><div class="type-name" id="passiveName"></div><div class="type-perk" id="passivePerk"></div></div>
       </div>
+      <div class="type-row" id="minionRow" style="display:none">
+        <div class="type-icon" id="minIconOut"></div>
+        <div><div class="type-name" id="minTitle"></div><div class="type-perk" id="minStats"></div></div>
+      </div>
+      <div class="box mb" id="elemBox" style="display:none"><div class="elem-row" id="elemOut"></div></div>
       <div class="stats" id="stats">
         <div class="stat" id="dmgBox"><b id="dmgOut">0</b><span data-i18n="enemyLblDamage">Schaden</span></div>
         <div class="stat" id="moveBox"><b id="moveOut">0</b><span data-i18n="enemyStatMove">Bewegung</span></div>
@@ -256,6 +322,13 @@
       <div class="footer-row" id="footerRow" style="display:none">
         <div class="track"><div class="label"><span>💰</span> <span data-i18n="playerLblInventory">Inventar</span></div><div class="pouch-slots" id="pouchSlots"></div></div>
       </div>
+    </div>
+    <div id="cardBack" class="face-hidden">
+      <div class="seal"><span class="num" id="threatOutB"></span><span class="cap" data-i18n="enemyCapThreat">Gefahr</span></div>
+      <div class="header"><h2 id="nameOutB"></h2><div class="epithet" id="epiOutB"></div></div>
+      <div class="rule"></div>
+      <div class="box" id="loreBox" style="display:none"><div class="label" data-i18n="enemyLblLore">Lore</div><p id="loreOut"></p></div>
+      <div class="box" id="tacBox" style="display:none"><div class="label" data-i18n="enemyLblTactics">Taktik für den Spielleiter</div><p id="tacOut"></p></div>
     </div>
   </div>
 </div>
@@ -305,6 +378,55 @@
     const o = document.createElement('option');
     o.value = pa.id; o.textContent = pa.name; o.setAttribute('data-i18n', 'enemyPassive_' + pa.id);
     passiveSel.appendChild(o);
+  });
+
+  // Elemente für Schwächen/Resistenzen (neue nur ans ENDE anhängen: Position steckt im Teilen-Link)
+  const ELEMENTS = [
+    { id:'fire',      icon:'🔥', name:'Feuer' },
+    { id:'ice',       icon:'❄️', name:'Eis' },
+    { id:'silver',    icon:'🥈', name:'Silber' },
+    { id:'lightning', icon:'⚡', name:'Blitz' },
+    { id:'poison',    icon:'☠️', name:'Gift' },
+    { id:'holy',      icon:'✨', name:'Heilig' },
+    { id:'dark',      icon:'🌑', name:'Dunkel' },
+    { id:'magic',     icon:'🔮', name:'Magie' }
+  ];
+  const HABITATS = [
+    { id:'forest',    icon:'🌲', name:'Wald' },
+    { id:'mountains', icon:'⛰️', name:'Gebirge' },
+    { id:'harbor',    icon:'⚓', name:'Hafen' },
+    { id:'swamp',     icon:'🐸', name:'Sumpf' },
+    { id:'desert',    icon:'🏜️', name:'Wüste' },
+    { id:'ruins',     icon:'🏛️', name:'Ruinen' },
+    { id:'cave',      icon:'🕳️', name:'Höhle' },
+    { id:'plains',    icon:'🌾', name:'Ebene' }
+  ];
+  // Voreinstellungen je Spezies (w = Schwäche, r = Resistenz, i = Immunität)
+  const PRESETS = {
+    undead:    { hp:14, ar:2, dmg:4, mv:2, passive:'regen',    el:{ fire:'w', holy:'w', ice:'r', poison:'i' } },
+    beast:     { hp:12, ar:1, dmg:4, mv:4, passive:'pack',     el:{ fire:'w' } },
+    demon:     { hp:25, ar:4, dmg:6, mv:3, passive:'fear',     el:{ fire:'i', holy:'w', silver:'w' } },
+    dragon:    { hp:40, ar:6, dmg:8, mv:3, passive:'thick',    el:{ fire:'i', ice:'w', lightning:'r' } },
+    goblin:    { hp:6,  ar:0, dmg:3, mv:3, passive:'pack',     el:{} },
+    giant:     { hp:35, ar:3, dmg:8, mv:2, passive:'berserk',  el:{ ice:'r', lightning:'w' } },
+    elemental: { hp:18, ar:2, dmg:5, mv:3, passive:'magicres', el:{ fire:'r', ice:'w', poison:'i' } },
+    construct: { hp:20, ar:5, dmg:4, mv:2, passive:'thick',    el:{ lightning:'w', poison:'i' } },
+    bandit:    { hp:10, ar:1, dmg:4, mv:3, passive:'',         el:{} }
+  };
+  ELEMENTS.forEach(e => {
+    const lb = document.createElement('label'); lb.htmlFor = 'el_' + e.id;
+    const nm = document.createElement('span'); nm.setAttribute('data-i18n', 'enemyElem_' + e.id); nm.textContent = e.name;
+    lb.append(e.icon + ' ', nm);
+    const sl = document.createElement('select'); sl.id = 'el_' + e.id;
+    [['', 'enemyElemNeutral', '—'], ['w', 'enemyElemWeak', 'Schwäche'], ['r', 'enemyElemResist', 'Resistent'], ['i', 'enemyElemImmune', 'Immun']].forEach(([v, k, de]) => {
+      const o = document.createElement('option'); o.value = v; o.setAttribute('data-i18n', k); o.textContent = de; sl.appendChild(o);
+    });
+    $('elemGrid').append(lb, sl);
+  });
+  $('eHabitat').innerHTML = '<option value="" data-i18n="enemyTypeNone">— Keiner —</option>';
+  HABITATS.forEach(h => {
+    const o = document.createElement('option'); o.value = h.id; o.setAttribute('data-i18n', 'enemyHab_' + h.id); o.textContent = h.name;
+    $('eHabitat').appendChild(o);
   });
 
   // Reihenfolge = Position im Teilen-Link, nur ans Ende anhängen
@@ -384,6 +506,47 @@
     med.style.borderColor = $('eBorderC').value || '#241a08';
     const ab = $('eAbility').value.trim();
     $('abOut').textContent = ab; $('abBox').style.display = ab ? '' : 'none';
+    const boss = $('bossOn').checked, pct = Math.max(5, Math.min(95, parseInt($('bossPct').value, 10) || 50)), ab2 = $('bossAbility').value.trim();
+    $('bossFields').style.display = boss ? '' : 'none';
+    $('abLbl').textContent = boss ? tt('enemyPhase1', 'Phase 1') : tt('enemyLblAbility', 'Spezialangriff');
+    $('phaseBox').style.display = (boss && ab2) ? '' : 'none';
+    $('phaseLbl').textContent = tt('enemyPhase2', 'Phase 2') + ' · ≤ ' + pct + ' %';
+    $('phaseOut').textContent = ab2;
+
+    const ds = $('eDesc').value.trim();
+    $('descBox').style.display = ds ? '' : 'none'; $('descOut').textContent = ds;
+    const hb = HABITATS.find(x => x.id === $('eHabitat').value), loc = $('eLocation').value.trim();
+    $('habBox').style.display = (hb || loc) ? '' : 'none';
+    $('habOut').textContent = [hb ? hb.icon + ' ' + tt('enemyHab_' + hb.id, hb.name) : '', loc].filter(Boolean).join(' · ');
+
+    const grp = { w:[], r:[], i:[] };
+    ELEMENTS.forEach(e => { const v = $('el_' + e.id).value; if(grp[v]) grp[v].push(e); });
+    const eo = $('elemOut'); eo.innerHTML = '';
+    [['w', 'enemyElemWeak', 'Schwäche', '⚠️'], ['r', 'enemyElemResist', 'Resistent', '🛡️'], ['i', 'enemyElemImmune', 'Immun', '🚫']].forEach(([k, key, de, ic]) => {
+      if(!grp[k].length) return;
+      const g = document.createElement('div'); g.className = 'elem-grp';
+      const lb = document.createElement('div'); lb.className = 'label'; lb.textContent = ic + ' ' + tt(key, de); g.appendChild(lb);
+      const cs = document.createElement('div'); cs.className = 'chips';
+      grp[k].forEach(e => { const c = document.createElement('span'); c.className = 'chip'; c.textContent = e.icon + ' ' + tt('enemyElem_' + e.id, e.name); cs.appendChild(c); });
+      g.appendChild(cs); eo.appendChild(g);
+    });
+    $('elemBox').style.display = eo.children.length ? '' : 'none';
+
+    const mo = $('minOn').checked;
+    $('minFields').style.display = mo ? '' : 'none';
+    $('minionRow').style.display = mo ? 'flex' : 'none';
+    if(mo){
+      $('minIconOut').textContent = $('minIcon').value || '💀';
+      $('minTitle').textContent = tt('enemyMinionSummons', 'Ruft herbei') + ': ' + (parseInt($('minCount').value, 10) || 1) + '× ' + ($('minName').value || tt('enemyMinionDefault', 'Handlanger'));
+      $('minStats').textContent = '❤️ ' + (parseInt($('minHp').value, 10) || 1) + '   ⚔️ ' + (parseInt($('minDmg').value, 10) || 0);
+    }
+
+    $('nameOutB').textContent = $('nameOut').textContent; $('epiOutB').textContent = $('epiOut').textContent;
+    $('threatOutB').textContent = $('threatOut').textContent;
+    const lo = $('eLore').value.trim(), ta = $('eTactics').value.trim();
+    $('loreBox').style.display = lo ? '' : 'none'; $('loreOut').textContent = lo;
+    $('tacBox').style.display = ta ? '' : 'none'; $('tacOut').textContent = ta;
+    $('flipBtn').textContent = showBack ? tt('enemyFlipFront', '↻ Vorderseite zeigen') : tt('enemyFlipBack', '↻ Rückseite zeigen');
 
     const ty = TYPES.find(x => x.id === $('eType').value);
     $('typeRow').style.display = ty ? 'flex' : 'none';
@@ -411,6 +574,7 @@
     if(asPips) pips($('dmgPips'), dmg, 1, 30);
 
     pips($('hpPips'), $('eHp').value, 1);
+    if(boss){ const hpPips = $('hpPips'), k = Math.floor(hpPips.children.length * pct / 100); Array.from(hpPips.children).forEach((q, i) => { if(i < k) q.classList.add('phase2'); }); }
     const ar = parseInt($('eArmor').value, 10) || 0;
     $('arTrack').style.display = ar > 0 ? '' : 'none';
     if(ar > 0) pips($('arPips'), ar, 1);
@@ -431,6 +595,7 @@
     c.style.setProperty('--tint-1', mix(a, '#e7d9b6', .14));
     c.style.setProperty('--tint-2', mix(a, '#ded0a6', .16));
     c.style.setProperty('--tint-3', mix(a, '#d3c092', .18));
+    $('cardBack').style.cssText = c.style.cssText;
     const s = document.body.style;
     s.setProperty('--accent', a); s.setProperty('--accent-60', mix(a, '#000000', .6)); s.setProperty('--accent-55', alpha(a, .55));
     s.setProperty('--bg-base', mix(a, dark, .10)); s.setProperty('--bg-glow-1', mix(b, dark, .22));
@@ -441,19 +606,23 @@
   });
 
   // ---------- Bild-Upload (quadratisch zugeschnitten, 300 px) ----------
-  let portrait = null;
+  let portrait = null;       // Bild für Karte und PNG (300 px)
+  let portraitShare = null;  // kleinere Kopie (128 px) für den Teilen-Link
   $('uploadBtn').addEventListener('click', () => $('eImage').click());
-  $('removeImgBtn').addEventListener('click', () => { portrait = null; $('eImage').value = ''; render(); });
+  $('removeImgBtn').addEventListener('click', () => { portrait = portraitShare = null; $('eImage').value = ''; render(); });
   $('eImage').addEventListener('change', function(){
     const f = this.files[0]; if(!f) return;
     const fr = new FileReader();
     fr.onload = () => {
       const img = new Image();
       img.onload = () => {
-        const c = document.createElement('canvas'); c.width = c.height = 300;
         const side = Math.min(img.width, img.height);
-        c.getContext('2d').drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, 300, 300);
-        portrait = c.toDataURL('image/jpeg', 0.88); render();
+        const square = (size, q) => {
+          const c = document.createElement('canvas'); c.width = c.height = size;
+          c.getContext('2d').drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, size, size);
+          return c.toDataURL('image/jpeg', q);
+        };
+        portrait = square(300, 0.88); portraitShare = square(128, 0.6); render();
       };
       img.src = fr.result;
     };
@@ -461,6 +630,29 @@
   });
 
   $('borderResetBtn').addEventListener('click', () => { $('eBorderC').value = '#241a08'; $('eBorderW').value = 3; render(); });
+
+  // ---------- Vorder-/Rückseite ----------
+  let showBack = false;
+  function setFace(b){
+    showBack = b;
+    $('card').classList.toggle('face-hidden', b); $('cardBack').classList.toggle('face-hidden', !b);
+    render();
+  }
+  $('flipBtn').addEventListener('click', () => setFace(!showBack));
+  document.querySelector('.panel').addEventListener('focusin', e => {
+    if(!/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
+    setFace(!!e.target.closest('[data-cat="back"]'));
+  });
+
+  // ---------- Voreinstellung der Spezies ----------
+  $('applyPresetBtn').addEventListener('click', () => {
+    const id = $('eType').value, pr = PRESETS[id], ty = TYPES.find(x => x.id === id);
+    if(!pr || !ty) return;
+    $('eHp').value = pr.hp; $('eArmor').value = pr.ar; $('eDmg').value = pr.dmg; $('eMove').value = pr.mv;
+    $('ePassive').value = pr.passive; $('eIcon').value = ty.icon;
+    ELEMENTS.forEach(e => $('el_' + e.id).value = pr.el[e.id] || '');
+    render();
+  });
 
   // ---------- Zufallsgenerator ----------
   const R = a => a[Math.floor(Math.random() * a.length)];
@@ -486,8 +678,14 @@
     $('eArmor').value = Math.min(100, Math.floor(thr / 4) + rnd(0, 1));
     $('eDmg').value = Math.max(1, Math.round(thr / 2) + rnd(0, 2));
     $('eMove').value = rnd(1, 4);
+    ELEMENTS.forEach(e => $('el_' + e.id).value = '');
+    $('el_' + R(ELEMENTS).id).value = 'w';
+    if(Math.random() < .5){ const e2 = $('el_' + R(ELEMENTS).id); if(!e2.value) e2.value = 'r'; }
+    $('bossOn').checked = false; $('minOn').checked = false;
+    $('eHabitat').value = Math.random() < .7 ? R(HABITATS).id : '';
+    ['eLocation', 'eDesc', 'eLore', 'eTactics'].forEach(id => $(id).value = '');
     selectColor(rnd(0, PALETTE.length - 1));
-    portrait = null; $('eImage').value = '';
+    portrait = portraitShare = null; $('eImage').value = '';
     render();
   });
 
@@ -495,9 +693,9 @@
   $('exportBtn').addEventListener('click', () => {
     const st = $('exportStatus');
     st.textContent = tt('playerExportCreating', 'Erstelle Bild …');
-    html2canvas($('card'), { scale: 2, backgroundColor: null }).then(canvas => {
+    html2canvas(showBack ? $('cardBack') : $('card'), { scale: 2, backgroundColor: null }).then(canvas => {
       const a = document.createElement('a');
-      a.download = 'Gegnertafel_' + ($('eName').value || 'gegner').trim().replace(/\s+/g, '_') + '.png';
+      a.download = 'Gegnertafel_' + ($('eName').value || 'gegner').trim().replace(/\s+/g, '_') + (showBack ? '_Rueckseite' : '') + '.png';
       a.href = canvas.toDataURL('image/png'); a.click();
       st.textContent = tt('playerExportSaved', 'Gespeichert!');
       setTimeout(() => st.textContent = '', 2500);
@@ -508,16 +706,32 @@
   function collect(){
     return { v:1, l:currentLang, n:$('eName').value, e:$('eEpi').value, r:$('eThreat').value, i:$('eIcon').value,
       t:TYPES.findIndex(x => x.id === $('eType').value), p:PASSIVES.findIndex(x => x.id === $('ePassive').value), a:$('eAbility').value, hp:$('eHp').value, ar:$('eArmor').value,
-      d:$('eDmg').value, sd:$('eDmgMode').value, bw:$('eBorderW').value, ss:$('showStorage').checked, sca:$('storageCapacity').value, bc:$('eBorderC').value.slice(1), m:$('eMove').value, ac:PALETTE.indexOf(sel) };
+      d:$('eDmg').value, sd:$('eDmgMode').value, bw:$('eBorderW').value, ss:$('showStorage').checked, sca:$('storageCapacity').value, bc:$('eBorderC').value.slice(1), m:$('eMove').value, ac:PALETTE.indexOf(sel),
+      el:ELEMENTS.map(e => $('el_' + e.id).value || '0').join(''),
+      bo:$('bossOn').checked, bp:$('bossPct').value, ba:$('bossAbility').value,
+      mi:$('minOn').checked, mn:$('minName').value, mj:$('minIcon').value, mh:$('minHp').value, md:$('minDmg').value, mc:$('minCount').value,
+      hb:HABITATS.findIndex(x => x.id === $('eHabitat').value), fo:$('eLocation').value, ds:$('eDesc').value, lo:$('eLore').value, ta:$('eTactics').value };
   }
+  // Link = #g=<Einstellungen als base64>[.<Porträt als base64url-JPEG, 128 px>]
   function shareURL(){
-    return location.origin + location.pathname + location.search + '#g=' + encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(collect())))));
+    const json = encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(collect())))));
+    const img = portraitShare ? '.' + portraitShare.replace(/^data:image\/jpeg;base64,/, '').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '') : '';
+    return location.origin + location.pathname + location.search + '#g=' + json + img;
   }
   function applyShared(code){
     const m = code.trim().match(/[#&]g=([^&]+)/);
     const raw = m ? decodeURIComponent(m[1]) : code.trim();
-    const s = JSON.parse(decodeURIComponent(escape(atob(raw))));
+    const parts = raw.split('.');
+    const s = JSON.parse(decodeURIComponent(escape(atob(parts[0]))));
     if(s.v !== 1) throw new Error('invalid');
+    let im = null;
+    if(parts[1] && /^[A-Za-z0-9_-]+$/.test(parts[1]) && parts[1].length % 4 !== 1){
+      try{
+        let b = parts[1].replace(/-/g, '+').replace(/_/g, '/'); while(b.length % 4) b += '=';
+        const bin = atob(b);
+        if(bin.charCodeAt(0) === 0xFF && bin.charCodeAt(1) === 0xD8) im = 'data:image/jpeg;base64,' + b;   // nur echte JPEGs
+      }catch(e){ im = null; }
+    }
     $('eName').value = s.n; $('eEpi').value = s.e; $('eThreat').value = s.r; $('eIcon').value = s.i;
     $('eType').value = s.t >= 0 && TYPES[s.t] ? TYPES[s.t].id : '';
     $('ePassive').value = s.p >= 0 && PASSIVES[s.p] ? PASSIVES[s.p].id : '';
@@ -527,7 +741,14 @@
     $('showStorage').checked = s.ss === true;
     if(s.sca !== undefined) $('storageCapacity').value = s.sca;
     $('eBorderC').value = (typeof s.bc === 'string' && /^[0-9a-fA-F]{6}$/.test(s.bc)) ? '#' + s.bc.toLowerCase() : '#241a08';
-    portrait = null; $('eImage').value = '';
+    const elS = typeof s.el === 'string' ? s.el : '';
+    ELEMENTS.forEach((e, i) => { const ch = elS[i]; $('el_' + e.id).value = (ch === 'w' || ch === 'r' || ch === 'i') ? ch : ''; });
+    $('bossOn').checked = s.bo === true; $('bossPct').value = s.bp !== undefined ? s.bp : 50; $('bossAbility').value = s.ba || '';
+    $('minOn').checked = s.mi === true; $('minName').value = s.mn || ''; $('minIcon').value = s.mj || '💀';
+    $('minHp').value = s.mh !== undefined ? s.mh : 3; $('minDmg').value = s.md !== undefined ? s.md : 1; $('minCount').value = s.mc !== undefined ? s.mc : 2;
+    $('eHabitat').value = (s.hb >= 0 && HABITATS[s.hb]) ? HABITATS[s.hb].id : '';
+    $('eLocation').value = s.fo || ''; $('eDesc').value = s.ds || ''; $('eLore').value = s.lo || ''; $('eTactics').value = s.ta || '';
+    portrait = portraitShare = im; $('eImage').value = '';
     if(s.l && L[s.l]) applyLanguage(s.l); else render();
   }
   $('shareToggleBtn').addEventListener('click', function(){

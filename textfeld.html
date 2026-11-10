@@ -110,6 +110,8 @@
   .wax-row{display:flex;justify-content:flex-end;margin-top:10px}
   .wax{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--accent-bright,#b34d4d),var(--accent,#7c2020) 62%,var(--accent-60,#4a1313) 100%);border:2px solid var(--accent-60,#4a1313);display:flex;align-items:center;justify-content:center;font-family:'Cinzel Decorative',serif;font-size:1.4rem;color:rgba(255,235,200,.88);text-shadow:0 -1px 1px rgba(0,0,0,.45);box-shadow:0 4px 8px rgba(0,0,0,.4)}
   #card.f-runes .wax{font-family:'Noto Sans Runic','Segoe UI Historic','Segoe UI Symbol',sans-serif;font-size:1.3rem}
+  .sub-title{font-family:'Cinzel',serif;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-bright);border-top:1px solid rgba(182,144,63,.35);padding-top:12px;margin:16px 0 12px}
+  .group-body>.sub-title:first-child{border-top:none;padding-top:0;margin-top:0}
   .control-group{margin-bottom:6px}
   .group-title{display:flex;align-items:center;justify-content:space-between;margin:6px 0 16px;padding:8px 0;font-family:'Cinzel',serif;font-size:.95rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-bright);border-bottom:1px solid rgba(182,144,63,.45);cursor:pointer;user-select:none}
   .group-title::after{content:'▾';font-size:.9rem;color:var(--gold)}
@@ -118,6 +120,37 @@
   .control-group.collapsed .group-title{margin-bottom:12px}
   .control-group.collapsed .group-title::after{content:'▸'}
   .control-group.collapsed .group-body{display:none}
+  #card .seal{flex-direction:column-reverse;line-height:1}
+  .seal .cap{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.08em;text-transform:uppercase;color:#f3e8c8;opacity:.9;margin-top:1px}
+  .seal.has-cap .num{font-size:1.25rem}
+  .letter-date{text-align:left;padding-right:70px;margin:0 0 8px}
+  .letter-foot{text-align:right;margin-top:10px}
+  .box p>div{min-height:1.2em}
+  .box p .li{padding-left:1.1em;text-indent:-1.1em}
+  .box p.cols{display:flex;gap:18px}
+  .box p.cols>div{flex:1;min-width:0}
+  #imgBox{padding:6px;text-align:center}
+  #imgOut{max-width:100%;max-height:190px;display:block;margin:0 auto}
+  .dlg-row{display:flex;gap:8px;align-items:flex-end;margin:6px 0}
+  .dlg-row.r{flex-direction:row-reverse}
+  .dlg-av{flex:0 0 38px;width:38px;height:38px;border-radius:50%;border:2px solid #241a08;background:radial-gradient(circle at 35% 30%,#fff6e0,var(--accent,#7c2020) 75%);display:flex;align-items:center;justify-content:center;overflow:hidden;font-family:'Cinzel',serif;font-weight:700;font-size:1rem;color:#241a08}
+  .dlg-av img{width:100%;height:100%;object-fit:cover}
+  .dlg-b{position:relative;flex:1;min-width:0;background:rgba(255,255,255,.55);border:1px solid var(--parchment-shadow);border-radius:10px;padding:6px 10px}
+  .dlg-b::before{content:"";position:absolute;bottom:10px;left:-7px;border:6px solid transparent;border-right-color:var(--parchment-shadow);border-left:0}
+  .dlg-row.r .dlg-b::before{left:auto;right:-7px;border:6px solid transparent;border-left-color:var(--parchment-shadow);border-right:0}
+  .dlg-n{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--crimson)}
+  .box p.hint{margin:4px 0;padding:6px 10px;border:1px dashed var(--parchment-shadow);border-radius:3px;cursor:pointer}
+  .box p.hint.closed{background:rgba(0,0,0,.08);color:#5a4a30;font-style:italic}
+  .box p.hint.open{background:rgba(255,255,255,.35);border-style:solid}
+  .answer{display:flex;align-items:flex-end;gap:8px;margin-top:10px;font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--crimson)}
+  .answer i{flex:1;border-bottom:1.5px solid #5a4a30;height:20px}
+  #backSide{display:none}
+  #card.can-flip{cursor:pointer}
+  #card.flip{animation:flipcard .5s ease}
+  @keyframes flipcard{0%{transform:rotateY(0)}50%{transform:rotateY(90deg)}100%{transform:rotateY(0)}}
+  #orn{position:absolute;inset:0;pointer-events:none;z-index:1}
+  .orn-run{position:absolute;left:30px;right:30px;text-align:center;font-family:'Noto Sans Runic','Segoe UI Historic',sans-serif;font-size:.7rem;letter-spacing:.3em;color:var(--accent,#7c2020);opacity:.85;white-space:nowrap;overflow:hidden}
+  #card.has-orn{padding-top:54px;padding-bottom:54px}
   .fmt-row{display:flex;gap:8px;margin-bottom:8px}
   .fmt-btn{width:38px;height:34px;font-family:'EB Garamond',serif;font-size:1.1rem;background:#0f0c09;border:1px solid #4a3c28;color:var(--gold-bright);border-radius:3px;cursor:pointer;padding:0}
   .fmt-btn:hover{border-color:var(--gold);background:rgba(182,144,63,.12)}
@@ -164,22 +197,24 @@
         <option value="letter" data-i18n="textboxTplLetter">Brief</option>
         <option value="rumors" data-i18n="textboxTplRumors">Gerüchte</option>
         <option value="sign" data-i18n="textboxTplSign">Schild am Stadttor</option>
+        <option value="puzzle" data-i18n="textboxTplPuzzle">Rätselkarte</option>
+        <option value="dialog" data-i18n="textboxTplDialog">Dialog</option>
       </select>
       <button type="button" class="btn" id="tInsertBtn" data-i18n="textboxInsertBtn">Einfügen</button>
     </div>
 
-    </div></div>
+        </div></div>
 
-    <div class="control-group"><h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="textboxGrpHeader">Kopf</h3><div class="group-body">
+    <div class="control-group"><h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="textboxGrpContent">Inhalt</h3><div class="group-body">
+    <div class="sub-title" data-i18n="textboxGrpHeader">Kopf</div>
     <div class="field"><label class="toggle-row"><input type="checkbox" id="tTitleOn" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowTitle">Überschrift anzeigen</span></label></div>
     <div class="field" id="titleField"><label for="tTitle" data-i18n="textboxLblTitle">Überschrift</label><input type="text" id="tTitle" value="Die alte Schenke" maxlength="60"></div>
     <div class="field"><label class="toggle-row"><input type="checkbox" id="tSubOn" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowSub">Untertitel anzeigen</span></label></div>
     <div class="field" id="subField"><label for="tSub" data-i18n="textboxLblSubtitle">Untertitel</label><input type="text" id="tSub" value="Erster Abend in der Stadt" maxlength="60"></div>
     <div class="field"><label class="toggle-row"><input type="checkbox" id="tNumOn" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowNumber">Zahl anzeigen</span></label></div>
-    <div class="field" id="numField"><label for="tNum" data-i18n="textboxLblNumber">Zahl</label><input type="number" id="tNum" value="1" min="0" max="999"></div>
-    </div></div>
-
-    <div class="control-group"><h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="textboxGrpText1">Text</h3><div class="group-body">
+    <div class="field" id="numField"><label for="tNum" data-i18n="textboxLblNumber">Zahl</label><input type="number" id="tNum" value="1" min="0" max="999"><label for="tNumCap" style="margin-top:12px" data-i18n="textboxLblNumCap">Beschriftung im Siegel (z. B. Kap., S.)</label><input type="text" id="tNumCap" maxlength="6"></div>
+    
+    <div class="sub-title" data-i18n="textboxGrpText1">Text</div>
     <div class="field"><label class="toggle-row"><input type="checkbox" id="tBodyOn" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowText">Text anzeigen</span></label></div>
     <div class="field" id="bodyField"><label for="tBody" data-i18n="textboxLblBody">Text</label>
       <div class="fmt-row">
@@ -187,10 +222,10 @@
         <button type="button" class="fmt-btn" data-mark="*" title="Ctrl+I"><i>I</i></button>
         <button type="button" class="fmt-btn" data-mark="__" title="Ctrl+U"><u>U</u></button>
         <button type="button" class="fmt-btn" data-mark="~~"><s>S</s></button>
+        <button type="button" class="fmt-btn" data-list="1" data-target="tBody" title="Liste">•</button>
       </div><textarea id="tBody" rows="8" maxlength="3000">Hinter dem Stadttor liegt eine verrauchte Schenke. Am Tresen sitzt ein einsamer Zwerg und starrt in seinen Krug.</textarea></div>
-    </div></div>
-
-    <div class="control-group"><h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="textboxGrpText2">Zweiter Textbereich</h3><div class="group-body">
+    
+    <div class="sub-title" data-i18n="textboxGrpText2">Zweiter Textbereich</div>
     <div class="field"><label class="toggle-row"><input type="checkbox" id="t2On" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowSection2">Zweiten Textbereich anzeigen</span></label></div>
     <div id="sec2Field">
       <div class="field"><label for="t2Title" data-i18n="textboxLblSection2Title">Überschrift (Textbereich 2)</label><input type="text" id="t2Title" value="Gerüchte am Tresen" maxlength="60"></div>
@@ -200,21 +235,60 @@
           <button type="button" class="fmt-btn" data-mark="*" data-target="t2Body" title="Ctrl+I"><i>I</i></button>
           <button type="button" class="fmt-btn" data-mark="__" data-target="t2Body" title="Ctrl+U"><u>U</u></button>
           <button type="button" class="fmt-btn" data-mark="~~" data-target="t2Body"><s>S</s></button>
+          <button type="button" class="fmt-btn" data-list="1" data-target="t2Body" title="Liste">•</button>
         </div>
         <textarea id="t2Body" rows="6" maxlength="3000">Der Wirt flüstert von einem verschwundenen Händler und einer Karte, die im Keller versteckt sein soll.</textarea></div>
     </div>
+    
     </div></div>
 
-    <div class="control-group"><h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="textboxGrpFonts">Schriftarten</h3><div class="group-body">
+    <div class="control-group"><h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="textboxGrpExtras">Zusatzbereiche</h3><div class="group-body">
+    <div class="sub-title" data-i18n="textboxGrpLetter">Brief</div>
+<div class="field"><label class="toggle-row"><input type="checkbox" id="tLetterOn"><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblLetterOn">Briefkopf anzeigen (Datum &amp; Absender)</span></label></div>
+<div class="field"><label for="tDate" data-i18n="textboxLblDate">Datum</label><input type="text" id="tDate" value="3. Erntemond" maxlength="40"></div>
+<div class="field"><label for="tSender" data-i18n="textboxLblSender">Absender</label><input type="text" id="tSender" value="In Treue, deine Mara" maxlength="60"></div>
+    
+    <div class="sub-title" data-i18n="textboxGrpDialog">Dialog</div>
+<div class="field"><label class="toggle-row"><input type="checkbox" id="tDlgOn"><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblDlgOn">Dialog anzeigen</span></label></div>
+<div id="dlgField"><div class="field"><label for="tDlg" data-i18n="textboxLblDlg">Dialog</label><textarea id="tDlg" rows="5" maxlength="1500">Wirt: Willkommen in meiner Schenke, Fremder!
+Aldric: Habt Ihr noch ein Zimmer frei?
+Wirt: Für Euch immer.</textarea></div>
+<p style="font-size:.78rem;color:var(--text-muted);margin:-8px 0 14px;line-height:1.4" data-i18n="textboxDlgHint">Eine Zeile pro Sprecher: „Name: Text“. Der erste und zweite Sprecher stehen links und rechts.</p>
+<div class="field"><input type="file" id="tDlgImg1" accept="image/*" hidden><button type="button" class="btn" id="tDlgImg1Btn" data-i18n="textboxUploadDlg1">🖼 Porträt Sprecher 1</button><button type="button" class="btn" id="tDlgImg1Rm" hidden data-i18n="textboxRemoveImg">✕ Entfernen</button></div>
+<div class="field"><input type="file" id="tDlgImg2" accept="image/*" hidden><button type="button" class="btn" id="tDlgImg2Btn" data-i18n="textboxUploadDlg2">🖼 Porträt Sprecher 2</button><button type="button" class="btn" id="tDlgImg2Rm" hidden data-i18n="textboxRemoveImg">✕ Entfernen</button></div>
+</div>
+    
+    <div class="sub-title" data-i18n="textboxGrpPuzzle">Rätsel</div>
+<div class="field"><label class="toggle-row"><input type="checkbox" id="tPuzOn"><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblPuzOn">Rätselbereich anzeigen</span></label></div>
+<div id="puzField"><div class="field"><label for="tHints" data-i18n="textboxLblHints">Hinweise (eine pro Zeile)</label><textarea id="tHints" rows="4" maxlength="1500">Es hat vier Beine, aber keine Füße.
+Man sitzt darauf, wenn man müde ist.</textarea></div>
+<p style="font-size:.78rem;color:var(--text-muted);margin:-8px 0 14px;line-height:1.4" data-i18n="textboxHintsNote">Auf der Karte anklicken, um einen Hinweis aufzudecken oder wieder zu verdecken.</p>
+<div class="field"><label class="toggle-row"><input type="checkbox" id="tAnswerOn" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblAnswerOn">Antwortfeld anzeigen</span></label></div>
+</div>
+    
+    <div class="sub-title" data-i18n="textboxGrpBack">Rückseite</div>
+<div class="field"><label class="toggle-row"><input type="checkbox" id="tBackOn"><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblBackOn">Rückseite mit verborgenem Teil</span></label></div>
+<div id="backField"><div class="field"><label for="tBackTitle" data-i18n="textboxLblBackTitle">Überschrift (Rückseite)</label><input type="text" id="tBackTitle" value="Verborgen" maxlength="40"></div>
+<div class="field"><label for="tBackText" data-i18n="textboxLblBackText">Text (Rückseite)</label><textarea id="tBackText" rows="4" maxlength="1500">Unter der Bodendiele hinter dem Tresen liegt ein Schlüssel.</textarea></div>
+<button type="button" class="btn" id="flipBtn" data-i18n="textboxFlipBtn">↻ Umdrehen</button></div>
+    
+    </div></div>
+
+    <div class="control-group"><h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="textboxGrpLook">Aussehen</h3><div class="group-body">
+    <div class="sub-title" data-i18n="textboxGrpLayout">Layout &amp; Zierde</div>
+<div class="field"><label class="toggle-row"><input type="checkbox" id="tCols"><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblCols">Text in zwei Spalten</span></label></div>
+<div class="field"><label for="tOrn" data-i18n="textboxLblOrn">Randverzierung</label><select id="tOrn"><option value="none" data-i18n="textboxOrnNone">Keine</option><option value="vines" data-i18n="textboxOrnVines">Ranken</option><option value="runes" data-i18n="textboxOrnRunes">Runenband</option><option value="wax" data-i18n="textboxOrnWax">Siegelwachs</option></select></div>
+<div class="field"><input type="file" id="tImg" accept="image/*" hidden><button type="button" class="btn" id="tImgBtn" data-i18n="textboxUploadImg">🖼 Bild im Text (Karte, Wappen, Skizze)</button><button type="button" class="btn" id="tImgRm" hidden data-i18n="textboxRemoveImg">✕ Entfernen</button></div>
+    
+    <div class="sub-title" data-i18n="textboxGrpFonts">Schriftarten</div>
     <div class="field"><label for="tFont" data-i18n="textboxLblFontAll">Allgemein (alle Texte)</label><select id="tFont"></select></div>
     <div class="field"><label for="fTitle" data-i18n="textboxLblFontTitle">Überschrift</label><select id="fTitle"></select></div>
     <div class="field"><label for="fSub" data-i18n="textboxLblFontSub">Untertitel</label><select id="fSub"></select></div>
     <div class="field"><label for="fBody" data-i18n="textboxLblFontBody">Text</label><select id="fBody"></select></div>
     <div class="field"><label for="fTitle2" data-i18n="textboxLblFontTitle2">Überschrift 2</label><select id="fTitle2"></select></div>
     <div class="field"><label for="fBody2" data-i18n="textboxLblFontBody2">Text 2</label><select id="fBody2"></select></div>
-    </div></div>
-
-    <div class="control-group"><h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="textboxGrpStyle">Stil &amp; Farbe</h3><div class="group-body">
+    
+    <div class="sub-title" data-i18n="textboxGrpStyle">Stil &amp; Farbe</div>
     <div class="field"><label data-i18n="playerLblAccentColor">Akzentfarbe</label><div class="swatches" id="swatches"></div></div>
 
     <div class="field"><label for="tPaper" data-i18n="textboxLblPaper">Pergament</label>
@@ -231,7 +305,9 @@
       </select></div>
     <div class="field"><label class="toggle-row"><input type="checkbox" id="tWax"><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblWax">Wachssiegel anzeigen</span></label></div>
 
+    
     </div></div>
+
     <button class="btn main" id="exportBtn" data-i18n="playerExportBtn">Als PNG speichern</button>
     <button class="btn" id="shareToggleBtn" data-i18n="shareToggleBtn">🔗 Teilen</button>
     <div class="share-panel collapsed" id="sharePanel">
@@ -245,12 +321,21 @@
 
   <div class="stage">
     <div id="card">
-      <div class="seal" id="seal"><span class="num" id="numOut">1</span></div>
+      <div id="orn"></div>
+      <div class="seal" id="seal"><span class="cap" id="numCap"></span><span class="num" id="numOut">1</span></div>
+      <div class="front" id="frontSide">
+      <div class="letter-date epithet" id="dateOut"></div>
       <div class="header" id="headBox"><h2 id="titleOut"></h2><div class="epithet" id="subOut"></div></div>
       <div class="rule" id="ruleOut"></div>
       <div class="box" id="bodyBox"><p id="bodyOut"></p></div>
+      <div class="box" id="imgBox"><img id="imgOut" alt=""></div>
+      <div class="box" id="dlgBox"></div>
+      <div class="box" id="puzBox"><div id="hintsOut"></div><div class="answer" id="answerOut"><span data-i18n="textboxAnswerLbl">Antwort:</span><i></i></div></div>
       <div class="box" id="box2"><h3 id="t2Out"></h3><p id="body2Out"></p></div>
+      <div class="letter-foot epithet" id="senderOut"></div>
       <div class="wax-row" id="waxRow"><div class="wax" id="waxOut">✦</div></div>
+      </div>
+      <div class="back" id="backSide"><div class="header"><h2 id="backTitleOut"></h2></div><div class="rule"></div><div class="box"><p id="backOut"></p></div></div>
     </div>
   </div>
 </div>
@@ -324,8 +409,7 @@
   const alpha = (h, a) => 'rgba(' + rgb(h).join(',') + ',' + a + ')';
 
   // ---------- Formatierung: **fett**, *kursiv*, __unterstrichen__, ~~durchgestrichen~~ ----------
-  function renderFormatted(el, text){
-    el.textContent = '';
+  function fmtInto(el, text){
     const parts = text.split(/(\*\*|__|~~|\*)/);
     const marks = ['**', '*', '__', '~~'], last = {};
     parts.forEach((p, i) => { if(marks.includes(p)) (last[p] = last[p] || []).push(i); });
@@ -352,7 +436,7 @@
   }
   document.querySelectorAll('.fmt-btn').forEach(b => {
     b.addEventListener('mousedown', e => e.preventDefault());
-    b.addEventListener('click', () => wrapSelection(b.dataset.mark, b.dataset.target));
+    b.addEventListener('click', () => b.dataset.list ? listSelection(b.dataset.target) : wrapSelection(b.dataset.mark, b.dataset.target));
   });
   ['tBody', 't2Body'].forEach(id => $(id).addEventListener('keydown', e => {
     if(!(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey) return;
@@ -388,22 +472,34 @@
 
   // ---------- Vorlagen (füllen alle Felder und den Stil) ----------
   const TEMPLATES = {
-    quest:  { title:'Questauftrag', sub:'Gesucht: mutige Abenteurer',
-      body:'**Auftrag:** Befreit das Dorf Eichenfurt von den Wölfen, die seit drei Nächten das Vieh reißen.\n**Ort:** Eichenfurt, einen Tagesmarsch nördlich der Stadt.',
+    quest: { title:'Questauftrag', sub:'Gesucht: mutige Abenteurer',
+      body:'**Auftrag:** Befreit das Dorf Eichenfurt von den Wölfen, die seit drei Nächten das Vieh reißen.\n\n**Ziele:**\n- Spuren der Wölfe im Nordwald finden\n- Den Rudelführer stellen\n- Dem Dorfältesten Bericht erstatten',
       title2:'Belohnung', body2:'50 Goldmünzen und die Gastfreundschaft des ganzen Dorfes.',
-      num:true, font:'normal', paper:'aged', wax:false },
+      num:true, n:1, numCap:'Quest', font:'normal', paper:'aged', wax:false, orn:'vines',
+      back:{ title:'Nur für den Spielleiter', text:'Der Rudelführer ist ein verwandelter Jäger. Wer ihn tötet, wird verflucht.' } },
     letter: { title:'Lieber Aldric,', sub:'Aus Silberbach, im Erntemond',
       body:'ich hoffe, dieser Brief erreicht dich wohlbehalten. Die Straße nach Norden ist nicht mehr sicher, und ich bitte dich, vorsichtig zu sein.\nKomm, sobald du kannst, zur alten Mühle. Ich erwarte dich dort.',
-      title2:'In Treue,', body2:'Mara',
-      num:false, font:'hand', paper:'aged', wax:true },
+      title2:'P. S.', body2:'Bring eine Laterne mit, der Keller ist dunkel.', sender:'In Treue, deine Mara', date:'3. Erntemond',
+      num:false, font:'hand', paper:'aged', wax:true, orn:'none',
+      back:{ title:'Auf der Rückseite', text:'Das Siegel ist unecht. Dieser Brief stammt nicht von Mara.' } },
     rumors: { title:'Gerüchte am Tresen', sub:'Gehört in der Schenke „Zum Goldenen Krug“',
-      body:'• Der Bürgermeister soll nachts heimlich im Keller des Rathauses graben.\n• Ein Fremder im schwarzen Mantel hat nach dem verlassenen Turm gefragt.\n• In den Bergen heulen seit Tagen keine Wölfe mehr, und das gefällt niemandem.',
+      body:'- Der Bürgermeister soll nachts heimlich im Keller des Rathauses graben.\n- Ein Fremder im schwarzen Mantel hat nach dem verlassenen Turm gefragt.\n- In den Bergen heulen seit Tagen keine Wölfe mehr, und das gefällt niemandem.',
       title2:'Wahr oder falsch?', body2:'*Nur eines dieser Gerüchte ist wahr.*',
-      num:false, font:'normal', paper:'normal', wax:false },
-    sign:   { title:'Willkommen in Eichenfurt', sub:'Tore geöffnet von Sonnenaufgang bis Sonnenuntergang',
-      body:'**Waffen** sind innerhalb der Stadtmauern anzubinden.\nZoll: 1 Silbermünze je Wagen, 2 Kupfermünzen je Reiter.',
+      num:false, font:'normal', paper:'stained', wax:false, orn:'none',
+      puz:{ hints:'Es betrifft einen Ort, den niemand mehr betritt.\nDer Wirt weiß mehr, als er sagt.', answer:true } },
+    sign: { title:'Willkommen in Eichenfurt', sub:'Tore geöffnet von Sonnenaufgang bis Sonnenuntergang',
+      body:'**Waffen** sind innerhalb der Stadtmauern anzubinden.\n1. Zoll: 1 Silbermünze je Wagen\n2. Zoll: 2 Kupfermünzen je Reiter\n3. Die Tore schließen bei Sonnenuntergang',
       title2:'Bekanntmachung', body2:'Wer Ärger macht, übernachtet im Turm.',
-      num:false, font:'normal', paper:'aged', wax:false }
+      num:false, font:'medieval', paper:'wood', wax:false, orn:'runes' },
+    puzzle: { title:'Das Rätsel der Sphinx', sub:'Löse es, oder bleibe für immer hier',
+      body:'*Am Morgen geht es auf vier Beinen, am Mittag auf zwei und am Abend auf drei. Was ist es?*',
+      title2:'', body2:'',
+      num:true, n:1, numCap:'Rätsel', font:'fell', paper:'aged', wax:false, orn:'vines',
+      puz:{ hints:'Es wandelt sich im Laufe eines Lebens.\nDer Stock ist sein dritter Freund.', answer:true } },
+    dialog: { title:'An der Zugbrücke', sub:'Ein Gespräch mit der Torwache',
+      body:'', title2:'', body2:'',
+      num:false, font:'normal', paper:'light', wax:false, orn:'none',
+      dlg:'Wache: Halt! Wer will in die Stadt?\nAldric: Nur ein Händler auf der Durchreise.\nWache: Dann zeig mir deine Papiere.' }
   };
   $('tInsertBtn').addEventListener('click', () => {
     const tp = TEMPLATES[$('tTemplate').value];
@@ -411,11 +507,133 @@
     $('tTitle').value = tp.title; $('tSub').value = tp.sub; $('tBody').value = tp.body;
     $('t2Title').value = tp.title2; $('t2Body').value = tp.body2;
     ['tTitleOn', 'tSubOn', 'tBodyOn', 't2On'].forEach(id => $(id).checked = true);
-    $('tNumOn').checked = tp.num;
+    $('tNumOn').checked = tp.num; if(tp.n !== undefined) $('tNum').value = tp.n; $('tNumCap').value = tp.numCap || '';
+    $('tLetterOn').checked = !!tp.sender; $('tSender').value = tp.sender || ''; $('tDate').value = tp.date || '';
     $('tFont').value = tp.font; ELEM_FONTS.forEach(e => $(e[0]).value = ''); $('tPaper').value = tp.paper; $('tWax').checked = tp.wax;
+    $('tOrn').value = tp.orn || 'none'; $('tCols').checked = !!tp.cols;
+    $('tDlgOn').checked = !!tp.dlg; if(tp.dlg) $('tDlg').value = tp.dlg;
+    $('tPuzOn').checked = !!tp.puz; if(tp.puz){ $('tHints').value = tp.puz.hints; $('tAnswerOn').checked = tp.puz.answer; }
+    revealed.length = 0;
+    $('tBackOn').checked = !!tp.back; if(tp.back){ $('tBackTitle').value = tp.back.title; $('tBackText').value = tp.back.text; }
+    showBack = false;
     render();
   });
   document.querySelectorAll('.panel select').forEach(el => el.addEventListener('change', render));
+
+  // ---------- Zeilen, Listen, Spalten ----------
+  function renderFormatted(el, text, cols){
+    el.textContent = ''; el.classList.remove('cols');
+    const lines = text.split('\n');
+    const build = (arr, parent) => arr.forEach(l => {
+      const d = document.createElement('div');
+      const m = /^\s*(?:[-•]|(\d+)\.)\s+/.exec(l);
+      if(m){ d.className = 'li'; d.appendChild(document.createTextNode((m[1] ? m[1] + '.' : '•') + ' ')); l = l.slice(m[0].length); }
+      fmtInto(d, l); parent.appendChild(d);
+    });
+    if(cols && text.trim()){
+      let a = lines, b = [];
+      if(lines.length > 1){
+        const tot = lines.reduce((n, l) => n + l.length + 30, 0); let acc = 0, k = 0;
+        while(k < lines.length && acc < tot / 2) acc += lines[k++].length + 30;
+        a = lines.slice(0, k); b = lines.slice(k);
+      } else { const t = lines[0], i = t.indexOf(' ', Math.floor(t.length / 2)); if(i > 0){ a = [t.slice(0, i)]; b = [t.slice(i + 1)]; } }
+      el.classList.add('cols');
+      [a, b].forEach(arr => { const c = document.createElement('div'); build(arr, c); el.appendChild(c); });
+    } else build(lines, el);
+  }
+  function listSelection(id){
+    const ta = $(id || 'tBody'), v = ta.value, s0 = ta.selectionStart, e0 = ta.selectionEnd;
+    const a = v.lastIndexOf('\n', s0 - 1) + 1; let b = v.indexOf('\n', e0); if(b < 0) b = v.length;
+    const block = v.slice(a, b).split('\n').map(l => /^\s*(?:[-•]|\d+\.)\s/.test(l) ? l : '- ' + l).join('\n');
+    ta.setRangeText(block, a, b, 'end'); ta.focus(); render();
+  }
+
+  // ---------- Bilder (Upload) ----------
+  const IMGS = { tImg: null, tDlgImg1: null, tDlgImg2: null };
+  function readImage(file, max, cb){
+    const r = new FileReader();
+    r.onload = e => { const im = new Image(); im.onload = () => {
+      const k = Math.min(1, max / Math.max(im.width, im.height)), c = document.createElement('canvas');
+      c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      cb(c.toDataURL(file.type === 'image/png' ? 'image/png' : 'image/jpeg', .85));
+    }; im.src = e.target.result; };
+    r.readAsDataURL(file);
+  }
+  [['tImg', 640], ['tDlgImg1', 96], ['tDlgImg2', 96]].forEach(a => {
+    const id = a[0];
+    $(id + 'Btn').addEventListener('click', () => $(id).click());
+    $(id).addEventListener('change', function(){
+      const f = this.files && this.files[0]; if(!f) return;
+      readImage(f, a[1], d => { IMGS[id] = d; $(id + 'Rm').hidden = false; render(); }); this.value = '';
+    });
+    $(id + 'Rm').addEventListener('click', () => { IMGS[id] = null; $(id + 'Rm').hidden = true; render(); });
+  });
+
+  // ---------- Dialog, Rätsel, Rückseite, Verzierungen ----------
+  let showBack = false;
+  const revealed = [];
+  function renderDialog(F, R){
+    const box = $('dlgBox'), on = $('tDlgOn').checked;
+    $('dlgField').style.display = on ? '' : 'none';
+    box.textContent = ''; box.style.display = on ? '' : 'none';
+    if(!on) return;
+    const sp = [];
+    $('tDlg').value.split('\n').forEach(line => {
+      const m = /^\s*([^:]{1,24}):\s*(.+)$/.exec(line); if(!m) return;
+      const name = m[1].trim(); let i = sp.indexOf(name); if(i < 0){ sp.push(name); i = sp.length - 1; }
+      const row = document.createElement('div'); row.className = 'dlg-row' + (i % 2 ? ' r' : '');
+      const av = document.createElement('div'); av.className = 'dlg-av';
+      const im = i === 0 ? IMGS.tDlgImg1 : i === 1 ? IMGS.tDlgImg2 : null;
+      if(im){ const e = document.createElement('img'); e.src = im; e.alt = ''; av.appendChild(e); }
+      else av.textContent = R((Array.from(name)[0] || '?').toUpperCase(), 'bodyOut');
+      const b = document.createElement('div'); b.className = 'dlg-b';
+      const n = document.createElement('div'); n.className = 'dlg-n'; n.textContent = name;
+      const p = document.createElement('p'); FONT_VALUES.forEach(v => { if(F.bodyOut === v) p.classList.add('fx-' + v); });
+      renderFormatted(p, R(m[2], 'bodyOut'));
+      b.appendChild(n); b.appendChild(p); row.appendChild(av); row.appendChild(b); box.appendChild(row);
+    });
+  }
+  function renderPuzzle(F, R){
+    const on = $('tPuzOn').checked, ans = $('tAnswerOn').checked;
+    const hs = $('tHints').value.split('\n').map(x => x.trim()).filter(Boolean);
+    $('puzField').style.display = on ? '' : 'none';
+    $('puzBox').style.display = on && (hs.length || ans) ? '' : 'none';
+    const out = $('hintsOut');
+    $('answerOut').style.display = on && ans ? '' : 'none';
+    // Hinweise nur neu aufbauen, wenn sich etwas geändert hat (sonst geht ein Klick verloren, wenn gerade ein Feld den Fokus verliert)
+    const key = JSON.stringify([on, hs, hs.map((h, i) => !!revealed[i]), F.bodyOut, R('x', 'bodyOut')]);
+    if(out.dataset.k === key) return;
+    out.dataset.k = key; out.textContent = '';
+    if(!on) return;
+    hs.forEach((h, i) => {
+      const p = document.createElement('p'); p.className = 'hint ' + (revealed[i] ? 'open' : 'closed'); p.dataset.i = i;
+      FONT_VALUES.forEach(v => { if(F.bodyOut === v) p.classList.add('fx-' + v); });
+      p.textContent = revealed[i] ? R(h, 'bodyOut') : '🔒 ' + tt('textboxHintLbl', 'Hinweis') + ' ' + (i + 1);
+      out.appendChild(p);
+    });
+  }
+  $('hintsOut').addEventListener('click', e => { const h = e.target.closest('.hint'); if(!h) return; revealed[+h.dataset.i] = !revealed[+h.dataset.i]; render(); });
+  function flipCard(){
+    if(!$('tBackOn').checked) return;
+    const c = $('card'); c.classList.add('flip');
+    setTimeout(() => { showBack = !showBack; render(); }, 250);
+    setTimeout(() => c.classList.remove('flip'), 520);
+  }
+  $('flipBtn').addEventListener('click', flipCard);
+  $('card').addEventListener('click', e => { if(e.target.closest('.hint')) return; flipCard(); });
+  function ornHTML(kind, A){
+    if(kind === 'vines'){
+      const g = (pos, tf) => `<svg style="position:absolute;${pos}" width="46" height="46" viewBox="0 0 46 46"><g transform="${tf}"><g fill="none" stroke="${A}" stroke-width="1.6" stroke-linecap="round"><path d="M3 43C3 22 22 3 43 3"/><path d="M3 30C10 30 14 26 14 19"/><path d="M19 3C19 10 23 14 30 14"/></g><g fill="${A}"><ellipse cx="14" cy="19" rx="3.2" ry="5"/><ellipse cx="30" cy="14" rx="5" ry="3.2"/></g></g></svg>`;
+      return g('left:19px;top:19px', '') + g('right:19px;top:19px', 'translate(46 0) scale(-1 1)') + g('left:19px;bottom:19px', 'translate(0 46) scale(1 -1)') + g('right:19px;bottom:19px', 'translate(46 46) scale(-1 -1)');
+    }
+    if(kind === 'runes'){ const t = 'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛊᛏᛒᛖᛗᛚᛜᛞᛟ'; return `<div class="orn-run" style="top:21px">${t}</div><div class="orn-run" style="bottom:21px">${t}</div>`; }
+    if(kind === 'wax'){
+      const d = (x, l) => `<path d="M${x} 18v${l}" stroke="${A}" stroke-width="7" stroke-linecap="round"/><circle cx="${x}" cy="${18 + l + 2}" r="5" fill="${A}"/>`;
+      return `<svg style="position:absolute;left:0;top:10px;width:100%;height:46px" viewBox="0 0 420 46" preserveAspectRatio="xMidYMin meet"><rect x="26" y="12" width="368" height="8" rx="4" fill="${A}"/>${d(70, 8)}${d(140, 16)}${d(215, 6)}${d(290, 14)}${d(352, 9)}</svg>`;
+    }
+    return '';
+  }
 
   function render(){
     const fnt = $('tFont').value, paper = PAPERS[$('tPaper').value] ? $('tPaper').value : 'normal', cardEl = $('card');
@@ -443,15 +661,36 @@
     $('subOut').textContent = R(sub, 'subOut');
     $('subOut').style.display = sub ? '' : 'none';
     $('headBox').style.display = (title || sub) ? '' : 'none';
-    renderFormatted($('bodyOut'), R(body, 'bodyOut'));
+    renderFormatted($('bodyOut'), R(body, 'bodyOut'), $('tCols').checked);
     $('bodyBox').style.display = body ? '' : 'none';
     $('bodyField').style.display = on ? '' : 'none';
     const o2 = $('t2On').checked, h2 = o2 ? $('t2Title').value.trim() : '', b2 = o2 ? $('t2Body').value.trim() : '';
     $('t2Out').textContent = R(h2, 't2Out'); $('t2Out').style.display = h2 ? '' : 'none';
-    renderFormatted($('body2Out'), R(b2, 'body2Out')); $('body2Out').style.display = b2 ? '' : 'none';
+    renderFormatted($('body2Out'), R(b2, 'body2Out'), $('tCols').checked); $('body2Out').style.display = b2 ? '' : 'none';
     $('box2').style.display = (h2 || b2) ? '' : 'none';
     $('sec2Field').style.display = o2 ? '' : 'none';
     $('ruleOut').style.display = (title || sub) && (body || h2 || b2) ? '' : 'none';
+    // --- erweiterte Funktionen ---
+    [['dateOut', 'subOut'], ['senderOut', 'subOut'], ['backTitleOut', 'titleOut'], ['backOut', 'bodyOut']].forEach(a => {
+      F[a[0]] = F[a[1]]; FONT_VALUES.forEach(v => $(a[0]).classList.toggle('fx-' + v, F[a[0]] === v));
+    });
+    const lt = $('tLetterOn').checked;
+    [['dateOut', 'tDate'], ['senderOut', 'tSender']].forEach(a => {
+      const t = lt ? R($(a[1]).value.trim(), a[0]) : ''; $(a[0]).textContent = t; $(a[0]).style.display = t ? '' : 'none';
+    });
+    const cap = $('tNumCap').value.trim();
+    $('numCap').textContent = cap; $('numCap').style.display = cap ? '' : 'none'; $('seal').classList.toggle('has-cap', !!cap);
+    const orn = $('tOrn').value;
+    cardEl.classList.toggle('has-orn', orn !== 'none'); $('orn').innerHTML = ornHTML(orn, sel.accent);
+    $('imgBox').style.display = IMGS.tImg ? '' : 'none';
+    if(IMGS.tImg && $('imgOut').getAttribute('src') !== IMGS.tImg) $('imgOut').src = IMGS.tImg;
+    renderDialog(F, R); renderPuzzle(F, R);
+    const bk = $('tBackOn').checked; if(!bk) showBack = false;
+    $('backField').style.display = bk ? '' : 'none'; cardEl.classList.toggle('can-flip', bk);
+    $('frontSide').style.display = showBack ? 'none' : ''; $('backSide').style.display = showBack ? 'block' : 'none';
+    $('backTitleOut').textContent = R($('tBackTitle').value.trim(), 'backTitleOut');
+    renderFormatted($('backOut'), R($('tBackText').value.trim(), 'backOut'));
+
 
     const c = $('card'), a = sel.accent, b = sel.bright, dark = '#0a0806';
     c.style.setProperty('--accent', a); c.style.setProperty('--accent-bright', b);
@@ -474,7 +713,7 @@
     st.textContent = tt('playerExportCreating', 'Erstelle Bild …');
     html2canvas($('card'), { scale: 2, backgroundColor: null }).then(canvas => {
       const a = document.createElement('a');
-      a.download = 'Textfeld_' + ($('tTitle').value || 'text').trim().replace(/\s+/g, '_') + '.png';
+      a.download = 'Textfeld_' + ($('tTitle').value || 'text').trim().replace(/\s+/g, '_') + (showBack ? '_Rueckseite' : '') + '.png';
       a.href = canvas.toDataURL('image/png'); a.click();
       st.textContent = tt('playerExportSaved', 'Gespeichert!');
       setTimeout(() => st.textContent = '', 2500);
@@ -482,7 +721,10 @@
   });
 
   // ---------- Teilen per Link (#g=<base64 JSON>) ----------
-  function collect(){ return { v:1, l:currentLang, h:$('tTitle').value, x:$('tBody').value, ac:PALETTE.indexOf(sel), st:$('tSub').value, bo:$('tBodyOn').checked ? 1 : 0, ho:$('tTitleOn').checked ? 1 : 0, so:$('tSubOn').checked ? 1 : 0, n:$('tNum').value, no:$('tNumOn').checked ? 1 : 0, o2:$('t2On').checked ? 1 : 0, h2:$('t2Title').value, x2:$('t2Body').value, f:$('tFont').value, fe:ELEM_FONTS.map(e => $(e[0]).value), pp:$('tPaper').value, wx:$('tWax').checked ? 1 : 0 }; }
+  function collect(){ return { v:1, l:currentLang, h:$('tTitle').value, x:$('tBody').value, ac:PALETTE.indexOf(sel), st:$('tSub').value, bo:$('tBodyOn').checked ? 1 : 0, ho:$('tTitleOn').checked ? 1 : 0, so:$('tSubOn').checked ? 1 : 0, n:$('tNum').value, no:$('tNumOn').checked ? 1 : 0, o2:$('t2On').checked ? 1 : 0, h2:$('t2Title').value, x2:$('t2Body').value, f:$('tFont').value, fe:ELEM_FONTS.map(e => $(e[0]).value), pp:$('tPaper').value, wx:$('tWax').checked ? 1 : 0,
+    lt:$('tLetterOn').checked ? 1 : 0, sd:$('tSender').value, dt:$('tDate').value, nc:$('tNumCap').value, co:$('tCols').checked ? 1 : 0, or:$('tOrn').value,
+    dg:$('tDlgOn').checked ? 1 : 0, dl:$('tDlg').value, pz:$('tPuzOn').checked ? 1 : 0, ph:$('tHints').value, an:$('tAnswerOn').checked ? 1 : 0,
+    bk:$('tBackOn').checked ? 1 : 0, bt:$('tBackTitle').value, bx:$('tBackText').value }; }
   function shareURL(){
     return location.origin + location.pathname + location.search + '#g=' + encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(collect())))));
   }
@@ -497,6 +739,10 @@
     $('t2On').checked = s.o2 === 1; $('t2Title').value = s.h2 || ''; $('t2Body').value = s.x2 || '';
     $('tFont').value = FONT_VALUES.includes(s.f) ? s.f : 'normal';
     ELEM_FONTS.forEach((e, i) => { const v = Array.isArray(s.fe) ? s.fe[i] : ''; $(e[0]).value = (v === 'normal' || FONT_VALUES.includes(v)) ? v : ''; }); $('tPaper').value = PAPERS[s.pp] ? s.pp : 'normal'; $('tWax').checked = s.wx === 1;
+    $('tLetterOn').checked = s.lt === 1; $('tSender').value = s.sd || ''; $('tDate').value = s.dt || ''; $('tNumCap').value = s.nc || '';
+    $('tCols').checked = s.co === 1; $('tOrn').value = ['vines', 'runes', 'wax'].includes(s.or) ? s.or : 'none';
+    $('tDlgOn').checked = s.dg === 1; $('tDlg').value = s.dl || ''; $('tPuzOn').checked = s.pz === 1; $('tHints').value = s.ph || ''; $('tAnswerOn').checked = s.an !== 0;
+    $('tBackOn').checked = s.bk === 1; $('tBackTitle').value = s.bt || ''; $('tBackText').value = s.bx || ''; showBack = false;
     selectColor(s.ac);
     if(s.l && L[s.l]) applyLanguage(s.l); else render();
   }
@@ -551,7 +797,7 @@
 
   // einklappbare Gruppen im Panel (Zustand pro Position in localStorage)
   (function(){
-    const KEY = 'textfeldGroupsCollapsed';
+    const KEY = 'textfeldGroupsCollapsed2';
     let saved = [];
     try { saved = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch(e) { saved = []; }
     if(!Array.isArray(saved)) saved = [];
