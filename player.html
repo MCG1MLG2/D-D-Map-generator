@@ -555,6 +555,7 @@
   }
   #strengthPips .pip{ background:rgba(200,60,60,.28); }
   #willPips .pip{ background:rgba(70,150,80,.28); }
+  #charismaPips .pip{ background:rgba(60,110,215,.38); }
 
   .field .toggle-row{
     display:flex;
@@ -993,6 +994,11 @@
     </div>
 
     <div class="field">
+      <label for="charismaCount" data-i18n="playerLblCharismaCount">Charismapunkte-Felder (0 = ausblenden)</label>
+      <input type="number" id="charismaCount" value="10" min="0" max="30">
+    </div>
+
+    <div class="field">
       <label data-i18n="playerLblAccentColor">Akzentfarbe</label>
       <div class="swatches" id="swatches"></div>
     </div>
@@ -1178,6 +1184,10 @@
         <div class="track">
           <div class="label"><span data-i18n="playerTrackWill">Willenspunkte</span></div>
           <div class="pips" id="willPips"></div>
+        </div>
+        <div class="track" id="charismaTrack">
+          <div class="label"><span data-i18n="playerTrackCharisma">Charismapunkte</span></div>
+          <div class="pips" id="charismaPips"></div>
         </div>
       </div>
 
@@ -1655,6 +1665,9 @@
 
     buildPips(document.getElementById('strengthPips'), strengthCount);
     buildPips(document.getElementById('willPips'), willCount);
+    const charismaCount = Math.max(0, Math.min(30, parseInt(document.getElementById('charismaCount').value, 10) || 0));
+    document.getElementById('charismaTrack').style.display = charismaCount > 0 ? '' : 'none';
+    if(charismaCount > 0) buildPips(document.getElementById('charismaPips'), charismaCount);
 
     const collapse = !document.getElementById('showStorage').checked;
     document.getElementById('storageTrack').classList.toggle('no-storage', collapse);
@@ -1780,6 +1793,7 @@
 
     setField('strengthCount', randomInt(6, 15));
     setField('willCount', randomInt(6, 15));
+    setField('charismaCount', randomInt(3, 12));
 
     setField('heroFrameStyle', randomPick(FRAME_STYLES));
     setField('heroBorderColor', randomPick(RANDOM_BORDER_COLORS));
@@ -1869,6 +1883,8 @@
     if(background) s.bg = background;
     const frameStyle = document.getElementById('heroFrameStyle').value;
     if(frameStyle) s.fs = frameStyle;
+    const charisma = Math.max(0, Math.min(30, parseInt(document.getElementById('charismaCount').value, 10) || 0));
+    if(charisma !== 10) s.ch = String(charisma);
     if(document.getElementById('showCompanion').checked) s.cp = document.getElementById('companionIcon').value;
     const bw = parseInt(document.getElementById('heroBorderWidth').value, 10);
     if(!isNaN(bw) && bw !== BORDER_DEFAULT_WIDTH) s.bw = bw;
@@ -2072,7 +2088,9 @@
       const hasBg = s.bg !== undefined;
       // 11th field: portrait frame style (position in FRAME_STYLES, 1 character); if no background is set, the 10th field is "0"
       const hasFrame = s.fs !== undefined;
-      const hasLate = hasCm || hasBg || hasFrame;
+      // 12th field: charisma point fields (base 36, only if not the default 10); then the 11th field is "0" if no frame style is set
+      const hasCh = s.ch !== undefined;
+      const hasLate = hasCm || hasBg || hasFrame || hasCh;
       const fieldList = [s.n, s.e, s.i, s.a];
       if(s.st !== undefined || s.eq !== undefined || s.sp !== undefined || s.bw !== undefined || s.bc !== undefined || hasLate){
         if(s.st !== undefined && typeof s.st !== 'string') return null;
@@ -2095,17 +2113,24 @@
               if(hasLate){
                 if(hasCm && typeof s.cp !== 'string') return null;
                 fieldList.push(hasCm ? s.cp : '\u0001');
-                if(hasBg || hasFrame){
+                if(hasBg || hasFrame || hasCh){
                   let bgIdx = 0;
                   if(hasBg){
                     bgIdx = shareBackgroundValues().indexOf(s.bg);
                     if(bgIdx < 1 || bgIdx > 35) return null;
                   }
                   fieldList.push(bgIdx.toString(36));
-                  if(hasFrame){
-                    const frIdx = FRAME_STYLES.indexOf(s.fs);
-                    if(frIdx < 1 || frIdx > 35) return null;
+                  if(hasFrame || hasCh){
+                    let frIdx = 0;
+                    if(hasFrame){
+                      frIdx = FRAME_STYLES.indexOf(s.fs);
+                      if(frIdx < 1 || frIdx > 35) return null;
+                    }
                     fieldList.push(frIdx.toString(36));
+                    if(hasCh){
+                      if(typeof s.ch !== 'string' || !SHARE_INT_RE.test(s.ch) || +s.ch > 30) return null;
+                      fieldList.push((+s.ch).toString(36));
+                    }
                   }
                 }
               }
@@ -2156,7 +2181,7 @@
 
     const joined = (flags & 4) ? alphabetDecode(p[1]) : unescapeShareText(p[1]);
     const fields = joined.split(SHARE_SEP);
-    if(fields.length < 4 || fields.length > 11) throw bad();
+    if(fields.length < 4 || fields.length > 12) throw bad();
 
     const s = {
       v: 3,
@@ -2198,11 +2223,16 @@
       if(bgVal === undefined || (bgIdx < 1 && fields.length === 10)) throw bad();
       if(bgIdx >= 1) s.bg = bgVal;
     }
-    if(fields.length === 11){
+    if(fields.length >= 11){
       if(!/^[0-9a-z]$/.test(fields[10])) throw bad();
-      const frVal = FRAME_STYLES[parseInt(fields[10], 36)];
-      if(frVal === undefined || frVal === '') throw bad();
-      s.fs = frVal;
+      const frIdx = parseInt(fields[10], 36);
+      const frVal = FRAME_STYLES[frIdx];
+      if(frVal === undefined || (frIdx < 1 && fields.length === 11)) throw bad();
+      if(frIdx >= 1) s.fs = frVal;
+    }
+    if(fields.length === 12){
+      if(!/^[0-9a-u]$/.test(fields[11])) throw bad();
+      s.ch = String(parseInt(fields[11], 36));
     }
     if(flags & 8) eq |= 1;     // earlier links: weapon flag (now hand 1)
     if(flags & 16) eq |= 30;   // earlier links: armor flag = all four armor pieces
@@ -2270,6 +2300,7 @@
     if(ability !== undefined) document.getElementById('heroAbility').innerHTML = ability;
     setVal('strengthCount', strengthCount);
     setVal('willCount', willCount);
+    document.getElementById('charismaCount').value = (s.ch !== undefined && /^\d+$/.test(String(s.ch)) && +s.ch <= 30) ? String(s.ch) : '10';
     setChecked('showStorage', showStorage);
     EQUIP.forEach(e => setChecked(e.toggle, !!(s.eq & e.bit)));
     setChecked('equipSide', !!(s.eq & 256));
