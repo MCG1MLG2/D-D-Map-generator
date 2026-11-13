@@ -304,6 +304,17 @@ Man sitzt darauf, wenn man müde ist.</textarea></div>
         <option value="stone" data-i18n="textboxPaperStone">Stein</option>
       </select></div>
     <div class="field"><label class="toggle-row"><input type="checkbox" id="tWax"><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblWax">Wachssiegel anzeigen</span></label></div>
+    <div id="waxField">
+      <div class="field"><label for="tWaxSym" data-i18n="textboxLblWaxSym">Symbol im Siegel (leer = Anfangsbuchstabe)</label><input type="text" id="tWaxSym" maxlength="3"></div>
+      <div class="field"><label for="tWaxCol" data-i18n="textboxLblWaxCol">Farbe des Siegels</label><select id="tWaxCol">
+        <option value="accent" data-i18n="textboxWaxColAccent">Akzentfarbe</option><option value="red" data-i18n="textboxWaxColRed">Rot</option>
+        <option value="blue" data-i18n="textboxWaxColBlue">Blau</option><option value="green" data-i18n="textboxWaxColGreen">Grün</option>
+        <option value="black" data-i18n="textboxWaxColBlack">Schwarz</option><option value="gold" data-i18n="textboxWaxColGold">Gold</option>
+        <option value="purple" data-i18n="textboxWaxColPurple">Violett</option></select></div>
+      <div class="field"><label for="tWaxSize" data-i18n="textboxLblWaxSize">Größe des Siegels</label><input type="range" id="tWaxSize" min="36" max="90" step="2" value="52" style="width:100%;accent-color:var(--gold)"></div>
+      <div class="field"><label for="tWaxPos" data-i18n="textboxLblWaxPos">Position des Siegels</label><select id="tWaxPos">
+        <option value="right" data-i18n="textboxPosRight">Rechts</option><option value="center" data-i18n="textboxPosCenter">Mitte</option><option value="left" data-i18n="textboxPosLeft">Links</option></select></div>
+    </div>
 
     
     </div></div>
@@ -509,7 +520,7 @@ Man sitzt darauf, wenn man müde ist.</textarea></div>
     ['tTitleOn', 'tSubOn', 'tBodyOn', 't2On'].forEach(id => $(id).checked = true);
     $('tNumOn').checked = tp.num; if(tp.n !== undefined) $('tNum').value = tp.n; $('tNumCap').value = tp.numCap || '';
     $('tLetterOn').checked = !!tp.sender; $('tSender').value = tp.sender || ''; $('tDate').value = tp.date || '';
-    $('tFont').value = tp.font; ELEM_FONTS.forEach(e => $(e[0]).value = ''); $('tPaper').value = tp.paper; $('tWax').checked = tp.wax;
+    $('tFont').value = tp.font; ELEM_FONTS.forEach(e => $(e[0]).value = ''); $('tPaper').value = tp.paper; $('tWax').checked = tp.wax; $('tWaxSym').value = ''; $('tWaxCol').value = 'accent'; $('tWaxSize').value = 52; $('tWaxPos').value = 'right';
     $('tOrn').value = tp.orn || 'none'; $('tCols').checked = !!tp.cols;
     $('tDlgOn').checked = !!tp.dlg; if(tp.dlg) $('tDlg').value = tp.dlg;
     $('tPuzOn').checked = !!tp.puz; if(tp.puz){ $('tHints').value = tp.puz.hints; $('tAnswerOn').checked = tp.puz.answer; }
@@ -571,6 +582,7 @@ Man sitzt darauf, wenn man müde ist.</textarea></div>
   });
 
   // ---------- Dialog, Rätsel, Rückseite, Verzierungen ----------
+  const WAX_COLORS = { accent: null, red: '#8b1a1a', blue: '#1f3a7a', green: '#1f5a2f', black: '#262626', gold: '#b08a2a', purple: '#5a2a7a' };
   let showBack = false;
   const revealed = [];
   function renderDialog(F, R){
@@ -643,8 +655,14 @@ Man sitzt darauf, wenn man müde ist.</textarea></div>
     ELEM_FONTS.forEach(e => FONT_VALUES.forEach(v => $(e[1]).classList.toggle('fx-' + v, F[e[1]] === v)));
     cardEl.classList.toggle('f-runes', F.titleOut === 'runes');   // Siegel folgt der Überschrift
     Object.keys(PAPERS).forEach(k => cardEl.classList.toggle('p-' + k, paper === k));
-    $('waxRow').style.display = $('tWax').checked ? '' : 'none';
-    $('waxOut').textContent = R((Array.from($('tTitle').value.trim())[0] || '✦').toUpperCase(), 'titleOut');
+    const wOn = $('tWax').checked; $('waxRow').style.display = wOn ? '' : 'none'; $('waxField').style.display = wOn ? '' : 'none';
+    const wsym = Array.from($('tWaxSym').value.trim()).slice(0, 3).join('');
+    const wsz = Math.max(36, Math.min(90, parseInt($('tWaxSize').value, 10) || 52)), wox = $('waxOut'), wc = WAX_COLORS[$('tWaxCol').value];
+    wox.style.width = wox.style.height = wsz + 'px'; wox.style.fontSize = Math.round(wsz * (wsym.length > 1 ? .32 : .42)) + 'px';
+    wox.style.background = wc ? 'radial-gradient(circle at 35% 30%,' + mix(wc, '#ffffff', .6) + ',' + wc + ' 62%,' + mix(wc, '#000000', .55) + ' 100%)' : '';
+    wox.style.borderColor = wc ? mix(wc, '#000000', .55) : '';
+    $('waxRow').style.justifyContent = { left: 'flex-start', center: 'center' }[$('tWaxPos').value] || 'flex-end';
+    $('waxOut').textContent = R(wsym || (Array.from($('tTitle').value.trim())[0] || '✦').toUpperCase(), 'titleOut');
     const tOn = $('tTitleOn').checked, sOn = $('tSubOn').checked, on = $('tBodyOn').checked;
     const title = tOn ? $('tTitle').value.trim() : '', sub = sOn ? $('tSub').value.trim() : '', body = on ? $('tBody').value.trim() : '';
     const nOn = $('tNumOn').checked;
@@ -722,6 +740,7 @@ Man sitzt darauf, wenn man müde ist.</textarea></div>
 
   // ---------- Teilen per Link (#g=<base64 JSON>) ----------
   function collect(){ return { v:1, l:currentLang, h:$('tTitle').value, x:$('tBody').value, ac:PALETTE.indexOf(sel), st:$('tSub').value, bo:$('tBodyOn').checked ? 1 : 0, ho:$('tTitleOn').checked ? 1 : 0, so:$('tSubOn').checked ? 1 : 0, n:$('tNum').value, no:$('tNumOn').checked ? 1 : 0, o2:$('t2On').checked ? 1 : 0, h2:$('t2Title').value, x2:$('t2Body').value, f:$('tFont').value, fe:ELEM_FONTS.map(e => $(e[0]).value), pp:$('tPaper').value, wx:$('tWax').checked ? 1 : 0,
+    wy:$('tWaxSym').value, wc:$('tWaxCol').value, wz:$('tWaxSize').value, wp:$('tWaxPos').value,
     lt:$('tLetterOn').checked ? 1 : 0, sd:$('tSender').value, dt:$('tDate').value, nc:$('tNumCap').value, co:$('tCols').checked ? 1 : 0, or:$('tOrn').value,
     dg:$('tDlgOn').checked ? 1 : 0, dl:$('tDlg').value, pz:$('tPuzOn').checked ? 1 : 0, ph:$('tHints').value, an:$('tAnswerOn').checked ? 1 : 0,
     bk:$('tBackOn').checked ? 1 : 0, bt:$('tBackTitle').value, bx:$('tBackText').value }; }
@@ -739,6 +758,8 @@ Man sitzt darauf, wenn man müde ist.</textarea></div>
     $('t2On').checked = s.o2 === 1; $('t2Title').value = s.h2 || ''; $('t2Body').value = s.x2 || '';
     $('tFont').value = FONT_VALUES.includes(s.f) ? s.f : 'normal';
     ELEM_FONTS.forEach((e, i) => { const v = Array.isArray(s.fe) ? s.fe[i] : ''; $(e[0]).value = (v === 'normal' || FONT_VALUES.includes(v)) ? v : ''; }); $('tPaper').value = PAPERS[s.pp] ? s.pp : 'normal'; $('tWax').checked = s.wx === 1;
+    $('tWaxSym').value = s.wy || ''; $('tWaxCol').value = WAX_COLORS[s.wc] !== undefined ? s.wc : 'accent';
+    $('tWaxSize').value = (+s.wz >= 36 && +s.wz <= 90) ? s.wz : 52; $('tWaxPos').value = ['left', 'center'].includes(s.wp) ? s.wp : 'right';
     $('tLetterOn').checked = s.lt === 1; $('tSender').value = s.sd || ''; $('tDate').value = s.dt || ''; $('tNumCap').value = s.nc || '';
     $('tCols').checked = s.co === 1; $('tOrn').value = ['vines', 'runes', 'wax'].includes(s.or) ? s.or : 'none';
     $('tDlgOn').checked = s.dg === 1; $('tDlg').value = s.dl || ''; $('tPuzOn').checked = s.pz === 1; $('tHints').value = s.ph || ''; $('tAnswerOn').checked = s.an !== 0;
