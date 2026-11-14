@@ -124,11 +124,14 @@
     background:linear-gradient(180deg, var(--gold-bright), var(--gold));
     color:#241a08;
   }
-  body[data-map-type="burg"] .kingdom-only{ display:none !important; }
+  body[data-map-type="burg"] .kingdom-only, body[data-map-type="dungeon"] .kingdom-only{ display:none !important; }
+  body[data-map-type="burg"] .burg-hide{ display:none !important; }
+  body:not([data-map-type="dungeon"]) .dungeon-only{ display:none !important; }
   body:not([data-map-type="burg"]) .castle-only{ display:none !important; }
   .panel-actions{ margin-top:24px; }
   .panel-actions .export-btn{ margin-top:0; }
-  .type-switch{ margin-bottom:12px; }
+  .btn-row.type-switch{ margin-bottom:12px; grid-template-columns:repeat(3, 1fr); gap:6px; }
+  .type-switch .share-btn{ padding:10px 4px; font-size:.78rem; }
   .type-switch .share-btn{ margin-top:0; }
   .btn-row{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
   .btn-row .share-btn{ margin-top:8px; }
@@ -441,6 +444,7 @@
     <div class="btn-row type-switch" id="mapTypeSwitch">
       <button id="mapTypeKingdom" type="button" class="share-btn active" data-i18n="mapTypeKingdom">👑 Königreich</button>
       <button id="mapTypeCastle" type="button" class="share-btn" data-i18n="mapTypeCastle">🏰 Burg</button>
+      <button id="mapTypeDungeon" type="button" class="share-btn" data-i18n="mapTypeDungeon">🕳️ Dungeon</button>
     </div>
 
     <button id="generateBtn" class="export-btn" data-i18n="generateBtn">⚔ Neue Karte erzeugen</button>
@@ -511,6 +515,30 @@
           <div class="castle-buttons" id="peopleButtons"></div>
           <div class="castle-buttons" id="symbolButtons"></div>
           <button type="button" class="castle-reset" id="peopleResetBtn" data-i18n="actionResetBtn">Zurücksetzen</button>
+        </div>
+      </div>
+
+      <div class="control-group dungeon-only">
+        <h3 data-i18n="grpDungeon">Dungeon</h3>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblDungeonOpen">Höhlenform</span>
+          <select id="dungeonOpen">
+            <option value="0">Eng</option>
+            <option value="1" selected>Normal</option>
+            <option value="2">Weit</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblDungeonLiquid">Seen</span>
+          <select id="dungeonLiquid">
+            <option value="0">Keine</option>
+            <option value="1" selected>Wasser</option>
+            <option value="2">Lava</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <span class="f-label" data-i18n="lblDungeonDetails">Höhlendetails</span>
+          <input type="checkbox" id="dungeonDetails" checked>
         </div>
       </div>
 
@@ -2715,12 +2743,12 @@ const LABEL_ICONS = { castle: '🏰', village: '🏘️', region: '🗺️' };
 const LABEL_TITLES = { castle: ['labelKindCastle', 'Burg'], village: ['labelKindVillage', 'Dorf'], region: ['labelKindRegion', 'Region'] };
 const LABEL_MAX = 60;
 const LABEL_STYLES = ['auto', 'plaque', 'tag', 'compact', 'banner', 'scroll', 'wood', 'plain', 'grand'];
-function labelIcon(kind){ return mapType === 'burg' && kind === 'village' ? '🏷️' : LABEL_ICONS[kind]; }
+function labelIcon(kind){ return mapType !== 'koenigreich' && kind === 'village' ? '🏷️' : LABEL_ICONS[kind]; }
 TERRAIN.labels = (() => {
   const $ = id => document.getElementById(id);
   const P = {
     key: 'labels', list: [], placing: null,        // placing: null | a kind (new label) | index (move that label)
-    lists: { koenigreich: [], burg: [] }, curType: 'koenigreich',   // every map has its own names
+    lists: { koenigreich: [], burg: [], dungeon: [] }, curType: 'koenigreich',   // every map has its own names
     on(){ return $('customLabels').checked; },
     active(){ return P.on() && P.placing !== null; },
     clearMode(){ if(P.placing !== null){ P.placing = null; P.update(); } },
@@ -2753,12 +2781,12 @@ TERRAIN.labels = (() => {
       const kinds = $('labelKinds');
       kinds.innerHTML = '';
       LABEL_KINDS.forEach(k => {
-        if(mapType === 'burg' && k === 'castle') return;       // the castle map has no castles to name
+        if(mapType !== 'koenigreich' && k === 'castle') return;       // the castle and dungeon maps have no castles to name
         const b = document.createElement('button');
         b.type = 'button';
         b.className = 'castle-btn' + (P.placing === k ? ' active' : '');
         b.textContent = labelIcon(k);
-        b.title = k === 'village' && mapType === 'burg' ? (t('labelKindField') || 'Feld') : (t(LABEL_TITLES[k][0]) || LABEL_TITLES[k][1]);
+        b.title = k === 'village' && mapType !== 'koenigreich' ? (t('labelKindField') || 'Feld') : (t(LABEL_TITLES[k][0]) || LABEL_TITLES[k][1]);
         b.addEventListener('click', () => P.pick(k));
         kinds.appendChild(b);
       });
@@ -2798,7 +2826,7 @@ TERRAIN.labels = (() => {
         return true;
       }
       let ref;
-      if(kind === 'castle' && mapType === 'burg') return true;
+      if(kind === 'castle' && mapType !== 'koenigreich') return true;
       if(kind === 'castle'){
         let best = -1, bd = Infinity;
         lastCastleCells.forEach((c, i) => { const d = (c.px - x) * (c.px - x) + (c.py - y) * (c.py - y); if(d < bd){ bd = d; best = i; } });
@@ -2864,6 +2892,7 @@ TERRAIN.labels = (() => {
     applyState(s){
       P.lists.koenigreich = P.parse(s.labelList);
       P.lists.burg = P.parse(s.castleLabelList).filter(e => e.kind !== 'castle');
+      P.lists.dungeon = P.parse(s.dungeonLabelList).filter(e => e.kind !== 'castle');
       P.curType = mapType;
       P.list = P.lists[mapType];
       $('customLabels').checked = !!s.customLabels;
@@ -3521,6 +3550,223 @@ function generateCastleMap(seed){
   if(centerKey !== lastCenterKey){ lastCenterKey = centerKey; centerMapFrame(); }
 }
 
+// ---------- Dungeon map (a cave): fields like the kingdom map, but everything underground ----------
+// Jittered-grid points, a Voronoi diagram, a cave carved with a cellular automaton on the field graph
+// (largest cave only), optional pools of water or lava, an entrance, treasure in dead ends and cave details.
+const DUNGEON_ROCK = ['#3a332b', '#403830', '#35302a', '#463d33'];
+const DUNGEON_FLOOR = ['#a39579', '#9a8c70', '#ada084', '#968868'];
+const DUNGEON_WATER = ['#3d6b82', '#46768d'];
+const DUNGEON_LAVA = ['#c4531e', '#d86a2a'];
+
+function generateDungeonMap(seed){
+  const $ = id => document.getElementById(id);
+  const desired = Math.max(100, Math.min(10000, parseInt($('fieldCountInput').value, 10) || 700));
+  const openness = Math.max(0, Math.min(2, parseInt($('dungeonOpen').value, 10) || 0));
+  const liquid = Math.max(0, Math.min(2, parseInt($('dungeonLiquid').value, 10) || 0));   // 0 none, 1 water, 2 lava
+  const details = $('dungeonDetails').checked;
+  const f = v => Math.round(v * 100) / 100;
+
+  const total = Math.round(desired / 0.5);
+  const sc = Math.sqrt(total * 784 / 800000);          // a field is about 28 px wide
+  W = Math.round(1000 * sc); H = Math.round(800 * sc);
+  currentScale = sc;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.style.width = W + 'px';
+  svg.style.height = H + 'px';
+  rngFn = mulberry32((seed ^ 0x2f6e2b1) >>> 0);
+
+  // ----- points and fields -----
+  const spacing = 28;
+  const cols = Math.max(4, Math.round(W / spacing)), rows = Math.max(4, Math.round(H / spacing));
+  const dx = W / cols, dy = H / rows;
+  const points = [];
+  for(let r = 0; r < rows; r++) for(let c = 0; c < cols; c++) points.push([(c + 0.5 + rand(-0.38, 0.38)) * dx, (r + 0.5 + rand(-0.38, 0.38)) * dy]);
+  const n = points.length;
+  const delaunay = d3.Delaunay.from(points);
+  const voronoi = delaunay.voronoi([0, 0, W, H]);
+  const adj = new Array(n);
+  for(let i = 0; i < n; i++) adj[i] = Array.from(delaunay.neighbors(i));
+  const edgeCell = i => points[i][0] < dx * 0.9 || points[i][0] > W - dx * 0.9 || points[i][1] < dy * 0.9 || points[i][1] > H - dy * 0.9;
+
+  // ----- the cave: cellular automaton, keep the largest cave -----
+  const build = p => {
+    let rock = new Uint8Array(n);
+    for(let i = 0; i < n; i++) rock[i] = (edgeCell(i) || rand(0, 1) < p) ? 1 : 0;
+    for(let iter = 0; iter < 5; iter++){
+      const nr = new Uint8Array(n);
+      for(let i = 0; i < n; i++){
+        if(edgeCell(i)){ nr[i] = 1; continue; }
+        let rc = 0;
+        for(const j of adj[i]) rc += rock[j];
+        nr[i] = rc >= adj[i].length * 0.5 ? 1 : 0;
+      }
+      rock = nr;
+    }
+    // largest connected cave
+    const comp = new Int32Array(n).fill(-1);
+    let best = -1, bestSize = 0, cid = 0;
+    for(let i = 0; i < n; i++){
+      if(rock[i] || comp[i] >= 0) continue;
+      const q = [i]; comp[i] = cid;
+      for(let h = 0; h < q.length; h++) for(const j of adj[q[h]]) if(!rock[j] && comp[j] < 0){ comp[j] = cid; q.push(j); }
+      if(q.length > bestSize){ bestSize = q.length; best = cid; }
+      cid++;
+    }
+    for(let i = 0; i < n; i++) if(!rock[i] && comp[i] !== best) rock[i] = 1;
+    return { rock, count: bestSize };
+  };
+  const aim = liquid > 0 ? desired * 1.04 : desired;        // the pools take a few fields away again
+  let p = [0.5, 0.45, 0.39][openness], bestTry = null;
+  for(let attempt = 0; attempt < 14; attempt++){
+    const tryRes = build(p);
+    if(!bestTry || Math.abs(tryRes.count - aim) < Math.abs(bestTry.count - aim)) bestTry = tryRes;
+    if(Math.abs(tryRes.count - aim) <= desired * 0.05) break;
+    p += tryRes.count > aim ? 0.015 : -0.015;
+  }
+  const kind = bestTry.rock;                       // 1 = rock, 0 = cave floor (2 = pool added below)
+
+  // ----- pools of water or lava (only inside the cave, never cutting it in two) -----
+  const floorConnected = () => {
+    let start = -1, count = 0;
+    for(let i = 0; i < n; i++) if(kind[i] === 0){ count++; if(start < 0) start = i; }
+    if(start < 0) return true;
+    const seen = new Uint8Array(n); const q = [start]; seen[start] = 1;
+    for(let h = 0; h < q.length; h++) for(const j of adj[q[h]]) if(kind[j] === 0 && !seen[j]){ seen[j] = 1; q.push(j); }
+    return q.length === count;
+  };
+  if(liquid > 0){
+    const pools = Math.max(1, Math.round(n / 700));
+    const inner = i => kind[i] === 0 && adj[i].every(j => kind[j] !== 1);
+    for(let k = 0; k < pools; k++){
+      const cand = [];
+      for(let i = 0; i < n; i++) if(inner(i)) cand.push(i);
+      if(!cand.length) break;
+      const start = cand[randInt(0, cand.length - 1)];
+      const size = randInt(4, 8 + Math.round(n / 1500));
+      const made = [start]; kind[start] = 2;
+      for(let h = 0; h < made.length && made.length < size; h++){
+        for(const j of adj[made[h]]) if(made.length < size && inner(j)){ kind[j] = 2; made.push(j); }
+      }
+      if(!floorConnected()) made.forEach(i => { kind[i] = 0; });
+    }
+  }
+
+  // ----- numbering (rows or columns, like the kingdom map) -----
+  const floorIdx = [];
+  for(let i = 0; i < n; i++) if(kind[i] === 0) floorIdx.push(i);
+  const cnt = floorIdx.length;
+  const byColumns = $('numberOrder').value === 'spalten';
+  const bandsR = Math.max(1, Math.round(Math.sqrt(cnt * (H / W)))), bandsC = Math.max(1, Math.round(Math.sqrt(cnt * (W / H))));
+  const bandH = H / bandsR, bandW = W / bandsC;
+  const order = floorIdx.slice().sort((a, b) => {
+    const pa = points[a], pb = points[b];
+    if(byColumns){
+      const ca = Math.floor(pa[0] / bandW), cb = Math.floor(pb[0] / bandW);
+      return ca !== cb ? ca - cb : pa[1] - pb[1];
+    }
+    const ra = Math.floor(pa[1] / bandH), rb = Math.floor(pb[1] / bandH);
+    return ra !== rb ? ra - rb : pa[0] - pb[0];
+  });
+  const number = new Int32Array(n);
+  order.forEach((i, k) => { number[i] = k + 1; });
+
+  // ----- entrance, treasure in dead ends, cave details -----
+  const sideTarget = [[W / 2, H], [W / 2, 0], [0, H / 2], [W, H / 2]][randInt(0, 3)];
+  let entrance = -1, bd = Infinity;
+  floorIdx.forEach(i => { const d2 = (points[i][0] - sideTarget[0]) ** 2 + (points[i][1] - sideTarget[1]) ** 2; if(d2 < bd){ bd = d2; entrance = i; } });
+  const floorNb = i => adj[i].filter(j => kind[j] === 0).length;
+  const dead = floorIdx.filter(i => i !== entrance && floorNb(i) <= 2);
+  for(let i = dead.length - 1; i > 0; i--){ const j = randInt(0, i); [dead[i], dead[j]] = [dead[j], dead[i]]; }
+  const chests = new Set(dead.slice(0, 2 + Math.round(desired / 500)));
+  const deco = new Map();                          // cell -> 'stalagmite' | 'crystal' | 'mushroom' | 'bones'
+  if(details){
+    floorIdx.forEach(i => {
+      if(i === entrance || chests.has(i)) return;
+      const rockNb = adj[i].filter(j => kind[j] === 1).length, liqNb = adj[i].some(j => kind[j] === 2);
+      const r = rand(0, 1);
+      if(rockNb >= 2 && r < 0.12) deco.set(i, 'crystal');
+      else if(liqNb && r < 0.4) deco.set(i, 'mushroom');
+      else if(r < 0.13) deco.set(i, 'stalagmite');
+      else if(r > 0.975) deco.set(i, 'bones');
+      else if(!liqNb && r > 0.93 && r <= 0.96) deco.set(i, 'mushroom');
+    });
+  }
+
+  // ----- drawing -----
+  const cells = [];
+  const rockD = DUNGEON_ROCK.map(() => ''), floorD = DUNGEON_FLOOR.map(() => ''), liquidD = [0, 1].map(() => '');
+  const polyD = poly => { let s = ''; for(let k = 0; k < poly.length; k++) s += (k ? 'L' : 'M') + f(poly[k][0]) + ',' + f(poly[k][1]); return s + 'Z'; };
+  const edges = new Map(), wallD = [];
+  let textHtml = '', iconHtml = '';
+  const ink = 'stroke="#2c2013" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"';
+  for(let i = 0; i < n; i++){
+    const poly = voronoi.cellPolygon(i);
+    if(!poly) continue;
+    const mid = polygonCentroid(poly, points[i][0], points[i][1]);
+    const k = kind[i];
+    const d = polyD(poly);
+    if(k === 1) rockD[randInt(0, DUNGEON_ROCK.length - 1)] += d;
+    else if(k === 2) liquidD[randInt(0, 1)] += d;
+    else floorD[randInt(0, DUNGEON_FLOOR.length - 1)] += d;
+    cells.push({ idx: i, poly, px: points[i][0], py: points[i][1], cx: mid.x, cy: mid.y, blocked: k !== 0, isBuilding: false, terrain: k === 1 ? 'rock' : k === 2 ? 'sea' : 'floor', number: k === 0 ? number[i] : 0 });
+    // wall segments: every edge between rock and cave
+    for(let v = 0; v < poly.length - 1; v++){
+      const a = poly[v], b = poly[v + 1];
+      const ka = f(a[0]) + ',' + f(a[1]), kb = f(b[0]) + ',' + f(b[1]);
+      const key = ka < kb ? ka + '|' + kb : kb + '|' + ka;
+      if(edges.has(key)){
+        if((edges.get(key) === 1) !== (k === 1)) wallD.push(`M${f(a[0])},${f(a[1])}L${f(b[0])},${f(b[1])}`);
+        edges.delete(key);
+      } else edges.set(key, k);
+    }
+    if(k !== 0) continue;
+    const ux = mid.x, uy = mid.y;
+    let dyShift = 0;
+    const g = deco.get(i);
+    if(g || chests.has(i) || i === entrance){
+      dyShift = 5;
+      const gy = uy - 5;
+      if(i === entrance){
+        iconHtml += `<rect x="${f(ux - 8)}" y="${f(gy - 6)}" width="16" height="12" rx="2" fill="#2c2013" opacity="0.55"/>`
+          + `<path d="M${f(ux - 7)} ${f(gy + 4)}H${f(ux - 3)}V${f(gy + 1)}H${f(ux + 1)}V${f(gy - 2)}H${f(ux + 5)}V${f(gy - 5)}H${f(ux + 8)}" fill="none" stroke="#e8c76a" stroke-width="1.8" stroke-linejoin="round"/>`;
+      } else if(chests.has(i)){
+        iconHtml += `<rect x="${f(ux - 6)}" y="${f(gy - 4)}" width="12" height="8" rx="1.5" fill="#8a5a22" ${ink}/><path d="M${f(ux - 6)} ${f(gy)}H${f(ux + 6)}" ${ink} fill="none"/><rect x="${f(ux - 1.2)}" y="${f(gy - 1.2)}" width="2.4" height="2.6" fill="#e8c76a"/>`;
+      } else if(g === 'stalagmite'){
+        iconHtml += `<path d="M${f(ux - 7)} ${f(gy + 5)}L${f(ux - 3)} ${f(gy - 5)}L${f(ux + 1)} ${f(gy + 5)}ZM${f(ux)} ${f(gy + 5)}L${f(ux + 4)} ${f(gy - 2)}L${f(ux + 7)} ${f(gy + 5)}Z" fill="#6b6254" stroke="#2f2a22" stroke-width="1" stroke-linejoin="round"/>`;
+      } else if(g === 'crystal'){
+        iconHtml += `<path d="M${f(ux - 6)} ${f(gy + 4)}L${f(ux - 4)} ${f(gy - 5)}L${f(ux - 1.5)} ${f(gy + 4)}ZM${f(ux)} ${f(gy + 5)}L${f(ux + 2)} ${f(gy - 7)}L${f(ux + 5)} ${f(gy + 5)}Z" fill="#9fd8e6" stroke="#2f5d73" stroke-width="1" stroke-linejoin="round" opacity="0.95"/>`;
+      } else if(g === 'mushroom'){
+        iconHtml += `<path d="M${f(ux - 6)} ${f(gy)}Q${f(ux)} ${f(gy - 9)} ${f(ux + 6)} ${f(gy)}Z" fill="#c9a07a" stroke="#4a3320" stroke-width="1" stroke-linejoin="round"/><path d="M${f(ux)} ${f(gy)}V${f(gy + 5)}" stroke="#4a3320" stroke-width="2.2" stroke-linecap="round"/>`;
+      } else {
+        iconHtml += `<circle cx="${f(ux - 3)}" cy="${f(gy - 1)}" r="3" fill="#e7dcc2" ${ink}/><path d="M${f(ux - 1)} ${f(gy + 3)}L${f(ux + 6)} ${f(gy + 4)}M${f(ux + 1)} ${f(gy + 6)}L${f(ux + 6)} ${f(gy + 1)}" stroke="#e7dcc2" stroke-width="2" stroke-linecap="round"/>`;
+      }
+    }
+    textHtml += `<text x="${f(ux)}" y="${f(uy + dyShift + 2.5)}">${number[i]}</text>`;
+  }
+  const layer = el('g', { id: 'dungeonLayer' });
+  let html = '';
+  DUNGEON_ROCK.forEach((c, k) => { if(rockD[k]) html += `<path d="${rockD[k]}" fill="${c}" stroke="#1b1612" stroke-width="0.8"/>`; });
+  DUNGEON_FLOOR.forEach((c, k) => { if(floorD[k]) html += `<path d="${floorD[k]}" fill="${c}" stroke="#3f3325" stroke-width="1"/>`; });
+  const liq = liquid === 2 ? DUNGEON_LAVA : DUNGEON_WATER;
+  liq.forEach((c, k) => { if(liquidD[k]) html += `<path d="${liquidD[k]}" fill="${c}" stroke="${liquid === 2 ? '#5a1f0a' : '#1f3f50'}" stroke-width="1"/>`; });
+  html += `<path d="${wallD.join('')}" fill="none" stroke="#120e0a" stroke-width="2.8" stroke-linecap="round"/>`;
+  html += iconHtml;
+  html += `<g text-anchor="middle" font-family="'Cinzel', serif" font-size="7" fill="#2c2013" opacity="0.85">${textHtml}</g>`;
+  html += `<defs><radialGradient id="dgVignette" cx="50%" cy="50%" r="75%"><stop offset="55%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity="0.45"/></radialGradient></defs><rect x="0" y="0" width="${W}" height="${H}" fill="url(#dgVignette)" pointer-events="none"/>`;
+  layer.innerHTML = html;
+  svg.appendChild(layer);
+
+  lastCells = cells; lastCastleCells = []; lastFieldTotal = cnt;
+  if(castleEdit) castleEdit.tool = null;
+  $('seedLabel').textContent = (t('mapTypeDungeon') || 'Dungeon') + ' #' + currentSeed + ' · ' + cnt + ' ' + LANGUAGES[currentLang].fieldsWord;
+  TERRAIN.labels.update();
+  TERRAIN.people.update();
+  renderLabels();
+  updatePickUI();
+  const centerKey = 'dungeon|' + currentSeed + '|' + W + '|' + H;
+  if(centerKey !== lastCenterKey){ lastCenterKey = centerKey; centerMapFrame(); }
+}
+
 function generateMap(explicitSeed){
   clear();
 
@@ -3534,6 +3780,7 @@ function generateMap(explicitSeed){
   rngFn = mulberry32(seed);
   document.getElementById('seedInput').value = seed;
   if(mapType === 'burg'){ generateCastleMap(seed); return; }
+  if(mapType === 'dungeon'){ generateDungeonMap(seed); return; }
 
   const fieldInput = document.getElementById('fieldCountInput');
   let desiredFields = parseInt(fieldInput.value, 10);
@@ -3685,14 +3932,16 @@ document.getElementById('generateBtn').addEventListener('click', () => generateM
   // everything that only makes sense for the kingdom map
   document.querySelectorAll('#settingsBody .control-group').forEach(g => {
     const key = g.querySelector('h3').getAttribute('data-i18n');
-    if(key !== 'grpMap' && key !== 'grpCastleMap' && key !== 'grpLabels') g.classList.add('kingdom-only');
+    if(key !== 'grpMap' && key !== 'grpCastleMap' && key !== 'grpDungeon' && key !== 'grpLabels') g.classList.add('kingdom-only');
   });
-  ['fieldCountInput', 'showFlowArrows'].forEach(id => { const row = document.getElementById(id).closest('.field-row'); if(row) row.classList.add('kingdom-only'); });
+  [['fieldCountInput', 'burg-hide'], ['showFlowArrows', 'kingdom-only']].forEach(([id, cls]) => { const row = document.getElementById(id).closest('.field-row'); if(row) row.classList.add(cls); });
+  ['dungeonOpen', 'dungeonLiquid', 'dungeonDetails'].forEach(id => document.getElementById(id).addEventListener('change', () => generateMap(currentSeed)));
   ['castleSize', 'castleTowers', 'castleGate', 'castleMoat'].forEach(id => {
     document.getElementById(id).addEventListener('change', () => generateMap(currentSeed));
   });
   document.getElementById('mapTypeKingdom').addEventListener('click', () => setMapType('koenigreich', true));
   document.getElementById('mapTypeCastle').addEventListener('click', () => setMapType('burg', true));
+  document.getElementById('mapTypeDungeon').addEventListener('click', () => setMapType('dungeon', true));
 })();
 // ---------- merchants and people on the castle map: icons placed on tiles ----------
 const CASTLE_PEOPLE = ['merchant', 'guard', 'noble', 'craftsman', 'priest', 'person'];
@@ -3942,11 +4191,12 @@ var castleEdit = {
 
 function setMapType(type, regenerate){
   if(typeof castleEdit !== 'undefined' && castleEdit) castleEdit.tool = null;
-  mapType = type === 'burg' ? 'burg' : 'koenigreich';
+  mapType = type === 'burg' ? 'burg' : type === 'dungeon' ? 'dungeon' : 'koenigreich';
   if(TERRAIN.labels) TERRAIN.labels.switchTo(mapType);
   document.body.dataset.mapType = mapType;
   document.getElementById('mapTypeKingdom').classList.toggle('active', mapType !== 'burg');
   document.getElementById('mapTypeCastle').classList.toggle('active', mapType === 'burg');
+  document.getElementById('mapTypeDungeon').classList.toggle('active', mapType === 'dungeon');
   if(regenerate){
     placingCastle = null; placingMerchant = null; placingAction = null; placingVillage = null;
     TERRAIN_PICKERS.forEach(P => { P.placing = null; });
@@ -4007,6 +4257,10 @@ function collectSettings(){
     customLabels: TERRAIN.labels.toSettings().flag,
     labelList: TERRAIN.labels.toSettings().list,
     castleLabelList: TERRAIN.labels.settingsFor('burg'),
+    dungeonLabelList: TERRAIN.labels.settingsFor('dungeon'),
+    dungeonOpen: document.getElementById('dungeonOpen').value,
+    dungeonLiquid: document.getElementById('dungeonLiquid').value,
+    dungeonDetails: document.getElementById('dungeonDetails').checked,
     customPeople: TERRAIN.people.toSettings().flag,
     castlePeople: TERRAIN.people.toSettings().list,
     mapType,
@@ -4169,9 +4423,9 @@ function encodeCompactSettings(s){
     const moat = s.castleMoat === undefined ? true : !!s.castleMoat;
     const gate = CASTLE_GATES.indexOf(s.castleGate === undefined ? 'unten' : s.castleGate);
     const isDefault = size === 1 && towers === 1 && moat && gate === 0;
-    if(s.mapType !== 'burg' && isDefault) return null;
+    if(s.mapType !== 'burg' && s.mapType !== 'dungeon' && isDefault) return null;
     if(size < 0 || towers < 0 || gate < 0) throw new Error('x');
-    return (s.mapType === 'burg' ? '1' : '0') + size + towers + (moat ? '1' : '0') + gate;
+    return (s.mapType === 'burg' ? '1' : s.mapType === 'dungeon' ? '2' : '0') + size + towers + (moat ? '1' : '0') + gate;
   };
   // 24: castle built by hand: edit flag + blank flag, then runs of equal tiles (key 3 + length 2 + type 1 characters)
   const encCastleEdits = () => {
@@ -4209,6 +4463,24 @@ function encodeCompactSettings(s){
     }
     return out;
   };
+  // 27: dungeon: openness (0-2) + liquid (0 none, 1 water, 2 lava) + details (0/1)
+  const encDungeon = () => {
+    const open = ['0', '1', '2'].indexOf(String(s.dungeonOpen === undefined ? '1' : s.dungeonOpen));
+    const liq = ['0', '1', '2'].indexOf(String(s.dungeonLiquid === undefined ? '1' : s.dungeonLiquid));
+    const det = s.dungeonDetails === undefined ? true : !!s.dungeonDetails;
+    if(s.mapType !== 'dungeon' && open === 1 && liq === 1 && det) return null;
+    if(open < 0 || liq < 0) throw new Error('x');
+    return '' + open + liq + (det ? '1' : '0');
+  };
+  // 28: names on the dungeon map (JSON, base64url like part 25)
+  const encDungeonLabels = () => {
+    const list = Array.isArray(s.dungeonLabelList) ? s.dungeonLabelList : [];
+    if(!list.length) return null;
+    for(const e of list){
+      if(!Array.isArray(e) || e.length < 3 || e.length > 6 || typeof e[e[0] === 2 ? 3 : 2] !== 'string') throw new Error('x');
+    }
+    return btoa(unescape(encodeURIComponent(JSON.stringify(list)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  };
   let tail;
   try{
     tail = [encCastles(), encCastleNumbers(),
@@ -4222,7 +4494,9 @@ function encodeCompactSettings(s){
       encCastleMap(),                                // part 23: map type and castle map options
       encCastleEdits(),                              // part 24: castle built by hand
       encCastleLabels(),                             // part 25: names on the castle map
-      encPeople()];                                  // part 26: merchants and people on the castle map
+      encPeople(),                                   // part 26: merchants and people on the castle map
+      encDungeon(),                                  // part 27: dungeon options
+      encDungeonLabels()];                           // part 28: names on the dungeon map
   } catch(e){ return null; }
   let last = tail.length - 1;
   while(last >= 0 && tail[last] === null) last--;
@@ -4233,7 +4507,7 @@ function encodeCompactSettings(s){
 function decodeCompactSettings(raw){
   const bad = () => new Error('invalid share code');
   const p = raw.split('.');
-  if(p.length < 8 || p.length > 26 || p[0] !== '2') throw bad();
+  if(p.length < 8 || p.length > 28 || p[0] !== '2') throw bad();
   const b36 = str => {
     if(!/^-?[0-9a-z]+$/.test(str)) throw bad();
     const n = parseInt(str, 36);
@@ -4288,6 +4562,18 @@ function decodeCompactSettings(raw){
   s.mapType = 'koenigreich'; s.castleSize = '1'; s.castleTowers = '6'; s.castleMoat = true; s.castleGate = 'unten';
   s.castleEdit = false; s.castleBlank = false; s.castleEdits = [];
   s.castleLabelList = [];
+  s.dungeonOpen = '1'; s.dungeonLiquid = '1'; s.dungeonDetails = true; s.dungeonLabelList = [];
+  if(p.length >= 27 && p[26] !== '0'){
+    if(!/^[0-2][0-2][01]$/.test(p[26])) throw bad();
+    s.dungeonOpen = p[26][0]; s.dungeonLiquid = p[26][1]; s.dungeonDetails = p[26][2] === '1';
+  }
+  if(p.length >= 28 && p[27] !== '0'){
+    if(!/^[A-Za-z0-9_-]+$/.test(p[27])) throw bad();
+    let b = p[27].replace(/-/g, '+').replace(/_/g, '/');
+    while(b.length % 4) b += '=';
+    try{ s.dungeonLabelList = JSON.parse(decodeURIComponent(escape(atob(b)))); }catch(err){ throw bad(); }
+    if(!Array.isArray(s.dungeonLabelList)) throw bad();
+  }
   s.customPeople = false; s.castlePeople = [];
   if(p.length >= 26){
     if(!/^[01]([0-9a-z]{4})*$/.test(p[25])) throw bad();
@@ -4312,8 +4598,8 @@ function decodeCompactSettings(raw){
     }
   }
   if(p.length >= 23 && p[22] !== '0'){          // '0' = placeholder for an absent part
-    if(!/^[01][0-2][0-2][01][0-3]$/.test(p[22])) throw bad();
-    s.mapType = p[22][0] === '1' ? 'burg' : 'koenigreich';
+    if(!/^[0-2][0-2][0-2][01][0-3]$/.test(p[22])) throw bad();
+    s.mapType = p[22][0] === '1' ? 'burg' : p[22][0] === '2' ? 'dungeon' : 'koenigreich';
     s.castleSize = p[22][1];
     s.castleTowers = CASTLE_TOWER_OPTS[+p[22][2]];
     s.castleMoat = p[22][3] === '1';
@@ -4452,6 +4738,9 @@ function applySettings(s){
   const setChecked = (id, v) => { if(v !== undefined){ document.getElementById(id).checked = v; } };
 
   setVal('fieldCountInput', s.fieldCount);
+  setVal('dungeonOpen', s.dungeonOpen !== undefined ? s.dungeonOpen : '1');
+  setVal('dungeonLiquid', s.dungeonLiquid !== undefined ? s.dungeonLiquid : '1');
+  setChecked('dungeonDetails', s.dungeonDetails !== undefined ? !!s.dungeonDetails : true);
   setVal('castleSize', s.castleSize !== undefined ? s.castleSize : '1');
   setVal('castleTowers', s.castleTowers !== undefined ? s.castleTowers : '6');
   setChecked('castleMoat', s.castleMoat !== undefined ? !!s.castleMoat : true);
