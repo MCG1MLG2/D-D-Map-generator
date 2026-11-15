@@ -42,6 +42,9 @@
   .btn.main{background:linear-gradient(180deg,var(--gold-bright),var(--gold));border:1px solid #7a5c22;color:#241a08;}
   .btn.alt{background:transparent;border:1px solid var(--gold);color:var(--gold-bright);font-weight:600;}
   .btn:hover{filter:brightness(1.1);}
+  .btn.alt.on{background:linear-gradient(180deg,var(--gold-bright),var(--gold));color:#241a08;}
+  .share-panel{display:flex;flex-direction:column;gap:8px;margin-top:8px;padding:12px;background:rgba(0,0,0,.25);border:1px solid var(--gold);border-radius:4px;}
+  .share-panel .btn{margin-top:0;}
   .status{font-size:.8rem;color:var(--text-muted);margin-top:8px;min-height:1em;}
   .back{position:fixed;top:20px;left:20px;z-index:20;background:linear-gradient(180deg,var(--parchment),#d3c092);border:1px solid var(--gold);border-radius:6px;padding:8px 14px;box-shadow:0 6px 16px rgba(0,0,0,.5);font-family:'Cinzel',serif;font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;}
 
@@ -97,6 +100,13 @@
     <button class="btn main" id="svgBtn">Als SVG speichern</button>
     <button class="btn alt" id="pngBtn">Als PNG speichern</button>
     <button class="btn alt" id="copyBtn">SVG-Code kopieren</button>
+    <button class="btn alt" id="shareToggleBtn">🔗 Teilen</button>
+    <div class="share-panel" id="sharePanel" hidden>
+      <button class="btn alt" id="copyLinkBtn">📋 Link kopieren</button>
+      <input type="text" id="pasteInput" placeholder="Link oder Code hier einfügen:">
+      <button class="btn main" id="applyBtn">✓ Anwenden</button>
+      <span class="status" id="pasteFb"></span>
+    </div>
     <div class="status" id="status"></div>
   </div>
 
@@ -370,6 +380,80 @@
     if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(svg).then(ok, fallback);
     else fallback();
   });
+
+  // ---------- Teilen (Link oder Code mit allen Kategorien) ----------
+  const b64enc = s => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const b64dec = s => { let b = s.replace(/-/g, '+').replace(/_/g, '/'); while(b.length % 4) b += '='; return decodeURIComponent(escape(atob(b))); };
+
+  function encodeShare(){
+    const d = {};
+    CATS.forEach(c => {
+      const x = D[c.id];
+      d[c.id] = [x.v, ...COLKEYS.map(([k]) => x.col[k].slice(1)), x.mirror ? 1 : 0, x.emoji, x.bg ? x.bg.slice(1) : ''];
+    });
+    return b64enc(JSON.stringify({c: cur, d}));
+  }
+
+  // prüft alles, bevor etwas übernommen wird; bei Fehler bleibt der aktuelle Stand unverändert
+  function decodeShare(text){
+    const t = text.trim(), m = t.match(/[#&]h=([^&\s]+)/);
+    const o = JSON.parse(b64dec(m ? m[1] : t));
+    const hex = /^[0-9a-f]{6}$/i, next = {};
+    CATS.forEach(c => {
+      const a = o.d && o.d[c.id];
+      if(!a) return;
+      const [v, ...r] = a;
+      const max = T[c.id] ? T[c.id].length : 1;
+      if(!Number.isInteger(v) || v < 0 || v >= max || !r.slice(0, 4).every(x => hex.test(x)) ||
+         typeof r[5] !== 'string' || r[5].length > 16 || typeof r[6] !== 'string' || (r[6] !== '' && !hex.test(r[6]))) throw new Error('bad');
+      next[c.id] = {v, col:{m:'#' + r[0], a:'#' + r[1], h:'#' + r[2], o:'#' + r[3]}, mirror: r[4] === 1, emoji: r[5], bg: r[6] ? '#' + r[6] : ''};
+    });
+    if(!Object.keys(next).length || !catOf(o.c)) throw new Error('bad');
+    Object.assign(D, next);
+    cur = o.c;
+  }
+
+  function copyText(text, cb){
+    const fb = () => {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
+      document.body.appendChild(ta); ta.select();
+      let ok = false; try{ ok = document.execCommand('copy'); }catch(e){}
+      document.body.removeChild(ta); cb(ok);
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(() => cb(true), fb);
+    else fb();
+  }
+  function setFb(msg, ok){ const f = $('pasteFb'); f.textContent = msg; f.style.color = ok ? '#7fae6a' : ''; }
+
+  $('shareToggleBtn').addEventListener('click', () => {
+    const p = $('sharePanel');
+    p.hidden = !p.hidden;
+    $('shareToggleBtn').classList.toggle('on', !p.hidden);
+    setFb('');
+    if(!p.hidden){ $('pasteInput').value = ''; $('pasteInput').focus(); }
+  });
+  $('copyLinkBtn').addEventListener('click', () => {
+    const btn = $('copyLinkBtn'), orig = btn.textContent;
+    copyText(location.href.split('#')[0] + '#h=' + encodeShare(), ok => {
+      btn.textContent = ok ? 'Link kopiert' : 'Kopieren nicht möglich';
+      setTimeout(() => btn.textContent = orig, 1800);
+    });
+  });
+  function applyPaste(){
+    const v = $('pasteInput').value.trim();
+    if(!v) return;
+    try{
+      decodeShare(v); render();
+      setFb('Übernommen', true);
+      $('pasteInput').value = '';
+    }catch(e){ setFb('Ungültiger Link oder Code'); }
+  }
+  $('applyBtn').addEventListener('click', applyPaste);
+  $('pasteInput').addEventListener('keydown', e => { if(e.key === 'Enter') applyPaste(); });
+
+  // geöffneter Link mit #h=... lädt die geteilten Icons
+  if(location.hash.indexOf('h=') !== -1){ try{ decodeShare(location.hash); }catch(e){} }
 
   render();
 </script>

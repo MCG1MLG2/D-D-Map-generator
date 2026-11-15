@@ -523,17 +523,17 @@
         <div class="field-row">
           <span class="f-label" data-i18n="lblDungeonOpen">Höhlenform</span>
           <select id="dungeonOpen">
-            <option value="0">Eng</option>
-            <option value="1" selected>Normal</option>
-            <option value="2">Weit</option>
+            <option value="0" data-i18n="dungeonOpenNarrow">Eng</option>
+            <option value="1" selected data-i18n="dungeonOpenNormal">Normal</option>
+            <option value="2" data-i18n="dungeonOpenWide">Weit</option>
           </select>
         </div>
         <div class="field-row">
           <span class="f-label" data-i18n="lblDungeonLiquid">Seen</span>
           <select id="dungeonLiquid">
-            <option value="0">Keine</option>
-            <option value="1" selected>Wasser</option>
-            <option value="2">Lava</option>
+            <option value="0" data-i18n="dungeonLiquidNone">Keine</option>
+            <option value="1" selected data-i18n="dungeonLiquidWater">Wasser</option>
+            <option value="2" data-i18n="dungeonLiquidLava">Lava</option>
           </select>
         </div>
         <div class="field-row">
@@ -882,6 +882,7 @@ function applyLanguage(lang){
   });
   document.getElementById('languageSelect').value = currentLang;
   document.getElementById('settingsBody').querySelectorAll('option').forEach(opt => {
+    if(opt.hasAttribute('data-i18n')) return;
     const label = (s.options && s.options[opt.value] !== undefined) ? s.options[opt.value] : (LANGUAGES.en.options && LANGUAGES.en.options[opt.value]);
     if(label !== undefined) opt.textContent = label;
   });
