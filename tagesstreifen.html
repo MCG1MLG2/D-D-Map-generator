@@ -60,6 +60,9 @@
   .swatches{display:flex; flex-wrap:wrap; gap:10px;}
   .swatch{width:34px; height:34px; border-radius:50%; border:2px solid #000; cursor:pointer;}
   .swatch.active{border-color:var(--parchment); box-shadow:0 0 0 2px var(--gold);}
+  /* eigene Farbe: Farbkreis, darüber ein unsichtbarer Farbwähler */
+  .swatch.custom{position:relative; overflow:hidden; background:conic-gradient(#e0483a, #e8c43a, #5cb85c, #3aa6d8, #7a4fd1, #d84fa6, #e0483a);}
+  .swatch.custom input[type="color"]{position:absolute; left:-8px; top:-8px; width:48px; height:48px; padding:0; border:0; opacity:0; cursor:pointer;}
 
   .field .toggle-row{
     display:flex; align-items:center; gap:12px; cursor:pointer; user-select:none;
@@ -335,7 +338,7 @@
     pasteSettingsError:'Ungültiger Link oder Code',
     dayLblCustom:'Eigene Beschriftung pro Feld',
     dayHintCustom:'Eine Zeile pro Feld, beginnend mit dem ersten Feld (A bzw. 1). Leere Zeile = Standardbeschriftung.',
-    dayLblFieldColor:'Feldfarbe', dayResetColors:'↺ Alle Feldfarben zurücksetzen',
+    dayCustomColor:'Eigene Farbe wählen', dayLblFieldColor:'Feldfarbe', dayResetColors:'↺ Alle Feldfarben zurücksetzen',
     dayHintColor:'Klick auf ein Feld färbt es mit der gewählten Farbe, erneuter Klick mit derselben Farbe entfernt sie.'
   };
   const LANGS = (typeof LANGUAGES !== 'undefined') ? LANGUAGES : { en:{} };
@@ -483,6 +486,30 @@
     swWrap.appendChild(d);
   });
 
+  // Eigene Akzentfarbe: Farbkreis am Ende der Liste öffnet den Farbwähler (Teilen-Link speichert sie als Hex)
+  const toHex = (r, g, b) => '#' + [r, g, b].map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
+  function customPalette(hex){
+    const c = hexToRgb(hex);
+    return { key:'dayCustomColor', custom:true, accent:hex, bright:toHex(c[0]*.55 + 255*.45, c[1]*.55 + 255*.45, c[2]*.55 + 255*.45) };
+  }
+  const customSw = document.createElement('div');
+  customSw.className = 'swatch custom';
+  const customInput = document.createElement('input');
+  customInput.type = 'color';
+  customInput.value = '#c9732b';
+  customSw.appendChild(customInput);
+  swWrap.appendChild(customSw);
+  function showCustom(hex){   // Farbkreis zeigt die gewählte Farbe und gilt als ausgewählt
+    const pal = customPalette(hex);
+    customInput.value = hex;
+    customSw.style.background = 'radial-gradient(circle at 35% 30%, ' + pal.bright + ', ' + pal.accent + ' 75%)';
+    swWrap.querySelectorAll('.swatch').forEach(x => x.classList.toggle('active', x === customSw));
+    return pal;
+  }
+  function useCustom(){ selectedPalette = showCustom(customInput.value.toLowerCase()); render(); }
+  customInput.addEventListener('input', useCustom);
+  customInput.addEventListener('change', useCustom);
+
   // Einzelne Feldfarben: Standardbeschriftung -> Hex-Farbe
   let fieldColors = {};
   // Klick auf ein Feld: in der gewählten Farbe einfärben (gleiche Farbe nochmal = Farbe entfernen)
@@ -535,6 +562,7 @@
     });
     document.title = t('dayHeading');
     document.getElementById('pasteSettingsInput').placeholder = t('pasteSettingsPrompt');
+    customSw.title = t('dayCustomColor') || 'Eigene Farbe wählen';
     document.querySelectorAll('#swatches .swatch').forEach(el => {   // Farbnamen als Tooltip
       const pal = PALETTE[Number(el.dataset.idx)];
       const v = pal && t(pal.key);
@@ -566,7 +594,8 @@
       z: document.getElementById('dNumbers').checked ? 1 : 0,
       h: document.getElementById('dHorizontal').checked ? 1 : 0,
       r: document.getElementById('dReverse').checked ? 1 : 0,
-      a: PALETTE.indexOf(selectedPalette),
+      a: selectedPalette.custom ? 0 : PALETTE.indexOf(selectedPalette),
+      ca: selectedPalette.custom ? selectedPalette.accent.slice(1) : undefined,   // eigene Akzentfarbe (Hex)
       cl: document.getElementById('dCustom').value,
       fc: Object.keys(fieldColors).map(k => k + '=' + fieldColors[k].slice(1)).join(';')   // z. B. "A=b03a2e;C=2a5a86"
     };
@@ -582,7 +611,7 @@
     if(!o || typeof o !== 'object' || o.v !== 1) throw new Error('invalid share code');
     for(const k of ['t', 's']) if(typeof o[k] !== 'string') throw new Error('invalid share code');
     if(!Number.isInteger(o.a) || !PALETTE[o.a]) throw new Error('invalid share code');
-    for(const k of ['cl', 'fc']) if(o[k] !== undefined && typeof o[k] !== 'string') throw new Error('invalid share code');
+    for(const k of ['cl', 'fc', 'ca']) if(o[k] !== undefined && typeof o[k] !== 'string') throw new Error('invalid share code');
     return o;
   }
   function applySettings(o){
@@ -599,8 +628,12 @@
     document.getElementById('dNumbers').checked = !!o.z;
     document.getElementById('dHorizontal').checked = !!o.h;
     document.getElementById('dReverse').checked = !!o.r;
-    selectedPalette = PALETTE[o.a];
-    swWrap.querySelectorAll('.swatch').forEach(el => el.classList.toggle('active', Number(el.dataset.idx) === o.a));
+    if(typeof o.ca === 'string' && /^[0-9a-f]{6}$/.test(o.ca)){
+      selectedPalette = showCustom('#' + o.ca);
+    } else {
+      selectedPalette = PALETTE[o.a];
+      swWrap.querySelectorAll('.swatch').forEach(el => el.classList.toggle('active', Number(el.dataset.idx) === o.a));
+    }
     applyLanguage(typeof o.l === 'string' && LANGS[o.l] ? o.l : currentLang);   // rendert auch
   }
   function buildShareURL(){

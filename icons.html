@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ausrüstungs-Icons</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{--gold:#b6903f;--gold-bright:#d9b56a;--ink:#2c2013;--parchment:#e7d9b6;--text-muted:#a8977b;}
+  *{box-sizing:border-box;}
+  [hidden]{display:none!important;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:radial-gradient(ellipse at 70% 45%,rgba(217,181,106,.12) 0%,transparent 55%),
+      radial-gradient(ellipse at 20% -10%,#3a2c1c 0%,transparent 55%),
+      radial-gradient(ellipse at 90% 110%,#2a1f14 0%,transparent 55%),#171310;
+    color:var(--parchment);font-family:'EB Garamond',serif;min-height:100vh;
+  }
+  .layout{display:grid;grid-template-columns:380px 1fr;min-height:100vh;}
+  @media (max-width:900px){.layout{grid-template-columns:1fr;}}
+  .panel{background:linear-gradient(180deg,#241d17,#171310);border-right:1px solid #000;padding:64px 30px 40px;box-shadow:inset -18px 0 30px -28px #000;}
+  .panel h1{font-family:'Cinzel Decorative',serif;font-size:1.5rem;color:var(--gold-bright);margin:0 0 4px;}
+  .sub{color:var(--text-muted);font-size:.95rem;margin:0 0 26px;font-style:italic;}
+  .field{margin-bottom:20px;}
+  .field>label{display:block;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);margin-bottom:7px;}
+  select,input[type=text]{width:100%;background:#0f0c09;border:1px solid #4a3c28;color:var(--parchment);font-family:'EB Garamond',serif;font-size:1.05rem;padding:9px 11px;border-radius:3px;}
+  select:focus,input:focus{outline:none;border-color:var(--gold);}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px;margin-top:8px;}
+  .grid button{background:rgba(230,190,90,.3);border:2px solid #4a3c28;border-radius:8px;padding:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;min-height:58px;font-size:1.5rem;}
+  .grid button:hover{border-color:var(--gold);}
+  .grid button.on{border-color:var(--parchment);box-shadow:0 0 0 2px var(--gold);}
+  .swatches{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;}
+  .swatch{width:34px;height:34px;border-radius:50%;border:2px solid #000;cursor:pointer;}
+  .swatch.on{border-color:var(--parchment);box-shadow:0 0 0 2px var(--gold);}
+  .cols{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  .cols label{font-size:.72rem;color:var(--text-muted);text-align:center;display:block;}
+  .cols input{width:100%;height:36px;padding:2px;background:rgba(0,0,0,.35);border:1px solid var(--gold);border-radius:4px;cursor:pointer;}
+  .check{display:flex;align-items:center;gap:10px;cursor:pointer;color:var(--parchment);}
+  .check input{accent-color:var(--gold);width:18px;height:18px;}
+  .btn{width:100%;padding:12px;margin-top:8px;font-family:'Cinzel',serif;font-weight:700;letter-spacing:.03em;font-size:.9rem;border-radius:4px;cursor:pointer;}
+  .btn.main{background:linear-gradient(180deg,var(--gold-bright),var(--gold));border:1px solid #7a5c22;color:#241a08;}
+  .btn.alt{background:transparent;border:1px solid var(--gold);color:var(--gold-bright);font-weight:600;}
+  .btn:hover{filter:brightness(1.1);}
+  .status{font-size:.8rem;color:var(--text-muted);margin-top:8px;min-height:1em;}
+  .back{position:fixed;top:20px;left:20px;z-index:20;background:linear-gradient(180deg,var(--parchment),#d3c092);border:1px solid var(--gold);border-radius:6px;padding:8px 14px;box-shadow:0 6px 16px rgba(0,0,0,.5);font-family:'Cinzel',serif;font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;}
+
+  .stage{display:flex;align-items:center;justify-content:center;padding:50px 30px;}
+  @media (min-width:901px){.stage{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;}.stage>#card{margin:auto;}}
+  #card{width:min(100%,600px);flex:none;position:relative;padding:34px 36px 30px;color:var(--ink);
+    background:radial-gradient(circle at 15% 10%,rgba(255,255,255,.08),transparent 40%),linear-gradient(155deg,#e7d9b6 0%,#ded0a6 60%,#d3c092 100%);
+    box-shadow:0 30px 60px -20px rgba(0,0,0,.7),0 0 0 10px #17130f,0 0 0 11px #4a3c28;}
+  #card::before{content:"";position:absolute;inset:10px;border:1px solid #8a7142;pointer-events:none;}
+  #card::after{content:"";position:absolute;inset:15px;border:2px solid #a8823a;opacity:.7;pointer-events:none;}
+  .head{text-align:center;margin-bottom:6px;}
+  .head h2{font-family:'Cinzel',serif;font-weight:900;font-size:1.7rem;margin:0;}
+  .head div{font-style:italic;color:#5a4a30;margin-top:2px;}
+  .rule{height:1px;margin:16px auto;width:70%;background:linear-gradient(90deg,transparent,#a8823a,transparent);}
+  .big{display:flex;justify-content:center;align-items:center;min-height:240px;}
+  .label{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:#5a4a30;margin:18px 0 12px;text-align:center;}
+  .set{display:flex;flex-wrap:wrap;gap:18px 20px;align-items:flex-end;justify-content:center;}
+  .set>div{text-align:center;cursor:pointer;font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:#5a4a30;padding:4px;border-radius:6px;}
+  .set>div.on{outline:2px solid #7c2020;outline-offset:2px;}
+  .set>div>:first-child{margin:0 auto 4px;}
+</style>
+</head>
+<body>
+<a href="index.html" class="back">← Start</a>
+<div class="layout">
+  <div class="panel">
+    <h1>Ausrüstungs-Icons</h1>
+    <p class="sub">Gestalte Icons für Waffen, Rüstung und Begleiter</p>
+
+    <div class="field"><label for="cat">Kategorie</label><select id="cat"></select></div>
+    <div class="field" id="varF"><label>Motiv</label><div class="grid" id="vars"></div></div>
+    <div class="field" id="emoF" hidden>
+      <label for="emo">Symbol (Emoji)</label>
+      <input type="text" id="emo" maxlength="8">
+      <div class="grid" id="emos"></div>
+    </div>
+    <div class="field" id="colF">
+      <label>Farben</label>
+      <div class="swatches" id="pre"></div>
+      <div class="cols" id="cols"></div>
+    </div>
+    <div class="field" id="mirF"><label class="check"><input type="checkbox" id="mir"> Spiegeln (für Hand 2)</label></div>
+
+    <div class="field">
+      <label for="bg">Hintergrundfarbe</label>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <input type="color" id="bg" value="#e6be5a" style="width:56px;height:36px;padding:2px;background:rgba(0,0,0,.35);border:1px solid var(--gold);border-radius:4px;cursor:pointer;">
+        <button type="button" class="btn alt" id="bgReset" style="margin:0;padding:9px 14px;width:auto;font-size:.8rem;">↺ Standard</button>
+      </div>
+    </div>
+    <div class="field"><label class="check"><input type="checkbox" id="frm" checked> Slotrahmen mitexportieren</label></div>
+
+    <button class="btn main" id="svgBtn">Als SVG speichern</button>
+    <button class="btn alt" id="pngBtn">Als PNG speichern</button>
+    <button class="btn alt" id="copyBtn">SVG-Code kopieren</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="stage">
+    <div id="card">
+      <div class="head"><h2 id="title"></h2><div id="subtitle"></div></div>
+      <div class="rule"></div>
+      <div class="big" id="big"></div>
+      <div class="label">Mein Set</div>
+      <div class="set" id="set"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const CATS = [
+    {id:'hand',      name:'Waffe / Hand',        shape:'circle'},
+    {id:'helmet',    name:'Helm',                shape:'square'},
+    {id:'chest',     name:'Brustpanzer',         shape:'square'},
+    {id:'belt',      name:'Gürtel',              shape:'belt'},
+    {id:'pants',     name:'Hose',                shape:'square'},
+    {id:'shoes',     name:'Schuhe',              shape:'square'},
+    {id:'companion', name:'Begleiter / Reittier',shape:'hex'}
+  ];
+  // Farben: Hauptfarbe, Akzent, Glanz, Kontur (Standard = Farben der Icons in player.html)
+  const PRESETS = [
+    ['Original','#5a4630','#8a7142','#d9c393','#2f2416'],
+    ['Eisen','#6b7078','#8d949e','#cfd5dc','#23262b'],
+    ['Bronze','#8a5a2b','#b9803a','#f0c98a','#3a2410'],
+    ['Gold','#b6903f','#e6c571','#fff2c4','#4a3510'],
+    ['Mithril','#4f7ea8','#8fb8d9','#e4f2fb','#1c2f44'],
+    ['Blut','#7c2020','#b34d4d','#f0b9a8','#2a0d0d'],
+    ['Wald','#3f5f3a','#7a9a52','#cfe0a8','#1c2a18'],
+    ['Schatten','#2b2b33','#5a5a6e','#a9a9c0','#0e0e12']
+  ];
+  const COLKEYS = [['m','Haupt'],['a','Akzent'],['h','Glanz'],['o','Kontur']];
+  const EMOJIS = ['🐺','🦅','🐴','🐻','🦉','🐗','🦊','🐍','🐉','🦌','🐈','🐕','🦇','🕷️','🐢','🦎','🦁','🐅','🦄','🐂','🐘','🦂','🐙','🐲','🐎','🦬','🐪','🦏','🐊','🦖','🦍','🦚','🦜','🐿️','🦔','🐇','🦈','🐍','🦭','🐧'];
+
+  const S = c => `stroke="${c.o}" stroke-width="1.5"`;
+  const L = (k, w = 1.2) => `stroke="${k}" stroke-width="${w}" fill="none"`;
+
+  // Motive: [Name, c => SVG-Inhalt]; Raster 48x48 (Gürtel 96x28). Neue Motive nur ans ENDE einer Liste anhängen.
+  const T = {
+    hand: [
+      ['Schwert', c => `<path d="M24 3l4 5v22h-8V8z" fill="${c.h}" ${S(c)}/><path d="M24 9v19" ${L(c.a)}/><rect x="14" y="30" width="20" height="4" rx="1.5" fill="${c.a}" ${S(c)}/><rect x="22" y="34" width="4" height="8" fill="${c.m}" ${S(c)}/><circle cx="24" cy="44" r="2.5" fill="${c.a}" ${S(c)}/>`],
+      ['Axt', c => `<rect x="22" y="5" width="4" height="39" rx="2" fill="${c.m}" ${S(c)}/><path d="M26 8Q42 6 43 17Q42 26 26 24z" fill="${c.h}" ${S(c)}/><path d="M30 12Q38 13 38 17" ${L(c.a)}/><path d="M22 10l-6 3 6 3z" fill="${c.a}" ${S(c)}/>`],
+      ['Bogen', c => `<path d="M14 5Q40 24 14 43" fill="none" stroke="${c.o}" stroke-width="5"/><path d="M14 5Q40 24 14 43" ${L(c.m, 3)}/><path d="M14 5V43" ${L(c.h, 1)}/><path d="M7 24H37" ${L(c.a, 2.4)}/><path d="M43 24l-8-4v8z" fill="${c.h}" ${S(c)}/>`],
+      ['Stab', c => `<rect x="22" y="14" width="4" height="31" rx="2" fill="${c.m}" ${S(c)}/><rect x="20.5" y="28" width="7" height="3" fill="${c.a}" ${S(c)}/><path d="M16 14Q15 4 24 3Q33 4 32 14" ${L(c.a, 2.5)}/><circle cx="24" cy="10" r="5" fill="${c.h}" ${S(c)}/>`],
+      ['Schild', c => `<path d="M24 4L40 10V24Q40 38 24 44Q8 38 8 24V10Z" fill="${c.m}" ${S(c)}/><path d="M24 8V41M10 20H38" ${L(c.a, 2.4)}/><circle cx="24" cy="20" r="5" fill="${c.h}" ${S(c)}/>`],
+      ['Dolch', c => `<path d="M24 5l3.5 5v17h-7V10z" fill="${c.h}" ${S(c)}/><rect x="16" y="27" width="16" height="3.5" rx="1.5" fill="${c.a}" ${S(c)}/><rect x="22" y="30.5" width="4" height="9" fill="${c.m}" ${S(c)}/><circle cx="24" cy="42" r="2.5" fill="${c.a}" ${S(c)}/>`],
+      ['Hammer', c => `<rect x="22" y="14" width="4" height="30" rx="2" fill="${c.m}" ${S(c)}/><rect x="10" y="5" width="28" height="13" rx="2" fill="${c.h}" ${S(c)}/><path d="M16 5V18M32 5V18" ${L(c.a, 2)}/>`],
+      ['Zauberbuch', c => `<rect x="9" y="7" width="30" height="35" rx="2.5" fill="${c.m}" ${S(c)}/><rect x="9" y="7" width="6" height="35" rx="2" fill="${c.a}" ${S(c)}/><circle cx="27" cy="24" r="6" fill="${c.h}" ${S(c)}/><path d="M27 18v12M21 24h12" ${L(c.a)}/>`]
+    ],
+    helmet: [
+      ['Eisenhelm', c => `<path d="M13 41V21Q13 7 24 7T35 21V41z" fill="${c.m}" ${S(c)}/><rect x="13" y="21" width="22" height="4" fill="${c.o}"/><rect x="22.5" y="8" width="3" height="33" fill="${c.a}" ${S(c)}/><path d="M13 38h22" ${L(c.h)}/>`],
+      ['Hörnerhelm', c => `<path d="M14 21Q5 19 5 6Q12 9 16 17z" fill="${c.h}" ${S(c)}/><path d="M34 21Q43 19 43 6Q36 9 32 17z" fill="${c.h}" ${S(c)}/><path d="M13 38V25Q13 12 24 12T35 25V38z" fill="${c.m}" ${S(c)}/><rect x="13" y="26" width="22" height="4" fill="${c.a}" ${S(c)}/><rect x="22" y="30" width="4" height="8" fill="${c.a}" ${S(c)}/>`],
+      ['Spitzhelm', c => `<path d="M13 40V24Q13 14 24 4Q35 14 35 24V40z" fill="${c.m}" ${S(c)}/><path d="M24 4V40" ${L(c.a, 2.4)}/><rect x="13" y="26" width="22" height="4" fill="${c.o}"/><path d="M13 37h22" ${L(c.h)}/>`],
+      ['Krone', c => `<path d="M7 38V15L17 25L24 9L31 25L41 15V38z" fill="${c.a}" ${S(c)}/><rect x="7" y="32" width="34" height="6" fill="${c.m}" ${S(c)}/><g fill="${c.h}" ${S(c)}><circle cx="14" cy="35" r="1.8"/><circle cx="24" cy="35" r="1.8"/><circle cx="34" cy="35" r="1.8"/></g>`]
+    ],
+    chest: [
+      ['Plattenpanzer', c => `<path d="M9 13L18 8Q24 13 30 8L39 13L37 22L34 23V40Q24 45 14 40V23L11 22z" fill="${c.m}" ${S(c)}/><path d="M24 13V43" ${L(c.h, 1.4)}/><path d="M14 29Q24 33 34 29M14 35Q24 39 34 35" ${L(c.h)}/><g fill="${c.a}" ${S(c)}><circle cx="13" cy="15.5" r="2"/><circle cx="35" cy="15.5" r="2"/></g>`],
+      ['Lederharnisch', c => `<path d="M12 10H36L38 20L34 22V42H14V22L10 20z" fill="${c.m}" ${S(c)}/><path d="M24 12V40" ${L(c.h, 1.4)} stroke-dasharray="2 2.5"/><path d="M14 27H34M14 34H34" ${L(c.a, 2.4)}/>`],
+      ['Robe', c => `<path d="M16 6L24 12L32 6L39 42H9z" fill="${c.m}" ${S(c)}/><rect x="14.5" y="25" width="19" height="4" fill="${c.a}" ${S(c)}/><path d="M24 12V25M11 38H37" ${L(c.h)}/>`]
+    ],
+    belt: [
+      ['Ledergürtel', c => `<rect x="2" y="6" width="92" height="16" rx="3" fill="${c.m}" ${S(c)}/><path d="M8 14H34M62 14H88" ${L(c.h)} stroke-dasharray="3 3"/><rect x="36" y="3" width="24" height="22" rx="2" fill="${c.a}" ${S(c)}/><rect x="42" y="9" width="12" height="10" rx="1" fill="${c.m}" ${S(c)}/><path d="M48 14H64" ${L(c.h, 1.6)}/>`],
+      ['Plattengürtel', c => `<rect x="2" y="7" width="92" height="14" rx="3" fill="${c.m}" ${S(c)}/><g fill="${c.a}" ${S(c)}><rect x="6" y="5" width="12" height="18" rx="2"/><rect x="22" y="5" width="12" height="18" rx="2"/><rect x="62" y="5" width="12" height="18" rx="2"/><rect x="78" y="5" width="12" height="18" rx="2"/></g><rect x="38" y="3" width="20" height="22" rx="3" fill="${c.h}" ${S(c)}/><circle cx="48" cy="14" r="4" fill="${c.a}" ${S(c)}/>`]
+    ],
+    pants: [
+      ['Hose', c => `<polygon points="12,10 23,10 22,42 14,42" fill="${c.m}" ${S(c)}/><polygon points="25,10 36,10 34,42 26,42" fill="${c.m}" ${S(c)}/><g fill="${c.a}" ${S(c)}><circle cx="17.5" cy="25" r="4"/><circle cx="30.5" cy="25" r="4"/></g><path d="M13.5 35h8M26.5 35h8" ${L(c.h)}/>`],
+      ['Kilt', c => `<path d="M11 8H37L41 38H7z" fill="${c.m}" ${S(c)}/><rect x="11" y="8" width="26" height="5" fill="${c.a}" ${S(c)}/><path d="M16 14L13 38M24 14V38M32 14L35 38" ${L(c.h)}/>`],
+      ['Kurze Hose', c => `<path d="M11 9H37L38 30H27L24 22L21 30H10z" fill="${c.m}" ${S(c)}/><rect x="11" y="9" width="26" height="4" fill="${c.a}" ${S(c)}/><path d="M12 26h8M28 26h8" ${L(c.h)}/>`]
+    ],
+    shoes: [
+      ['Stiefel', c => `<path d="M13 6H27V28Q27 31 31 32.5L42 36Q45 38 41 41H13z" fill="${c.m}" ${S(c)}/><rect x="12" y="6" width="16" height="4" fill="${c.a}" ${S(c)}/><path d="M13 16h14M13 22h14" ${L(c.h)}/><rect x="12" y="41" width="31" height="3" rx="1" fill="${c.o}"/>`],
+      ['Sandale', c => `<path d="M6 38H42L40 43H8z" fill="${c.m}" ${S(c)}/><path d="M14 38V27M24 38V23M34 38V29M12 28H36" ${L(c.a, 3)} stroke-linecap="round"/>`],
+      ['Elfenstiefel', c => `<path d="M14 5H27V30Q27 34 31 35Q40 35 44 28Q43 41 31 42H13z" fill="${c.m}" ${S(c)}/><rect x="13" y="5" width="15" height="4" fill="${c.a}" ${S(c)}/><path d="M14 17h13" ${L(c.h)}/>`]
+    ]
+  };
+
+  // weitere Motive (nur anhängen, nie umsortieren)
+  T.hand.push(
+    ['Speer', c => `<rect x="22.5" y="12" width="3" height="33" rx="1.5" fill="${c.m}" ${S(c)}/><path d="M24 2l5 11h-10z" fill="${c.h}" ${S(c)}/><path d="M20 16h8" ${L(c.a, 2.4)}/>`],
+    ['Streitkolben', c => `<rect x="22" y="16" width="4" height="29" rx="2" fill="${c.m}" ${S(c)}/><rect x="21" y="28" width="6" height="3" fill="${c.a}" ${S(c)}/><path d="M24 1l2 4h-4zM24 23l2-4h-4zM12 12l4-2v4zM36 12l-4-2v4z" fill="${c.a}" ${S(c)}/><circle cx="24" cy="12" r="7.5" fill="${c.h}" ${S(c)}/>`],
+    ['Armbrust', c => `<rect x="22" y="8" width="4" height="35" rx="1.5" fill="${c.m}" ${S(c)}/><path d="M5 14Q24 3 43 14" fill="none" stroke="${c.o}" stroke-width="5"/><path d="M5 14Q24 3 43 14" ${L(c.a, 3)}/><path d="M5 14L24 22L43 14" ${L(c.h, 1)}/><path d="M24 22V8" ${L(c.h, 2)}/><path d="M24 3l-3.5 6h7z" fill="${c.h}" ${S(c)}/>`],
+    ['Krummsäbel', c => `<g transform="rotate(-20 24 24)"><path d="M22 3Q35 14 28 31H21z" fill="${c.h}" ${S(c)}/><rect x="16" y="31" width="16" height="3.5" rx="1.5" fill="${c.a}" ${S(c)}/><rect x="22" y="34.5" width="4" height="8" fill="${c.m}" ${S(c)}/><circle cx="24" cy="44" r="2.2" fill="${c.a}" ${S(c)}/></g>`],
+    ['Rapier', c => `<path d="M24 2l1.5 4v24h-3V6z" fill="${c.h}" ${S(c)}/><path d="M14 33Q24 24 34 33z" fill="${c.a}" ${S(c)}/><path d="M12 33H36" ${L(c.o, 3)}/><rect x="22.5" y="34" width="3" height="8" fill="${c.m}" ${S(c)}/><circle cx="24" cy="44" r="2.2" fill="${c.a}" ${S(c)}/>`],
+    ['Doppelaxt', c => `<rect x="22" y="5" width="4" height="40" rx="2" fill="${c.m}" ${S(c)}/><path d="M22 8Q8 6 6 17Q8 26 22 24z" fill="${c.h}" ${S(c)}/><path d="M26 8Q40 6 42 17Q40 26 26 24z" fill="${c.h}" ${S(c)}/><path d="M18 12Q11 13 11 17M30 12Q37 13 37 17" ${L(c.a)}/>`],
+    ['Morgenstern', c => `<rect x="22" y="24" width="4" height="20" rx="2" fill="${c.m}" ${S(c)}/><path d="M24 24Q24 20 26 16" ${L(c.a, 2)}/><path d="M26 0v3M26 17v3M16 10h3M33 10h3M19 3l2 2M33 3l-2 2M19 17l2-2M33 17l-2-2" ${L(c.a, 2.4)}/><circle cx="26" cy="10" r="6.5" fill="${c.h}" ${S(c)}/>`],
+    ['Keule', c => `<path d="M22 44V24Q12 22 14 10Q18 3 24 3Q30 3 34 10Q36 22 26 24V44z" fill="${c.m}" ${S(c)}/><g fill="${c.a}" ${S(c)}><circle cx="19" cy="12" r="1.6"/><circle cx="28" cy="10" r="1.6"/><circle cx="24" cy="17" r="1.6"/></g>`],
+    ['Dreizack', c => `<rect x="22.5" y="16" width="3" height="29" rx="1.5" fill="${c.m}" ${S(c)}/><path d="M12 7V14Q12 20 24 20Q36 20 36 14V7M24 20V6" ${L(c.h, 2.6)}/><path d="M12 2l-3.5 6h7zM24 1l-3.5 6h7zM36 2l-3.5 6h7z" fill="${c.h}" ${S(c)}/>`],
+    ['Zauberstab', c => `<g transform="rotate(30 24 24)"><rect x="22" y="12" width="4" height="32" rx="2" fill="${c.m}" ${S(c)}/><rect x="21" y="12" width="6" height="4" fill="${c.a}" ${S(c)}/><path d="M24 1l2.5 5.5 6 .8-4.4 4.1 1.1 6-5.2-3-5.2 3 1.1-6-4.4-4.1 6-.8z" fill="${c.h}" ${S(c)}/></g>`],
+    ['Rundschild', c => `<circle cx="24" cy="24" r="19" fill="${c.m}" ${S(c)}/><circle cx="24" cy="24" r="14" ${L(c.a, 2)}/><circle cx="24" cy="24" r="5" fill="${c.h}" ${S(c)}/>`],
+    ['Katana', c => `<path d="M23 3Q30 14 26 32H21z" fill="${c.h}" ${S(c)}/><path d="M23 8Q27 16 24.5 28" ${L(c.a)}/><ellipse cx="24" cy="33" rx="6" ry="2.5" fill="${c.a}" ${S(c)}/><rect x="22" y="35" width="4" height="9" fill="${c.m}" ${S(c)}/><path d="M22 38l4 2M22 41l4 2" ${L(c.h, 1)}/>`],
+    ['Sichel', c => `<path d="M23 20L18 44" ${L(c.o, 5)}/><path d="M23 20L18 44" ${L(c.m, 3)}/><path d="M23 20Q10 16 12 6Q28 2 38 14Q30 10 23 20z" fill="${c.h}" ${S(c)}/>`],
+    ['Fackel', c => `<rect x="21" y="20" width="6" height="24" rx="2" fill="${c.m}" ${S(c)}/><path d="M18 22h12l-2-6H20z" fill="${c.a}" ${S(c)}/><path d="M24 2Q34 10 30 16Q28 18 24 18Q20 18 18 16Q14 10 24 2z" fill="${c.h}" ${S(c)}/><path d="M24 9Q28 13 26 16H22Q20 13 24 9z" fill="${c.a}"/>`],
+    ['Wurfstern', c => `<path d="M24 3L29 19L45 24L29 29L24 45L19 29L3 24L19 19z" fill="${c.h}" ${S(c)}/><circle cx="24" cy="24" r="4" fill="${c.m}" ${S(c)}/>`]
+  );
+  T.helmet.push(
+    ['Visierhelm', c => `<path d="M24 7Q26 1 34 2Q31 6 29 10z" fill="${c.h}" ${S(c)}/><path d="M12 42V22Q12 7 24 7T36 22V42z" fill="${c.m}" ${S(c)}/><rect x="12" y="20" width="24" height="12" fill="${c.a}" ${S(c)}/><path d="M15 24h18M15 28h18" ${L(c.o, 1.6)}/>`],
+    ['Zaubererhut', c => `<path d="M14 36Q18 14 30 4Q28 14 34 35z" fill="${c.m}" ${S(c)}/><path d="M5 38Q24 32 43 38Q24 44 5 38z" fill="${c.m}" ${S(c)}/><path d="M16 33Q25 36 33 33" ${L(c.a, 3)}/><circle cx="24" cy="25" r="2.2" fill="${c.h}" ${S(c)}/>`],
+    ['Diadem', c => `<path d="M8 28Q24 36 40 28" ${L(c.o, 5)}/><path d="M8 28Q24 36 40 28" ${L(c.a, 3)}/><path d="M24 20l5 9-5 9-5-9z" fill="${c.h}" ${S(c)}/>`],
+    ['Lederkappe', c => `<path d="M11 36V24Q11 10 24 10T37 24V36Q24 31 11 36z" fill="${c.m}" ${S(c)}/><path d="M11 32Q24 27 37 32" ${L(c.a, 3)}/><path d="M16 17Q24 12 32 17" ${L(c.h)}/>`],
+    ['Schattenmaske', c => `<path d="M10 20Q10 6 24 6T38 20V28Q24 38 10 28z" fill="${c.m}" ${S(c)}/><path d="M12 22H36V27Q30 30 24 28Q18 30 12 27z" fill="${c.o}"/><circle cx="19" cy="25" r="1.6" fill="${c.h}"/><circle cx="29" cy="25" r="1.6" fill="${c.h}"/>`]
+  );
+  T.chest.push(
+    ['Kettenhemd', c => `<path d="M9 12L17 8Q24 14 31 8L39 12L37 22L34 23V40H14V23L11 22z" fill="${c.m}" ${S(c)}/><path d="M15 20H33M15 26H33M15 32H33M15 38H33" ${L(c.h, 2)} stroke-dasharray="2 2"/>`],
+    ['Schuppenpanzer', c => `<path d="M10 12L18 8Q24 12 30 8L38 12L36 20L34 22V40Q24 45 14 40V22L12 20z" fill="${c.m}" ${S(c)}/><path d="M15 20q3 3 6 0q3 3 6 0q3 3 6 0M15 27q3 3 6 0q3 3 6 0q3 3 6 0M15 34q3 3 6 0q3 3 6 0q3 3 6 0" ${L(c.h)}/>`],
+    ['Umhang', c => `<path d="M14 6Q24 10 34 6L42 42H6z" fill="${c.m}" ${S(c)}/><path d="M14 6Q24 12 34 6" ${L(c.a, 3)}/><circle cx="24" cy="10" r="3" fill="${c.h}" ${S(c)}/><path d="M24 14V40" ${L(c.h, 1)}/>`],
+    ['Wappenrock', c => `<path d="M13 8H35L37 42H11z" fill="${c.m}" ${S(c)}/><path d="M24 14L32 18V26Q32 33 24 37Q16 33 16 26V18z" fill="${c.a}" ${S(c)}/><path d="M24 17V33" ${L(c.h, 1.6)}/>`]
+  );
+  T.belt.push(
+    ['Seil', c => `<path d="M2 14Q14 6 26 14T50 14T74 14T94 14" ${L(c.o, 7)}/><path d="M2 14Q14 6 26 14T50 14T74 14T94 14" ${L(c.m, 5)}/><path d="M2 14Q14 6 26 14T50 14T74 14T94 14" ${L(c.h, 1)} stroke-dasharray="3 3"/><circle cx="48" cy="14" r="5" fill="${c.a}" ${S(c)}/>`],
+    ['Kettengürtel', c => `<g fill="none" stroke="${c.o}" stroke-width="5">${[10,24,38,52,66,80].map(x => `<ellipse cx="${x}" cy="14" rx="7" ry="4"/>`).join('')}</g><g fill="none" stroke="${c.a}" stroke-width="3">${[10,24,38,52,66,80].map(x => `<ellipse cx="${x}" cy="14" rx="7" ry="4"/>`).join('')}</g>`],
+    ['Schärpe', c => `<path d="M2 8H94V20H2z" fill="${c.m}" ${S(c)}/><path d="M2 14H94" ${L(c.a, 2)}/><path d="M44 14L38 27L47 23L52 27L54 14z" fill="${c.a}" ${S(c)}/><circle cx="48" cy="14" r="5" fill="${c.h}" ${S(c)}/>`]
+  );
+  T.pants.push(
+    ['Beinschienen', c => `<path d="M11 6H23L22 42H13z" fill="${c.m}" ${S(c)}/><path d="M25 6H37L35 42H26z" fill="${c.m}" ${S(c)}/><g fill="${c.a}" ${S(c)}><rect x="11" y="16" width="12" height="7" rx="2"/><rect x="25" y="16" width="12" height="7" rx="2"/><rect x="13" y="30" width="9" height="6" rx="2"/><rect x="26" y="30" width="9" height="6" rx="2"/></g>`],
+    ['Pluderhose', c => `<path d="M12 8H36Q42 24 36 36H27L24 24L21 36H12Q6 24 12 8z" fill="${c.m}" ${S(c)}/><rect x="12" y="8" width="24" height="4" fill="${c.a}" ${S(c)}/><path d="M10 36h12M26 36h12" ${L(c.a, 3)}/>`],
+    ['Lendenschurz', c => `<rect x="10" y="10" width="28" height="5" fill="${c.a}" ${S(c)}/><path d="M16 15H32L30 40L24 36L18 40z" fill="${c.m}" ${S(c)}/><path d="M24 15V34" ${L(c.h)}/>`]
+  );
+  T.shoes.push(
+    ['Plattenstiefel', c => `<path d="M13 6H27V28Q27 31 31 32.5L42 36Q45 38 41 41H13z" fill="${c.m}" ${S(c)}/><rect x="12" y="10" width="16" height="9" rx="2" fill="${c.a}" ${S(c)}/><rect x="12" y="22" width="16" height="6" rx="2" fill="${c.a}" ${S(c)}/><rect x="12" y="41" width="31" height="3" rx="1" fill="${c.o}"/>`],
+    ['Wanderschuh', c => `<path d="M10 24H22L26 30H40Q44 32 43 38H9z" fill="${c.m}" ${S(c)}/><rect x="9" y="38" width="35" height="4" rx="1" fill="${c.o}"/><path d="M14 24L18 30M18 24L22 30" ${L(c.h, 1)}/>`],
+    ['Schnabelschuh', c => `<path d="M8 30Q10 24 20 26L30 28Q38 28 42 14Q46 28 40 36H8z" fill="${c.m}" ${S(c)}/><rect x="8" y="36" width="33" height="4" fill="${c.o}"/><path d="M16 27V36" ${L(c.a, 3)}/>`]
+  );
+
+  const esc = s => String(s).replace(/[<>&"]/g, '');
+  const def = () => ({v:0, col:{m:PRESETS[0][1], a:PRESETS[0][2], h:PRESETS[0][3], o:PRESETS[0][4]}, mirror:false, emoji:'🐺', bg:''});   // bg '' = Standard (halbtransparentes Gold)
+  const BG_DEFAULT = 'rgba(230,190,90,.5)';
+  const D = {};
+  CATS.forEach(c => D[c.id] = def());
+  try{
+    const saved = JSON.parse(localStorage.getItem('iconEditorDesigns') || '{}');
+    CATS.forEach(c => { if(saved[c.id]) D[c.id] = Object.assign(def(), saved[c.id], {col:Object.assign(def().col, saved[c.id].col || {})}); });
+  }catch(e){}
+  let cur = 'hand';
+
+  const $ = id => document.getElementById(id);
+  const catOf = id => CATS.find(c => c.id === id);
+  const dims = cat => cat === 'belt' ? [96, 28] : [48, 48];
+
+  // Icon als SVG-String (w/h = Anzeigegröße in px)
+  function svgFor(cat, d, w, h){
+    const [vw, vh] = dims(cat);
+    let body;
+    if(cat === 'companion') body = `<text x="24" y="25" font-size="34" text-anchor="middle" dominant-baseline="central">${esc(d.emoji)}</text>`;
+    else {
+      body = T[cat][d.v][1](d.col);
+      if(d.mirror) body = `<g transform="translate(${vw} 0) scale(-1 1)">${body}</g>`;
+    }
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${vw} ${vh}" width="${w}" height="${h}" stroke-linejoin="round" stroke-linecap="round">${body}</svg>`;
+  }
+
+  // Icon im Ausstattungsfeld (Formen und Größen wie in player.html), z = Zoom
+  function slot(cat, d, z){
+    const shape = catOf(cat).shape, bg = d.bg || BG_DEFAULT, bd = '#8a7142';
+    if(shape === 'hex'){
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="${84*z}" height="${84*z}" viewBox="0 0 56 56"><polygon points="28,2 51,15 51,41 28,54 5,41 5,15" fill="${bg}" stroke="${bd}" stroke-width="2.5" stroke-linejoin="round"/><text x="28" y="29" font-size="26" text-anchor="middle" dominant-baseline="central">${esc(d.emoji)}</text></svg>`;
+    }
+    const belt = shape === 'belt';
+    const r = shape === 'circle' ? '50%' : belt ? '5px' : '6px';
+    return `<div style="display:flex;align-items:center;justify-content:center;width:${(belt?90:56)*z}px;height:${(belt?28:56)*z}px;background:${bg};border:${2*z}px solid ${bd};border-radius:${r}">${svgFor(cat, d, (belt?84:42)*z, (belt?24:42)*z)}</div>`;
+  }
+
+  function render(){
+    const d = D[cur], cat = catOf(cur), comp = cur === 'companion';
+    $('cat').value = cur;
+    $('varF').hidden = comp;
+    $('emoF').hidden = !comp;
+    $('colF').hidden = comp;
+    $('mirF').hidden = cur !== 'hand';
+    $('mir').checked = d.mirror;
+    if($('emo').value !== d.emoji) $('emo').value = d.emoji;
+    const bgv = d.bg || '#e6be5a';
+    if($('bg').value !== bgv) $('bg').value = bgv;
+
+    if(!comp){
+      const belt = cur === 'belt';
+      $('vars').innerHTML = T[cur].map((t, i) => `<button type="button" data-i="${i}" class="${i === d.v ? 'on' : ''}" title="${t[0]}">${svgFor(cur, Object.assign({}, d, {v:i, mirror:false}), belt ? 70 : 44, belt ? 20 : 44)}</button>`).join('');
+    }
+    $('emos').innerHTML = EMOJIS.map(e => `<button type="button" data-e="${e}" class="${e === d.emoji ? 'on' : ''}">${e}</button>`).join('');
+    $('pre').innerHTML = PRESETS.map((p, i) => `<div class="swatch ${COLKEYS.every((k, j) => d.col[k[0]] === p[j+1]) ? 'on' : ''}" data-p="${i}" title="${p[0]}" style="background:radial-gradient(circle at 35% 30%,${p[3]},${p[1]} 75%)"></div>`).join('');
+    COLKEYS.forEach(([k]) => { if($('c_' + k).value !== d.col[k]) $('c_' + k).value = d.col[k]; });
+
+    $('title').textContent = cat.name;
+    $('subtitle').textContent = comp ? 'Emoji im Sechseck' : T[cur][d.v][0];
+    $('big').innerHTML = slot(cur, d, cur === 'belt' ? 2.4 : 3);
+    $('set').innerHTML = CATS.map(c => `<div data-c="${c.id}" class="${c.id === cur ? 'on' : ''}">${slot(c.id, D[c.id], 1)}${c.name}</div>`).join('');
+    try{ localStorage.setItem('iconEditorDesigns', JSON.stringify(D)); }catch(e){}
+  }
+
+  // Bedienelemente aufbauen
+  $('cat').innerHTML = CATS.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  $('cols').innerHTML = COLKEYS.map(([k, n]) => `<div><input type="color" id="c_${k}" title="${n}"><label>${n}</label></div>`).join('');
+
+  $('cat').addEventListener('change', e => { cur = e.target.value; render(); });
+  $('vars').addEventListener('click', e => { const b = e.target.closest('button'); if(b){ D[cur].v = +b.dataset.i; render(); } });
+  $('emos').addEventListener('click', e => { const b = e.target.closest('button'); if(b){ D[cur].emoji = b.dataset.e; render(); } });
+  $('emo').addEventListener('input', e => { D[cur].emoji = e.target.value; render(); });
+  $('mir').addEventListener('change', e => { D[cur].mirror = e.target.checked; render(); });
+  $('pre').addEventListener('click', e => {
+    const s = e.target.closest('.swatch'); if(!s) return;
+    const p = PRESETS[+s.dataset.p];
+    COLKEYS.forEach(([k], j) => D[cur].col[k] = p[j+1]);
+    render();
+  });
+  COLKEYS.forEach(([k]) => $('c_' + k).addEventListener('input', e => { D[cur].col[k] = e.target.value; render(); }));
+  $('bg').addEventListener('input', e => { D[cur].bg = e.target.value; render(); });
+  $('bgReset').addEventListener('click', () => { D[cur].bg = ''; render(); });
+  $('set').addEventListener('click', e => { const c = e.target.closest('[data-c]'); if(c){ cur = c.dataset.c; render(); } });
+
+  // Export
+  function fileName(ext){
+    const d = D[cur];
+    return 'icon_' + cur + (cur === 'companion' ? '' : '_' + T[cur][d.v][0].toLowerCase().replace(/[^a-zäöüß0-9]+/g, '_')) + '.' + ext;
+  }
+  // Exportiert genau das große Icon oben: mit Slotrahmen (wie in der Vorschau) oder nur das Icon
+  function exportDims(){
+    if(!$('frm').checked) return dims(cur);
+    const shape = catOf(cur).shape;
+    return shape === 'hex' ? [56, 56] : shape === 'belt' ? [90, 28] : [56, 56];
+  }
+  function currentSvg(k){
+    const d = D[cur], [w, h] = exportDims();
+    if(!$('frm').checked) return svgFor(cur, d, w * k, h * k);
+    const shape = catOf(cur).shape;
+    if(shape === 'hex') return slot(cur, d, k * 56 / 84);
+    const belt = shape === 'belt', iw = belt ? 84 : 42, ih = belt ? 24 : 42;
+    const frame = shape === 'circle'
+      ? '<circle cx="28" cy="28" r="27"'
+      : `<rect x="1" y="1" width="${w - 2}" height="${h - 2}" rx="${belt ? 5 : 6}"`;
+    const inner = svgFor(cur, d, iw, ih).replace('<svg ', `<svg x="${(w - iw) / 2}" y="${(h - ih) / 2}" `);
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w * k}" height="${h * k}">${frame} fill="${d.bg || BG_DEFAULT}" stroke="#8a7142" stroke-width="2"/>${inner}</svg>`;
+  }
+  function download(href, name){ const a = document.createElement('a'); a.href = href; a.download = name; a.click(); }
+  function flash(msg){ $('status').textContent = msg; setTimeout(() => { if($('status').textContent === msg) $('status').textContent = ''; }, 2500); }
+
+  $('svgBtn').addEventListener('click', () => {
+    const url = URL.createObjectURL(new Blob([currentSvg(5)], {type:'image/svg+xml'}));
+    download(url, fileName('svg'));
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    flash('SVG gespeichert');
+  });
+  $('pngBtn').addEventListener('click', () => {
+    const [vw, vh] = exportDims(), k = 10;
+    const url = URL.createObjectURL(new Blob([currentSvg(k)], {type:'image/svg+xml'}));
+    const img = new Image();
+    img.onload = () => {
+      const cv = document.createElement('canvas');
+      cv.width = vw * k; cv.height = vh * k;
+      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+      download(cv.toDataURL('image/png'), fileName('png'));
+      URL.revokeObjectURL(url);
+      flash('PNG gespeichert');
+    };
+    img.onerror = () => flash('PNG-Export fehlgeschlagen');
+    img.src = url;
+  });
+  $('copyBtn').addEventListener('click', () => {
+    const svg = currentSvg(5);
+    const ok = () => flash('SVG-Code kopiert');
+    const fallback = () => {
+      const ta = document.createElement('textarea');
+      ta.value = svg; ta.style.cssText = 'position:fixed;opacity:0';
+      document.body.appendChild(ta); ta.select();
+      let done = false; try{ done = document.execCommand('copy'); }catch(e){}
+      document.body.removeChild(ta);
+      flash(done ? 'SVG-Code kopiert' : 'Kopieren nicht möglich');
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(svg).then(ok, fallback);
+    else fallback();
+  });
+
+  render();
+</script>
+</body>
+</html>
