@@ -162,6 +162,9 @@
   .paste-settings-feedback{font-size:.8rem; color:var(--text-muted); min-height:1em;}
   .paste-settings-feedback.success{color:#7fae6a;}
 
+  /* eigene Farbe: Farbkreis, darüber ein unsichtbarer Farbwähler */
+  .swatch.custom{position:relative; overflow:hidden; background:conic-gradient(#e0483a, #e8c43a, #5cb85c, #3aa6d8, #7a4fd1, #d84fa6, #e0483a);}
+  .swatch.custom input[type="color"]{position:absolute; left:-8px; top:-8px; width:48px; height:48px; padding:0; border:0; opacity:0; cursor:pointer;}
   .cell[data-h]{cursor:pointer; transition:transform .12s ease;}
   .cell[data-h]:hover{transform:translateY(-2px); outline:2px solid var(--accent, #a8823a); outline-offset:2px;}
   .over-picker{display:grid; grid-template-columns:repeat(auto-fill, 40px); gap:6px;}
@@ -318,7 +321,7 @@
     { key:'playerColorMagenta',  accent:'#8a1f6a', bright:'#d65aa8' },
     { key:'playerColorScarlet',  accent:'#b02a1c', bright:'#e8604d' }
   ];
-  let selectedPalette = PALETTE[0];
+  let selectedPalette = PALETTE[2];   // Standard: Waldgrün wie in tagesstreifen.html
   let overArr = [];   // Einzelauswahl der Überstunden (nur bei aktivem Schalter)
 
   // Deutsche Fallback-Texte, bis die Keys in languages.js eingetragen sind
@@ -329,7 +332,7 @@
     timeToggleSunrise:'Sonnenaufgang-Feld am Ende anzeigen', timeToggleBrackets:'Klammern unter den Stunden anzeigen',
     timeSunStart:'Start', timeSunrise:'Sonnen­aufgang', timeFreeLabel:'Freie Stunden', timeOverLabel:'Überstunden',
     timeBrand:'Legende der Zeit', timeDefaultTitle:'Tagesleiste',
-    timeToggleCustomOver:'Überstunden einzeln auswählen', timeOverPickHint:'Tippe auf die Stunden, die Überstunden sein sollen',
+    dayCustomColor:'Eigene Farbe wählen', timeToggleCustomOver:'Überstunden einzeln auswählen', timeOverPickHint:'Tippe auf die Stunden, die Überstunden sein sollen',
     shareToggleBtn:'🔗 Teilen', copySettingsBtn:'📋 Kopieren', applyPasteSettingsBtn:'✓ Anwenden',
     pasteSettingsPrompt:'Link oder Code hier einfügen:', settingsCopied:'✓ Kopiert', settingsCopyError:'Kopieren nicht möglich',
     pasteSettingsError:'Ungültiger Link oder Code'
@@ -459,7 +462,7 @@
   swatchOrder.forEach(i => {
     const p = PALETTE[i];
     const d = document.createElement('div');
-    d.className = 'swatch' + (i === 0 ? ' active' : '');
+    d.className = 'swatch' + (p === selectedPalette ? ' active' : '');
     d.dataset.idx = i;
     d.style.background = 'radial-gradient(circle at 35% 30%, ' + p.bright + ', ' + p.accent + ' 75%)';
     d.addEventListener('click', () => {
@@ -469,6 +472,30 @@
     });
     swWrap.appendChild(d);
   });
+
+  // Eigene Akzentfarbe: Farbkreis am Ende der Liste öffnet den Farbwähler (Teilen-Link speichert sie als Hex)
+  const toHex = (r, g, b) => '#' + [r, g, b].map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
+  function customPalette(hex){
+    const c = hexToRgb(hex);
+    return { key:'dayCustomColor', custom:true, accent:hex, bright:toHex(c[0]*.55 + 255*.45, c[1]*.55 + 255*.45, c[2]*.55 + 255*.45) };
+  }
+  const customSw = document.createElement('div');
+  customSw.className = 'swatch custom';
+  const customInput = document.createElement('input');
+  customInput.type = 'color';
+  customInput.value = '#c9732b';
+  customSw.appendChild(customInput);
+  swWrap.appendChild(customSw);
+  function showCustom(hex){   // Farbkreis zeigt die gewählte Farbe und gilt als ausgewählt
+    const pal = customPalette(hex);
+    customInput.value = hex;
+    customSw.style.background = 'radial-gradient(circle at 35% 30%, ' + pal.bright + ', ' + pal.accent + ' 75%)';
+    swWrap.querySelectorAll('.swatch').forEach(x => x.classList.toggle('active', x === customSw));
+    return pal;
+  }
+  function useCustom(){ selectedPalette = showCustom(customInput.value.toLowerCase()); render(); }
+  customInput.addEventListener('input', useCustom);
+  customInput.addEventListener('change', useCustom);
 
   document.querySelectorAll('.panel input').forEach(el => {
     el.addEventListener('input', render);
@@ -512,8 +539,9 @@
       h:clamp(document.getElementById('tHours').value, 1, 24), f:clamp(document.getElementById('tFree').value, 0, 24),
       c:clamp(document.getElementById('tCost').value, 1, 9),
       s:document.getElementById('tSun').checked, r:document.getElementById('tSunrise').checked,
-      b:document.getElementById('tBrackets').checked, a:PALETTE.indexOf(selectedPalette)
+      b:document.getElementById('tBrackets').checked, a:selectedPalette.custom ? 0 : PALETTE.indexOf(selectedPalette)
     };
+    if(selectedPalette.custom) o.ca = selectedPalette.accent.slice(1);   // eigene Akzentfarbe (Hex)
     if(document.getElementById('tCustomOver').checked){
       const hrs = clamp(document.getElementById('tHours').value, 1, 24);
       o.o = Array.from({length:hrs}, (_, k) => overArr[k] ? '1' : '0').join('');
@@ -551,7 +579,9 @@
       document.getElementById('tCustomOver').checked = false;
       overArr = [];
     }
-    if(Number.isInteger(o.a) && PALETTE[o.a]){
+    if(typeof o.ca === 'string' && /^[0-9a-f]{6}$/.test(o.ca)){
+      selectedPalette = showCustom('#' + o.ca);
+    } else if(Number.isInteger(o.a) && PALETTE[o.a]){
       selectedPalette = PALETTE[o.a];
       swWrap.querySelectorAll('.swatch').forEach(el => el.classList.toggle('active', Number(el.dataset.idx) === o.a));
     }
@@ -625,6 +655,7 @@
       const v = pk && (s[pk.key] !== undefined ? s[pk.key] : (LANGS.en || {})[pk.key]);
       if(v !== undefined) el.title = v;
     });
+    customSw.title = t('dayCustomColor') || 'Eigene Farbe wählen';
     document.title = t('timeHeading');
     document.getElementById('languageSelect').value = currentLang;
     render();
