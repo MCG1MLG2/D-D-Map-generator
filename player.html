@@ -148,6 +148,9 @@
     position:relative;
   }
   .swatch.active{border-color:var(--parchment); box-shadow:0 0 0 2px var(--gold);}
+  /* custom accent colour: colour wheel with an invisible colour picker on top */
+  .swatch.custom{overflow:hidden; background:conic-gradient(#e0483a, #e8c43a, #5cb85c, #3aa6d8, #7a4fd1, #d84fa6, #e0483a);}
+  .swatch.custom input[type="color"]{position:absolute; left:-8px; top:-8px; width:48px; height:48px; padding:0; border:0; opacity:0; cursor:pointer;}
 
   .hint{
     font-size:.78rem;
@@ -1345,6 +1348,30 @@
     swatches.appendChild(div);
   });
 
+  // Own accent colour: the colour wheel at the end of the list opens the colour picker (the share link stores it as hex)
+  const toHex = (r, g, b) => '#' + [r, g, b].map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
+  function customPalette(hex){
+    const c = hexToRgb(hex);
+    return { custom:true, accent:hex, bright:toHex(c.r*.55 + 255*.45, c.g*.55 + 255*.45, c.b*.55 + 255*.45) };
+  }
+  const customSw = document.createElement('div');
+  customSw.className = 'swatch custom';
+  const customInput = document.createElement('input');
+  customInput.type = 'color';
+  customInput.value = '#c9732b';
+  customSw.appendChild(customInput);
+  swatches.appendChild(customSw);
+  function showCustom(hex){   // the wheel shows the chosen colour and counts as selected
+    const pal = customPalette(hex);
+    customInput.value = hex;
+    customSw.style.background = 'radial-gradient(circle at 35% 30%, ' + pal.bright + ', ' + pal.accent + ' 75%)';
+    swatches.querySelectorAll('.swatch').forEach(x => x.classList.toggle('active', x === customSw));
+    return pal;
+  }
+  function useCustom(){ selectedPalette = showCustom(customInput.value.toLowerCase()); render(); }
+  customInput.addEventListener('input', useCustom);
+  customInput.addEventListener('change', useCustom);
+
   document.querySelectorAll('.toolbar button').forEach(btn => {
     btn.addEventListener('mousedown', e => e.preventDefault());
     btn.addEventListener('click', () => {
@@ -1871,10 +1898,11 @@
       a: document.getElementById('heroAbility').innerHTML,
       sc: document.getElementById('strengthCount').value,
       wc: document.getElementById('willCount').value,
-      ac: PALETTE.indexOf(selectedPalette),
+      ac: selectedPalette.custom ? 0 : PALETTE.indexOf(selectedPalette),
       ss: document.getElementById('showStorage').checked,
       sca: document.getElementById('storageCapacity').value
     };
+    if(selectedPalette.custom) s.ca = selectedPalette.accent.slice(1);   // own accent colour (hex)
     const story = document.getElementById('heroStory').value;
     if(story) s.st = story;
     const species = document.getElementById('heroSpecies').value;
@@ -2090,7 +2118,9 @@
       const hasFrame = s.fs !== undefined;
       // 12th field: charisma point fields (base 36, only if not the default 10); then the 11th field is "0" if no frame style is set
       const hasCh = s.ch !== undefined;
-      const hasLate = hasCm || hasBg || hasFrame || hasCh;
+      // 13th field: own accent colour (6 hex digits); if the charisma count is the default, the 12th field is "a" (10)
+      const hasCa = s.ca !== undefined;
+      const hasLate = hasCm || hasBg || hasFrame || hasCh || hasCa;
       const fieldList = [s.n, s.e, s.i, s.a];
       if(s.st !== undefined || s.eq !== undefined || s.sp !== undefined || s.bw !== undefined || s.bc !== undefined || hasLate){
         if(s.st !== undefined && typeof s.st !== 'string') return null;
@@ -2113,23 +2143,27 @@
               if(hasLate){
                 if(hasCm && typeof s.cp !== 'string') return null;
                 fieldList.push(hasCm ? s.cp : '\u0001');
-                if(hasBg || hasFrame || hasCh){
+                if(hasBg || hasFrame || hasCh || hasCa){
                   let bgIdx = 0;
                   if(hasBg){
                     bgIdx = shareBackgroundValues().indexOf(s.bg);
                     if(bgIdx < 1 || bgIdx > 35) return null;
                   }
                   fieldList.push(bgIdx.toString(36));
-                  if(hasFrame || hasCh){
+                  if(hasFrame || hasCh || hasCa){
                     let frIdx = 0;
                     if(hasFrame){
                       frIdx = FRAME_STYLES.indexOf(s.fs);
                       if(frIdx < 1 || frIdx > 35) return null;
                     }
                     fieldList.push(frIdx.toString(36));
-                    if(hasCh){
-                      if(typeof s.ch !== 'string' || !SHARE_INT_RE.test(s.ch) || +s.ch > 30) return null;
-                      fieldList.push((+s.ch).toString(36));
+                    if(hasCh || hasCa){
+                      if(hasCh && (typeof s.ch !== 'string' || !SHARE_INT_RE.test(s.ch) || +s.ch > 30)) return null;
+                      fieldList.push(hasCh ? (+s.ch).toString(36) : 'a');
+                      if(hasCa){
+                        if(typeof s.ca !== 'string' || !/^[0-9a-f]{6}$/.test(s.ca)) return null;
+                        fieldList.push(s.ca);
+                      }
                     }
                   }
                 }
@@ -2181,7 +2215,7 @@
 
     const joined = (flags & 4) ? alphabetDecode(p[1]) : unescapeShareText(p[1]);
     const fields = joined.split(SHARE_SEP);
-    if(fields.length < 4 || fields.length > 12) throw bad();
+    if(fields.length < 4 || fields.length > 13) throw bad();
 
     const s = {
       v: 3,
@@ -2230,9 +2264,13 @@
       if(frVal === undefined || (frIdx < 1 && fields.length === 11)) throw bad();
       if(frIdx >= 1) s.fs = frVal;
     }
-    if(fields.length === 12){
+    if(fields.length >= 12){
       if(!/^[0-9a-u]$/.test(fields[11])) throw bad();
       s.ch = String(parseInt(fields[11], 36));
+    }
+    if(fields.length === 13){
+      if(!/^[0-9a-f]{6}$/.test(fields[12])) throw bad();
+      s.ca = fields[12];
     }
     if(flags & 8) eq |= 1;     // earlier links: weapon flag (now hand 1)
     if(flags & 16) eq |= 30;   // earlier links: armor flag = all four armor pieces
@@ -2316,7 +2354,9 @@
     heroImageShareData = heroImageData;
     document.getElementById('heroImageRemoveBtn').hidden = !heroImageData;
 
-    if(typeof accent === 'number' && PALETTE[accent]){
+    if(typeof s.ca === 'string' && /^[0-9a-fA-F]{6}$/.test(s.ca)){
+      selectedPalette = showCustom('#' + s.ca.toLowerCase());
+    } else if(typeof accent === 'number' && PALETTE[accent]){
       selectedPalette = PALETTE[accent];
       document.querySelectorAll('.swatch').forEach(el => el.classList.toggle('active', Number(el.dataset.idx) === accent));
     }
@@ -2492,6 +2532,7 @@
       const val = s[key] !== undefined ? s[key] : LANGUAGES.en[key];
       if(val !== undefined) el.title = val;
     });
+    customSw.title = tf('dayCustomColor', 'Eigene Farbe wählen');
     document.querySelectorAll('#swatches .swatch').forEach(el => {
       const i = Number(el.dataset.idx);
       const key = PALETTE[i] && PALETTE[i].key;

@@ -182,6 +182,33 @@
   html[dir=rtl] .lang-picker{right:auto;left:20px}
   html[dir=rtl] .back-btn{left:auto;right:20px}
   @media(max-width:480px){.lang-picker{top:12px;right:12px;padding:6px 10px}.back-btn{top:12px;left:12px;padding:6px 10px}html[dir=rtl] .lang-picker{left:12px}html[dir=rtl] .back-btn{right:12px}#card{width:100%;padding:22px 20px}}
+  /* Würfeltabellen und Preiszeilen */
+  .box p .dt-h{font-family:'Cinzel',serif;font-weight:700;font-size:.85rem;letter-spacing:.08em;color:var(--accent,#7c2020);border-bottom:2px solid var(--accent,#7c2020);margin:4px 0 2px}
+  .box p .dt-row{display:flex;gap:8px;align-items:baseline;padding:2px 0;border-bottom:1px dotted rgba(90,74,48,.5)}
+  .box p .dt-n{flex:0 0 auto;min-width:38px;text-align:center;font-family:'Cinzel',serif;font-weight:700;font-size:.78rem;background:var(--accent,#7c2020);color:#f3e8c8;border-radius:3px;padding:1px 4px}
+  .box p .dt-t{flex:1;min-width:0}
+  .box p .pr-row{display:flex;align-items:baseline;gap:6px}
+  .box p .pr-l{flex:1;min-width:12px;height:.7em;border-bottom:1px dotted #5a4a30}
+  .box p .pr-p{flex:0 0 auto;font-weight:600}
+  /* Kartenlayouts */
+  #card.lay-poster .header h2{text-transform:uppercase;letter-spacing:.16em}
+  #card.lay-poster .epithet{text-transform:uppercase;letter-spacing:.2em;font-size:.8rem;font-style:normal}
+  #card.lay-poster .box{background:transparent;border:none;border-top:2px solid var(--ink);border-radius:0;text-align:center}
+  #card.lay-poster .box p .pr-row,#card.lay-poster .box p .dt-row{text-align:left}
+  #card.lay-poster #imgBox{border:4px double var(--ink);padding:6px;background:rgba(255,255,255,.2)}
+  #card.lay-poster #box2 h3{text-transform:uppercase;font-size:1.1rem}
+  #card.lay-poster #box2 p{font-size:1.5rem;font-weight:700}
+  #card.lay-menu .header h2{letter-spacing:.1em}
+  #card.lay-menu .header h2::before,#card.lay-menu .header h2::after{content:"✦";font-size:.55em;margin:0 .6em;color:var(--accent,#7c2020);vertical-align:middle}
+  #card.lay-menu .box{background:transparent;border:none;padding:4px 6px}
+  #card.lay-menu .box h3{text-align:center;text-transform:uppercase;letter-spacing:.14em;border-bottom:1px solid var(--accent,#7c2020);padding-bottom:3px;margin-bottom:6px}
+  #card.lay-news .header h2{text-transform:uppercase;letter-spacing:.05em;line-height:1}
+  #card.lay-news .letter-date{font-style:normal;text-transform:uppercase;letter-spacing:.1em;font-size:.78rem;text-align:center;padding:3px 0;margin:0 0 4px;border-bottom:3px double var(--ink)}
+  #card.lay-news .rule{display:none}
+  #card.lay-news .box{background:transparent;border:none;border-top:1px solid var(--ink);border-radius:0;padding:8px 0 0}
+  #card.lay-news .box h3{text-transform:uppercase;letter-spacing:.08em}
+  #card.lay-news .box p{text-align:justify}
+  #card.lay-news .box p.cols{text-align:left}
 </style>
 </head>
 <body>
@@ -202,6 +229,10 @@
         <option value="sign" data-i18n="textboxTplSign">Schild am Stadttor</option>
         <option value="puzzle" data-i18n="textboxTplPuzzle">Rätselkarte</option>
         <option value="dialog" data-i18n="textboxTplDialog">Dialog</option>
+        <option value="wanted" data-i18n="textboxTplWanted">Kopfgeld-Plakat</option>
+        <option value="menu" data-i18n="textboxTplMenu">Speisekarte</option>
+        <option value="news" data-i18n="textboxTplNews">Zeitungsseite</option>
+        <option value="dice" data-i18n="textboxTplDice">Würfeltabellen</option>
       </select>
       <button type="button" class="btn" id="tInsertBtn" data-i18n="textboxInsertBtn">Einfügen</button>
     </div>
@@ -212,12 +243,12 @@
     <div class="sub-title" data-i18n="textboxGrpHeader">Kopf</div>
     <div class="field"><label class="toggle-row"><input type="checkbox" id="tTitleOn" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowTitle">Überschrift anzeigen</span></label></div>
     <div class="field" id="titleField"><label for="tTitle" data-i18n="textboxLblTitle">Überschrift</label><input type="text" id="tTitle" value="Die alte Schenke" maxlength="60"></div>
-    <div class="field"><label class="toggle-row"><input type="checkbox" id="tSubOn" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowSub">Untertitel anzeigen</span></label></div>
-    <div class="field" id="subField"><label for="tSub" data-i18n="textboxLblSubtitle">Untertitel</label><input type="text" id="tSub" value="Erster Abend in der Stadt" maxlength="60"></div>
-    <div class="field"><label class="toggle-row"><input type="checkbox" id="tNumOn" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowNumber">Zahl anzeigen</span></label></div>
+            <div class="field"><label class="toggle-row"><input type="checkbox" id="tNumOn" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowNumber">Zahl anzeigen</span></label></div>
     <div class="field" id="numField"><label for="tNum" data-i18n="textboxLblNumber">Zahl</label><input type="number" id="tNum" value="1" min="0" max="999"><label for="tNumCap" style="margin-top:12px" data-i18n="textboxLblNumCap">Beschriftung im Siegel (z. B. Kap., S.)</label><input type="text" id="tNumCap" maxlength="6"></div>
     
     <div class="sub-title" data-i18n="textboxGrpText1">Text</div>
+    <div class="field"><label class="toggle-row"><input type="checkbox" id="tSubOn" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowBoxTitle">Überschrift anzeigen</span></label></div>
+    <div class="field" id="subField"><label for="tSub" data-i18n="textboxLblBoxTitle">Überschrift (Textfeld 1)</label><input type="text" id="tSub" value="Erster Abend in der Stadt" maxlength="60"></div>
     <div class="field"><label class="toggle-row"><input type="checkbox" id="tBodyOn" checked><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblShowText">Text anzeigen</span></label></div>
     <div class="field" id="bodyField"><label for="tBody" data-i18n="textboxLblBody">Text</label>
       <div class="fmt-row">
@@ -226,6 +257,8 @@
         <button type="button" class="fmt-btn" data-mark="__" title="Ctrl+U"><u>U</u></button>
         <button type="button" class="fmt-btn" data-mark="~~"><s>S</s></button>
         <button type="button" class="fmt-btn" data-list="1" data-target="tBody" title="Liste">•</button>
+        <button type="button" class="fmt-btn" data-dice="6" data-target="tBody" title="Würfeltabelle W6">W6</button>
+        <button type="button" class="fmt-btn" data-dice="20" data-target="tBody" title="Würfeltabelle W20">W20</button>
       </div><textarea id="tBody" rows="8" maxlength="3000">Hinter dem Stadttor liegt eine verrauchte Schenke. Am Tresen sitzt ein einsamer Zwerg und starrt in seinen Krug.</textarea></div>
     
     <div class="sub-title" data-i18n="textboxGrpText2">Zweiter Textbereich</div>
@@ -239,6 +272,8 @@
           <button type="button" class="fmt-btn" data-mark="__" data-target="t2Body" title="Ctrl+U"><u>U</u></button>
           <button type="button" class="fmt-btn" data-mark="~~" data-target="t2Body"><s>S</s></button>
           <button type="button" class="fmt-btn" data-list="1" data-target="t2Body" title="Liste">•</button>
+          <button type="button" class="fmt-btn" data-dice="6" data-target="t2Body" title="Würfeltabelle W6">W6</button>
+          <button type="button" class="fmt-btn" data-dice="20" data-target="t2Body" title="Würfeltabelle W20">W20</button>
         </div>
         <textarea id="t2Body" rows="6" maxlength="3000">Der Wirt flüstert von einem verschwundenen Händler und einer Karte, die im Keller versteckt sein soll.</textarea></div>
     </div>
@@ -279,6 +314,7 @@ Man sitzt darauf, wenn man müde ist.</textarea></div>
 
     <div class="control-group"><h3 class="group-title" role="button" tabindex="0" aria-expanded="true" data-i18n="textboxGrpLook">Aussehen</h3><div class="group-body">
     <div class="sub-title" data-i18n="textboxGrpLayout">Layout &amp; Zierde</div>
+<div class="field"><label for="tLayout" data-i18n="textboxLblLayout">Kartenlayout</label><select id="tLayout"><option value="standard" data-i18n="textboxLayoutStd">Standard</option><option value="poster" data-i18n="textboxLayoutPoster">Plakat / Steckbrief</option><option value="menu" data-i18n="textboxLayoutMenu">Speisekarte</option><option value="news" data-i18n="textboxLayoutNews">Zeitungsseite</option></select></div>
 <div class="field"><label class="toggle-row"><input type="checkbox" id="tCols"><span class="toggle-switch"></span><span class="toggle-label" data-i18n="textboxLblCols">Text in zwei Spalten</span></label></div>
 <div class="field"><label for="tOrn" data-i18n="textboxLblOrn">Randverzierung</label><select id="tOrn"><option value="none" data-i18n="textboxOrnNone">Keine</option><option value="vines" data-i18n="textboxOrnVines">Ranken</option><option value="runes" data-i18n="textboxOrnRunes">Runenband</option><option value="wax" data-i18n="textboxOrnWax">Siegelwachs</option></select></div>
 <div class="field"><input type="file" id="tImg" accept="image/*" hidden><button type="button" class="btn" id="tImgBtn" data-i18n="textboxUploadImg">🖼 Bild im Text (Karte, Wappen, Skizze)</button><button type="button" class="btn" id="tImgRm" hidden data-i18n="textboxRemoveImg">✕ Entfernen</button></div>
@@ -339,9 +375,9 @@ Man sitzt darauf, wenn man müde ist.</textarea></div>
       <div class="seal" id="seal"><span class="cap" id="numCap"></span><span class="num" id="numOut">1</span></div>
       <div class="front" id="frontSide">
       <div class="letter-date epithet" id="dateOut"></div>
-      <div class="header" id="headBox"><h2 id="titleOut"></h2><div class="epithet" id="subOut"></div></div>
+      <div class="header" id="headBox"><h2 id="titleOut"></h2></div>
       <div class="rule" id="ruleOut"></div>
-      <div class="box" id="bodyBox"><p id="bodyOut"></p></div>
+      <div class="box" id="bodyBox"><h3 id="subOut"></h3><p id="bodyOut"></p></div>
       <div class="box" id="imgBox"><img id="imgOut" alt=""></div>
       <div class="box" id="dlgBox"></div>
       <div class="box" id="puzBox"><div id="hintsOut"></div><div class="answer" id="answerOut"><span data-i18n="textboxAnswerLbl">Antwort:</span><i></i></div></div>
@@ -472,7 +508,7 @@ Man sitzt darauf, wenn man müde ist.</textarea></div>
   }
   document.querySelectorAll('.fmt-btn').forEach(b => {
     b.addEventListener('mousedown', e => e.preventDefault());
-    b.addEventListener('click', () => b.dataset.list ? listSelection(b.dataset.target) : wrapSelection(b.dataset.mark, b.dataset.target));
+    b.addEventListener('click', () => b.dataset.dice ? insertDice(b.dataset.target, +b.dataset.dice) : b.dataset.list ? listSelection(b.dataset.target) : wrapSelection(b.dataset.mark, b.dataset.target));
   });
   ['tBody', 't2Body'].forEach(id => $(id).addEventListener('keydown', e => {
     if(!(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey) return;
@@ -513,7 +549,7 @@ Man sitzt darauf, wenn man müde ist.</textarea></div>
       title2:'Belohnung', body2:'50 Goldmünzen und die Gastfreundschaft des ganzen Dorfes.',
       num:true, n:1, numCap:'Quest', font:'normal', paper:'aged', wax:false, orn:'vines',
       back:{ title:'Nur für den Spielleiter', text:'Der Rudelführer ist ein verwandelter Jäger. Wer ihn tötet, wird verflucht.' } },
-    letter: { title:'Lieber Aldric,', sub:'Aus Silberbach, im Erntemond',
+    letter: { title:'Lieber Aldric,', sub:'',
       body:'ich hoffe, dieser Brief erreicht dich wohlbehalten. Die Straße nach Norden ist nicht mehr sicher, und ich bitte dich, vorsichtig zu sein.\nKomm, sobald du kannst, zur alten Mühle. Ich erwarte dich dort.',
       title2:'P. S.', body2:'Bring eine Laterne mit, der Keller ist dunkel.', sender:'In Treue, deine Mara', date:'3. Erntemond',
       num:false, font:'hand', paper:'aged', wax:true, orn:'none',
@@ -532,6 +568,22 @@ Man sitzt darauf, wenn man müde ist.</textarea></div>
       title2:'', body2:'',
       num:true, n:1, numCap:'Rätsel', font:'fell', paper:'aged', wax:false, orn:'vines',
       puz:{ hints:'Es wandelt sich im Laufe eines Lebens.\nDer Stock ist sein dritter Freund.', answer:true } },
+    wanted: { title:'GESUCHT', sub:'Tot oder lebendig',
+      body:'**Name:** Grimbart „der Rote“\n**Vergehen:** Raub, Brandstiftung und Wirtshausschlägerei\n**Zuletzt gesehen:** Am Nordtor von Eichenfurt\n\n*Vorsicht: bewaffnet und gefährlich!*',
+      title2:'Belohnung', body2:'500 Goldmünzen',
+      num:false, font:'medieval', paper:'aged', wax:false, orn:'none', layout:'poster' },
+    menu: { title:'Zum Goldenen Krug', sub:'Speisen & Getränke',
+      body:'Wildschweinbraten | 8 SM\nKräutersuppe | 3 SM\nFrisches Brot mit Butter | 1 SM\nHonigkuchen | 2 SM',
+      title2:'Getränke', body2:'Dunkles Bier | 2 KM\nGewürzwein | 5 KM\nApfelmost | 1 KM\nQuellwasser | umsonst',
+      num:false, font:'fell', paper:'light', wax:false, orn:'vines', layout:'menu' },
+    news: { title:'Der Eichenfurter Bote', sub:'Wölfe bedrohen den Norden', date:'Nr. 42 · 3. Erntemond · 2 Kupfer',
+      body:'Seit drei Nächten reißen Wölfe das Vieh im Norden der Stadt. Der Bürgermeister kündigt eine Belohnung für jeden an, der dem Treiben ein Ende setzt. Händler meiden bereits die Nordstraße, und der Preis für Wolle steigt.\nWie unser Berichterstatter erfuhr, wurden nahe der alten Mühle seltsame Spuren gefunden.',
+      title2:'Eilmeldung', body2:'Stadttor ab sofort bei Dunkelheit geschlossen!',
+      num:false, font:'fell', paper:'aged', wax:false, orn:'none', layout:'news', cols:true },
+    dice: { title:'Zufallsbegegnungen', sub:'Würfle beim Durchqueren des Waldes',
+      body:'W6 | Begegnung am Tag\n1 | Ein Rudel Wölfe\n2 | Ein reisender Händler\n3 | Eine verlassene Wagenkolonne\n4 | Ein Jäger mit Neuigkeiten\n5 | Nichts, nur Vogelgezwitscher\n6 | Ein Hinterhalt von Banditen',
+      title2:'Im Gebüsch', body2:'W20 | Was liegt dort?\n1-5 | Eine rostige Münze\n6-10 | Ein Beutel mit Kräutern\n11-15 | Ein Dolch\n16-19 | Ein Heiltrank\n20 | Ein verzauberter Ring',
+      num:false, font:'normal', paper:'aged', wax:false, orn:'none' },
     dialog: { title:'An der Zugbrücke', sub:'Ein Gespräch mit der Torwache',
       body:'', title2:'', body2:'',
       num:false, font:'normal', paper:'light', wax:false, orn:'none',
@@ -544,9 +596,9 @@ Man sitzt darauf, wenn man müde ist.</textarea></div>
     $('t2Title').value = tp.title2; $('t2Body').value = tp.body2;
     ['tTitleOn', 'tSubOn', 'tBodyOn', 't2On'].forEach(id => $(id).checked = true);
     $('tNumOn').checked = tp.num; if(tp.n !== undefined) $('tNum').value = tp.n; $('tNumCap').value = tp.numCap || '';
-    $('tLetterOn').checked = !!tp.sender; $('tSender').value = tp.sender || ''; $('tDate').value = tp.date || '';
+    $('tLetterOn').checked = !!(tp.sender || tp.date); $('tSender').value = tp.sender || ''; $('tDate').value = tp.date || '';
     $('tFont').value = tp.font; ELEM_FONTS.forEach(e => $(e[0]).value = ''); $('tPaper').value = tp.paper; $('tWax').checked = tp.wax; $('tWaxSym').value = ''; $('tWaxCol').value = 'accent'; $('tWaxSize').value = 52; $('tWaxPos').value = 'right';
-    $('tOrn').value = tp.orn || 'none'; $('tCols').checked = !!tp.cols;
+    $('tOrn').value = tp.orn || 'none'; $('tCols').checked = !!tp.cols; $('tLayout').value = tp.layout || 'standard';
     $('tDlgOn').checked = !!tp.dlg; if(tp.dlg) $('tDlg').value = tp.dlg;
     $('tPuzOn').checked = !!tp.puz; if(tp.puz){ $('tHints').value = tp.puz.hints; $('tAnswerOn').checked = tp.puz.answer; }
     revealed.length = 0;
@@ -562,20 +614,41 @@ Man sitzt darauf, wenn man müde ist.</textarea></div>
     const lines = text.split('\n');
     const build = (arr, parent) => arr.forEach(l => {
       const d = document.createElement('div');
+      let q;
+      if((q = /^\s*(?:[Ww]|ᚹ)(\d+)\s*\|\s*(.*)$/.exec(l))){ d.className = 'dt-h'; d.textContent = '🎲 W' + q[1] + (q[2] ? ' · ' + q[2] : ''); parent.appendChild(d); return; }
+      if((q = /^\s*(\d+(?:\s*[-–]\s*\d+)?)\s*\|\s*(.+)$/.exec(l))){
+        d.className = 'dt-row'; const n = document.createElement('span'), t = document.createElement('span');
+        n.className = 'dt-n'; n.textContent = q[1].replace(/\s+/g, ''); t.className = 'dt-t'; fmtInto(t, q[2]); d.appendChild(n); d.appendChild(t); parent.appendChild(d); return;
+      }
+      if((q = /^\s*([^|]+?)\s*\|\s*(.+)$/.exec(l))){
+        d.className = 'pr-row'; const a = document.createElement('span'), z = document.createElement('span'), pr = document.createElement('span');
+        a.className = 'pr-n'; fmtInto(a, q[1]); z.className = 'pr-l'; pr.className = 'pr-p'; fmtInto(pr, q[2]); d.appendChild(a); d.appendChild(z); d.appendChild(pr); parent.appendChild(d); return;
+      }
       const m = /^\s*(?:[-•]|(\d+)\.)\s+/.exec(l);
       if(m){ d.className = 'li'; d.appendChild(document.createTextNode((m[1] ? m[1] + '.' : '•') + ' ')); l = l.slice(m[0].length); }
       fmtInto(d, l); parent.appendChild(d);
     });
-    if(cols && text.trim()){
-      let a = lines, b = [];
-      if(lines.length > 1){
-        const tot = lines.reduce((n, l) => n + l.length + 30, 0); let acc = 0, k = 0;
-        while(k < lines.length && acc < tot / 2) acc += lines[k++].length + 30;
-        a = lines.slice(0, k); b = lines.slice(k);
-      } else { const t = lines[0], i = t.indexOf(' ', Math.floor(t.length / 2)); if(i > 0){ a = [t.slice(0, i)]; b = [t.slice(i + 1)]; } }
+    if(cols && text.trim().length > 90){   // sehr kurze Texte bleiben einspaltig
+      // Spalten nach Zeichenmenge ausgleichen; eine lange Zeile wird bei Bedarf an einer Wortgrenze geteilt
+      const tot = lines.reduce((n, l) => n + l.length + 1, 0); let acc = 0, k = 0;
+      while(k < lines.length && acc + lines[k].length + 1 < tot / 2) acc += lines[k++].length + 1;
+      let a = lines.slice(0, k), b = lines.slice(k + 1);
+      if(k < lines.length){
+        const l = lines[k], off = Math.round(tot / 2 - acc);
+        const w = (l.length > 40 && off > 8 && off < l.length - 8) ? l.indexOf(' ', off) : -1;
+        if(w > 0){ a.push(l.slice(0, w)); b.unshift(l.slice(w + 1)); }
+        else if(off > l.length / 2) a.push(l); else b.unshift(l);
+      }
       el.classList.add('cols');
       [a, b].forEach(arr => { const c = document.createElement('div'); build(arr, c); el.appendChild(c); });
     } else build(lines, el);
+  }
+  function insertDice(id, n){
+    const ta = $(id || 'tBody'), rows = [];
+    if(n === 6) for(let i = 1; i <= 6; i++) rows.push(i + ' | ');
+    else for(let k = 0; k < 5; k++) rows.push((k * 4 + 1) + '-' + (k * 4 + 4) + ' | ');
+    const pos = ta.selectionStart, pre = pos > 0 && ta.value[pos - 1] !== '\n' ? '\n' : '';
+    ta.setRangeText(pre + 'W' + n + ' | Titel\n' + rows.join('\n'), pos, ta.selectionEnd, 'end'); ta.focus(); render();
   }
   function listSelection(id){
     const ta = $(id || 'tBody'), v = ta.value, s0 = ta.selectionStart, e0 = ta.selectionEnd;
@@ -703,16 +776,16 @@ Man sitzt darauf, wenn man müde ist.</textarea></div>
     $('titleOut').style.display = title ? '' : 'none';
     $('subOut').textContent = R(sub, 'subOut');
     $('subOut').style.display = sub ? '' : 'none';
-    $('headBox').style.display = (title || sub) ? '' : 'none';
+    $('headBox').style.display = title ? '' : 'none';
     renderFormatted($('bodyOut'), R(body, 'bodyOut'), $('tCols').checked);
-    $('bodyBox').style.display = body ? '' : 'none';
+    $('bodyBox').style.display = (body || sub) ? '' : 'none';
     $('bodyField').style.display = on ? '' : 'none';
     const o2 = $('t2On').checked, h2 = o2 ? $('t2Title').value.trim() : '', b2 = o2 ? $('t2Body').value.trim() : '';
     $('t2Out').textContent = R(h2, 't2Out'); $('t2Out').style.display = h2 ? '' : 'none';
     renderFormatted($('body2Out'), R(b2, 'body2Out'), $('tCols').checked); $('body2Out').style.display = b2 ? '' : 'none';
     $('box2').style.display = (h2 || b2) ? '' : 'none';
     $('sec2Field').style.display = o2 ? '' : 'none';
-    $('ruleOut').style.display = (title || sub) && (body || h2 || b2) ? '' : 'none';
+    $('ruleOut').style.display = title && (body || sub || h2 || b2) ? '' : 'none';
     // --- erweiterte Funktionen ---
     [['dateOut', 'subOut'], ['senderOut', 'subOut'], ['backTitleOut', 'titleOut'], ['backOut', 'bodyOut']].forEach(a => {
       F[a[0]] = F[a[1]]; FONT_VALUES.forEach(v => $(a[0]).classList.toggle('fx-' + v, F[a[0]] === v));
@@ -724,6 +797,7 @@ Man sitzt darauf, wenn man müde ist.</textarea></div>
     const cap = $('tNumCap').value.trim();
     $('numCap').textContent = cap; $('numCap').style.display = cap ? '' : 'none'; $('seal').classList.toggle('has-cap', !!cap);
     const orn = $('tOrn').value;
+    const lay = $('tLayout').value; ['poster', 'menu', 'news'].forEach(k => cardEl.classList.toggle('lay-' + k, lay === k));
     cardEl.classList.toggle('has-orn', orn !== 'none'); $('orn').innerHTML = ornHTML(orn, sel.accent);
     $('imgBox').style.display = IMGS.tImg ? '' : 'none';
     if(IMGS.tImg && $('imgOut').getAttribute('src') !== IMGS.tImg) $('imgOut').src = IMGS.tImg;
@@ -766,7 +840,7 @@ Man sitzt darauf, wenn man müde ist.</textarea></div>
   // ---------- Teilen per Link (#g=<base64 JSON>) ----------
   function collect(){ return { v:1, l:currentLang, h:$('tTitle').value, x:$('tBody').value, ac:Math.max(0, PALETTE.indexOf(sel)), cc:sel.custom ? sel.accent.slice(1) : undefined, st:$('tSub').value, bo:$('tBodyOn').checked ? 1 : 0, ho:$('tTitleOn').checked ? 1 : 0, so:$('tSubOn').checked ? 1 : 0, n:$('tNum').value, no:$('tNumOn').checked ? 1 : 0, o2:$('t2On').checked ? 1 : 0, h2:$('t2Title').value, x2:$('t2Body').value, f:$('tFont').value, fe:ELEM_FONTS.map(e => $(e[0]).value), pp:$('tPaper').value, wx:$('tWax').checked ? 1 : 0,
     wy:$('tWaxSym').value, wc:$('tWaxCol').value, wz:$('tWaxSize').value, wp:$('tWaxPos').value,
-    lt:$('tLetterOn').checked ? 1 : 0, sd:$('tSender').value, dt:$('tDate').value, nc:$('tNumCap').value, co:$('tCols').checked ? 1 : 0, or:$('tOrn').value,
+    ly:$('tLayout').value, lt:$('tLetterOn').checked ? 1 : 0, sd:$('tSender').value, dt:$('tDate').value, nc:$('tNumCap').value, co:$('tCols').checked ? 1 : 0, or:$('tOrn').value,
     dg:$('tDlgOn').checked ? 1 : 0, dl:$('tDlg').value, pz:$('tPuzOn').checked ? 1 : 0, ph:$('tHints').value, an:$('tAnswerOn').checked ? 1 : 0,
     bk:$('tBackOn').checked ? 1 : 0, bt:$('tBackTitle').value, bx:$('tBackText').value }; }
   function shareURL(){
@@ -786,7 +860,7 @@ Man sitzt darauf, wenn man müde ist.</textarea></div>
     $('tWaxSym').value = s.wy || ''; $('tWaxCol').value = WAX_COLORS[s.wc] !== undefined ? s.wc : 'accent';
     $('tWaxSize').value = (+s.wz >= 36 && +s.wz <= 90) ? s.wz : 52; $('tWaxPos').value = ['left', 'center'].includes(s.wp) ? s.wp : 'right';
     $('tLetterOn').checked = s.lt === 1; $('tSender').value = s.sd || ''; $('tDate').value = s.dt || ''; $('tNumCap').value = s.nc || '';
-    $('tCols').checked = s.co === 1; $('tOrn').value = ['vines', 'runes', 'wax'].includes(s.or) ? s.or : 'none';
+    $('tLayout').value = ['poster', 'menu', 'news'].includes(s.ly) ? s.ly : 'standard'; $('tCols').checked = s.co === 1; $('tOrn').value = ['vines', 'runes', 'wax'].includes(s.or) ? s.or : 'none';
     $('tDlgOn').checked = s.dg === 1; $('tDlg').value = s.dl || ''; $('tPuzOn').checked = s.pz === 1; $('tHints').value = s.ph || ''; $('tAnswerOn').checked = s.an !== 0;
     $('tBackOn').checked = s.bk === 1; $('tBackTitle').value = s.bt || ''; $('tBackText').value = s.bx || ''; showBack = false;
     if(typeof s.cc === 'string' && /^[0-9a-fA-F]{6}$/.test(s.cc)) useCustomColor('#' + s.cc); else selectColor(s.ac);
